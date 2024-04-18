@@ -73,7 +73,7 @@ limits.
 
 We also need to protect the rollup from spam. In a standard blockchain, spam is handled by ensuring that everyone
 pays for the computation that the network does on their behalf. Transactions with invalid signatures are filtered out at the
-peer-to-peer layer and never get included in blocks. This means that an attacker wanting to spam the rollup has no
+peer-to-peer layer and never get included in blocks. This means that an attacker wanting to spam the blockchain has no
 asymmetric advantage. He can send invalid transactions to the few nodes he happens to be directly connected to, but they will
 just disconnect. The only way to get the _entire blockchain network_ to process a transaction is to provide a valid
 signature and pay enough gas fees to cover the cost of execution.
@@ -141,7 +141,7 @@ On the other hand, we don't want to let sequencers get away with including trans
 Otherwise, a malicious sequencer could include invalid transactions "for free", causing the rollup to do a bunch
 of wasted computation.
 
-We address these issues by splitting transasction validation into two categories. Stateless validation (i.e. signature
+We address these issues by splitting transaction validation into two categories. Stateless validation (i.e. signature
 checks) happens first, and transactions which fail stateless validation are invalid _forever_. If a sequencer
 includes a transaction which is statelessly invalid, then we know he's malicious.
 After a transaction has passed stateless validation, we proceed to make some stateful checks (i.e. checking that
@@ -155,7 +155,7 @@ rollup never does any computation without getting paid for it without being unfa
 
 Now that we've talked about the minimum requirements for sequencer, we move on to soft-confirmations.
 
-One of the biggest selling points of rollups today is the ability to tell users the outcome of the tranaction instantly.
+One of the biggest selling points of rollups today is the ability to tell users the outcome of the transaction instantly.
 Under the hood, this experience is enabled by giving a single trusted sequencer a "lock" on the rollup state.
 Because he holds the lock, the sequencer can run a local simulation to determine the exact effect of a transaction
 _before_ he posts it on the DA layer.
