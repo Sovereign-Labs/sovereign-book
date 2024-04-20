@@ -418,3 +418,37 @@ global root, so users don't need to worry about which state trie there values ar
 the state transition function at all. Under the hood, these value are stored in the rollup's database
 _but not in either merkle tree_. This is useful for creating data that will be served via RPC but never
 accessed again during execution - for example, the transaction receipts from an Ethereum block.
+
+### The STF Blueprint
+
+The last key component of a `sov-modules` rollup is the `stf-blueprint`. This "blueprint" provides a generic
+implementation of a `StateTransitionFunction` in terms of a `Runtime` (described above) and a `Kernel` (which
+provides security-critical functionality like censorship resistance in a way that's isolated from the transaction
+execution logic).
+
+The STF blueprint implements the following high-level workflow:
+
+1. Take all of the new data `Blob`s read from the DA layer and send them to the `Kernel`.
+   The `Kernel` will return a list of deserialized `Batch`es of transactions as well as the current `gas` price.
+   (A "`Batch`" is a "`Blob`" sent by a registered sequencer that has been succesfully deserialized
+   into a list of `Transaction`s)
+
+- Note that the list of `Batch`es returned by the `Kernel` does _not_ necessarily correspond
+  exactly to the incoming `Blob`s. The `Kernel` might decide to ignore some Blobs, or to store some in its
+  internal state for "deferred" execution. It might also add some `Batch`es saved from a previous slot.
+
+2. Run the `begin_slot` hook, allowing modules to execute any initialization logic
+
+3. For each batch initialize the sequencer reward to zero and run the `begin_batch` hook.
+   Apply the transactions, rewarding or penalizing the sequencer as appropriate. Finally, run
+   the `end_batch` hook
+
+4. Run the `end_slot` hook to allow modules to execute any final logic.
+
+5. Compute the state change set and state root based on the transactions that were executed.
+
+6. Execute the `finalize` hook, which allows modules to compute any summary information from the change set
+   and make it available via RPC.
+
+For more details on the process of applying individual transactions, see the [transaction lifecycle](./transaction-lifecycle.md)
+document.
