@@ -249,6 +249,24 @@ pub trait Module {
 }
 ```
 
+You'll notice that the `call` function takes three arguments: an associated `CallMessage` type, a `Context`,
+and a `WorkingSet`.
+
+- The `CallMessage` type is the deserialized content of the user's transaction - and the
+  module can pick any type to be its `CallMessage`. In most cases, modules use an `enum` with one variant
+  for each action a user might want to take.
+
+- The `Context` type is relatively straightforward. It simply contains the address of the sequencer, who published
+  the transaction, the identity of the transaction's signer, and the current block height.
+
+- The `WorkingSet` is the most interesting of the three, but it needs a little bit of explanation.
+  In the Sovereign SDK, the rust `struct` which implements a `Module` doesn't actually contain any state.
+  Rather than holding actual values, the module simply defines the _structure_ of some items in state.
+  All of the actual state of the rollup is stored in a `WorkingSet`, which is an in-memory layer on top of
+  the rollup's database (in native mode) or merkle tree (in zk mode). The `WorkingSet` provides commit/revert
+  semantics, caching, deduplication, and automatic witness generation/checking. It also provides utilities
+  for charging `gas` and emitting `event`s.
+
 The `Accounts` module provides a good example of a standard `Module` trait implementation.
 
 ```rust
@@ -276,7 +294,7 @@ impl<S: Spec> sov_modules_api::Module for Accounts<S> {
 				// Find the account of the sender
 				let pub_key = self.public_keys.get(context.sender(), working_set)?;
 				let account = self.accounts.get(&pub_key, working_set);
-				// Update the public key (account data remains the same).
+				// Update the public key
 				self.accounts.set(&new_pub_key, &account, working_set);
 				self.public_keys
 					.set(context.sender(), &new_pub_key, working_set);
@@ -285,7 +303,6 @@ impl<S: Spec> sov_modules_api::Module for Accounts<S> {
         }
     }
 }
-
 ```
 
 #### The `ModuleInfo` trait
@@ -332,3 +349,72 @@ This code automatically generates a unique ID for the bank module and stores it 
 of the module called `id`. It also initializes the `StateMap` "`tokens`" so that any keys stored in the map
 will be prefixed the with module's `prefix`. This prevents collisions in case a different module also
 declares a `StateMap` where the keys are `TokenId`s.
+
+### Module State
+
+The Sovereign SDK provides three core abstractions for managing module state. A `StateMap<K, V>` maps arbitrary keys of type `K`
+to arbitrary values of type `V`. A `StateValue<V>` stores a value of type `V`. And a `StateVec<V>` store an arbitrary length
+vector of type `V`. All three types require their arguments to be serializable, since the values are stored in a merkle tree
+under the hood.
+
+All three abstractions support changing the underlying encoding scheme but default to `Borsh` if no alternative is specified. To
+override the default, simply add an extra type parameter which implements the `StateCodec` trait. (i.e you might write
+`StateValue<Da::BlockHeader, BcsCodec>` to use the `Bcs` serialization scheme for block headers, since your library
+for DA layer types might only support serde-compatible serializers).
+
+All state values are accessed through the `WorkingSet`. For example, you always write `my_state_value.get(&mut working_set)` to
+fetch a value. It's also important to remember that modifying a value that you read from state doesn't have any effect unless
+you call `my_value.set(new, &mut working_set)`.
+
+#### Merkle Tree Layout
+
+`sov-modules` currently uses a generic [Jellyfish Merkle Tree](https://github.com/penumbra-zone/jmt) for its authenticated
+key-value store. (Generic because it can be configured to use any 32-byte hash function).
+In the near future, this JMT will be replaced with the
+[Nearly Optimal Merkle Tree](https://sovereign.mirror.xyz/jfx_cJ_15saejG9ZuQWjnGnG-NfahbazQH98i1J3NN8)
+that is currently under development.
+
+In the current implementation, the SDK implements storage by generating a unique (human-readable) key for each `StateValue`,
+using the hash of that key as a path in the merkle tree. For `StateMap`s, the serialization of the key is appended to that path.
+And for `StateVec`s, the index of the value is appended to the path.
+
+For example, consider the following module:
+
+```rust
+// Suppose we're in the file my_crate/lib.rs
+#[derive(ModuleInfo, Clone)]
+pub struct Example<S: sov_modules_api::Spec> {
+    #[id]
+    pub(crate) id: ModuleId,
+    #[state]
+    pub(crate) some_value: sov_modules_api::StateValue<u8>,
+    #[state]
+    pub(crate) some_vec: sov_modules_api::StateVec<u64>,
+    #[state]
+    pub(crate) some_map: sov_modules_api::StateMap<String, String>,
+}
+```
+
+The value of `some_value` would be stored at the path `hash(b"my_crate/Example/some_value")`. The value of the key "hello"
+in `some_map` would be stored at `hash(b"my_crate/Example/some_map/⍰hello")` (where `⍰hello` represents the borsh encoding
+of the string "hello") etc.
+
+However, this layout may change in future to provide better locality. For more details... ask Preston, I guess.
+
+#### Exotic State Variants
+
+In addition to the standard state store, we support two other kinds of state:
+
+`KernelStateValue`s or (maps/vecs) act identically to regular `StateValues`, but they're stored in a separate merkle tree
+which is only accessible to builtin rollup functionality. This mechanism allows the rollup to store data that is
+inaccessible during transaction execution, which is necessary to enable soft-confirmations without sacrificing
+censorship resistance. For more details, see the section on soft-confirmations in the
+[transaction lifecycle](./transaction-lifecycle.md) documentation. The global "state root" returned by the `sov-modules`
+from the `StateTransitionFunction` implementation is the hash of the kernel state root with the regular state root.
+We do our best to hide this detail from users of the SDK, though. Merkle proofs are automatically generated against the
+global root, so users don't need to worry about which state trie there values are in.
+
+`AccessoryStateValue` or (map/vec) types are similar to `Kernel` types except that their values are not _readable_ from inside
+the state transition function at all. Under the hood, these value are stored in the rollup's database
+_but not in either merkle tree_. This is useful for creating data that will be served via RPC but never
+accessed again during execution - for example, the transaction receipts from an Ethereum block.
