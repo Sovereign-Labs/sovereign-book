@@ -153,7 +153,7 @@ rollup never does any computation without getting paid for it without being unfa
 
 ### Soft Confirmations
 
-Now that we've talked about the minimum requirements for sequencer, we move on to soft-confirmations.
+Now that we've talked about the minimum requirements for sequencer, we move on to soft confirmations.
 
 One of the biggest selling points of rollups today is the ability to tell users the outcome of the transaction instantly.
 Under the hood, this experience is enabled by giving a single trusted sequencer a "lock" on the rollup state.
@@ -181,7 +181,7 @@ of the protected kernel state, the rollup maintains a list of all the blobs that
 and the block number in which they appeared.
 
 Second, we prevent access to the kernel state of the rollup during transaction execution. This prevents users
-from creating transactions that could accidentally invalidate soft-confirmations given by the sequencer, as well
+from creating transactions that could accidentally invalidate soft confirmations given by the sequencer, as well
 as preventing the sequencer from deleting forced transactions before they can be processsed.
 
 Finally, we add two new invariants:
@@ -216,7 +216,7 @@ What all of this means in practice is that...
 - The visible state never changes unless either the preferred sequencer submits a bundle, or a timeout occurs (i.e. the virtual
 slot lags too far). This ensures that the preferred sequencer always knows the exact state that he's building on top of.
 - An honest sequencer wants to keep the virtual slot number as close to the real slot number as possible. This way, he has more
-buffer to absorb downtime without the state changing. This reduces the risk of soft-confirmations being invalidated.
+buffer to absorb downtime without the state changing. This reduces the risk of soft confirmations being invalidated.
 - Honest sequencers can always give accurate soft confirmations, unless the DA layer experiences a liveness failure lasting more
 than `K` slots.
 - Transactions can access information about the underlying blockchain with the best latency that doesn't invalidate soft confirmations.
@@ -229,10 +229,10 @@ processing by some constant number of blocks. He can't prevent forced transactio
 delay transactions.
 
 We also provide some limited protection if the preferred sequencer commits a slashable offense. In this case, the rollup enters "recovery mode",
-where it reverts to standard "based" sequencing (where all sequencer are equal). In this mode, it advances the virtual slot number
+where it reverts to standard "based" sequencing (where all sequencers are equal). In this mode, it advances the virtual slot number
 two-at-a-time until the rollup is caught up, at which point the rollup behaves as if there had never been a preferred sequencer.
 
-In the future, we may also add slashing if the preferred sequencer gives "soft-confirmations" which turn out to be invalid, but this
+In the future, we may also add slashing if the preferred sequencer gives "soft confirmations" which turn out to be invalid, but this
 requires some additional design work.
 
 ## Step 4: Execution
@@ -251,7 +251,7 @@ the minimum number of signatures.
 
   4. (Stateful) Authorization: Matching the results of the authentication and pre-validation steps to decide whether to execute. This step
   also reserves the funds to pay for gas used during transaction execution.
-  --- State changes up to this point are irreversable. State changes beyond this point are either committed or reverted together
+  --- State changes up to this point are irreversable. State changes beyond this point are either committed or reverted together.
 
   5. (Stateful) Pre-dispatch hook: This hook allows _all_ modules to inspect the transaction (and their own state) and do initialization
   before the transaction is executed. For example, a wallet module might use this hook to check the user's balance and store it for
@@ -271,7 +271,7 @@ For more details on execution, see [TODO]
 
 ## Step 5: Proving
 
-Once a transaction is executed, all of the rollup _full nodes_ know the result instantly. Light clients, on the other hand need proof.
+Once a transaction is executed, all of the rollup _full nodes_ know the result instantly. Light clients, on the other hand, need proof.
 In this section, we'll describe the different kinds of proof that the Sovereign SDK offers.
 
 ### Zero-Knowledge Proofs
@@ -291,7 +291,7 @@ All zero-knowledge proofs have the form, "I know of an input such that...". In o
 > I know of a DA layer block with hash X (where X is a public input to the proof) and a rollup state root Y (where Y is another public input)
 > such that the rollup transitions to state Z (another public input) when you apply its transaction processing rules.
 
-To checkthis proof, a client of the rollup needs to check that the input block hash X corresponds to the next DA layer block, and that
+To check this proof, a client of the rollup needs to check that the input block hash X corresponds to the next DA layer block, and that
 the input state root Y corresponds to the current rollup state. If so, the client can advance its view of the state from Y to Z.
 
 This works great for a single block. But if a client needs to validate the entire history of the rollup, checking proofs of each
@@ -346,7 +346,7 @@ chain split by creating a fork which sent some rewards to a different prover.) S
 on chain. The first prover to post a valid proof of a particular block gets rewarded with the majority of the `base_fee`s
 collected from that block. This is a deviation from EIP-1559, where all base fees are burned. Intuitively, our construction
 is still safe because provers "burn" money in electricity and hardware costs in order to create proofs. However, we also
-hold a burn a small proportion of base fees as insurance in case proving costs ever fall to negligble levels.
+burn a small proportion of base fees as insurance in case proving costs ever fall to negligible levels.
 
 Once a prover has posted his proof on the DA layer, two things happen. First, full nodes read the proof and, if it's valid
 reward the prover. If it's invalid, the prover has his deposit slashed. (Just like a misbehaving sequencer. Also like
@@ -414,7 +414,7 @@ until it reaches (near) certainty. (The point at which clients are certain about
 
 The previous generation of optimistic rollups (including Optimism and Arbitrum) relies on running an on-chain bisection
 game over an execution trace to resolve disputes about the rollup state.
-This requires $log_2(n)$ rounds of interaction, where `n` is the length of the trace (i.e. a few hundred million).
+This requires `log_2(n)` rounds of interaction, where `n` is the length of the trace (i.e. a few hundred million).
 To handle the possibility of congestion or censorship, rollups need to set the timeout period of messages 
 conservatively - which means that a dispute could take up to a week to resolve.
 
@@ -448,6 +448,6 @@ flexibility, and abstract as much functionality as possible into reusable compon
 we achieve flexibility at the level of Rust code in the [abstractions](./abstractions.md) chapter.
 
 Finally, we optimize performance. This means eliminating redundant computation, carefully managing
-state access patterns, and considering the strengths and weaknesses of zero-knowledge proofs systems.
+state access patterns, and considering the strengths and weaknesses of zero-knowledge proof systems.
 
 Happy hacking!
