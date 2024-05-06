@@ -155,7 +155,7 @@ rollup never does any computation without getting paid for it without being unfa
 
 Now that we've talked about the minimum requirements for sequencer, we move on to soft-confirmations.
 
-One of the biggest selling points of rollups today is the ability to tell users the outcome of the tranaction instantly.
+One of the biggest selling points of rollups today is the ability to tell users the outcome of the transaction instantly.
 Under the hood, this experience is enabled by giving a single trusted sequencer a "lock" on the rollup state.
 Because he holds the lock, the sequencer can run a local simulation to determine the exact effect of a transaction
 _before_ he posts it on the DA layer.
@@ -204,7 +204,7 @@ Inside the rollup, we enforce that...
 - The virtual slot number increments by _at least_ one every time the preferred sequencer succesfully submits a blob. The sequencer
 may increment the virtual slot by more than one.
 
-- The virtual slot number is never be greater than the current (real) slot number
+- The virtual slot number is never to be greater than the current (real) slot number
 
 - Transactions may only access information about the DA layer that was known at the time of their _virtual_ slot's creation.
 Otherwise, users could write transactions whose outcome couldn't be predicted, making it impossible to give out soft confirmations.
@@ -346,10 +346,10 @@ chain split by creating a fork which sent some rewards to a different prover.) S
 on chain. The first prover to post a valid proof of a particular block gets rewarded with the majority of the `base_fee`s
 collected from that block. This is a deviation from EIP-1559, where all base fees are burned. Intuitively, our construction
 is still safe because provers "burn" money in electricity and hardware costs in order to create proofs. However, we also
-hold a burn a small proportion of base fees as insurance in case proving costs ever fall to negligble levels.
+burn a small proportion of base fees as insurance in case proving costs ever fall to negligble levels.
 
-Once a prover has posted his proof on the DA layer, two things happen. First, full nodes read the proof and, if it's valid
-reward the prover. If it's invalid, the prover has his deposit slashed. (Just like a misbehaving sequencer. Also like
+Once a prover has posted his proof on the DA layer, two things happen. First, full nodes read the proof and, if it's valid,
+reward the prover, if it's invalid, the prover has his deposit slashed (Just like a misbehaving sequencer. Also like
 sequencers, data posted by un-bonded entities is ignored.) Second, light clients of the rollup download and verify the proof,
 learning the state of the rollup. As an implementation detail, we require proofs which get posted on chain to be domain
 separated, so that light clients can download just the proofs from a rollup without also needing to fetch all of hte
@@ -389,8 +389,8 @@ So, putting this all together, the proving workflow looks like this:
 
 For some rollups, generating a full zero-knowledge proof is too expensive. For these applications, the Sovereign SDK
 offers Optimistic Mode, which allows developers to trade some light-client latency for lower costs. With a zk-rollup,
-light clients have a view of the state which lags behind by about 15 minutes (the time it takes to generate a) zero-
-knowledge proof. However, at the end of those 15 minutes, light clients know the state with cryptographic certainty.
+light clients have a view of the state which lags behind by about 15 minutes (the time it takes to generate a zero-
+knowledge proof). However, at the end of those 15 minutes, light clients know the state with cryptographic certainty.
 
 In an optimistic rollup, light clients have a different experience. They get some indication of the new rollup state
 very quickly (usually in the very next block), but they need to wait much longer (usually about a day) to be sure that
@@ -402,7 +402,7 @@ In an optimistic rollup, the "proofs" checked by light clients are not (usually)
 attestations. Attesters stake tokens on claims like "the state of the rollup at height `N` is `X`", and anyone who
 successfully challenges a claim gets to keep half of the staked tokens. (The other half are burned to prevent an
 attester from lying about the state and then challenging himself from another account and keeping his tokens).
-In exchange, for their role in the process,  attesters are rewarded with some portion of the rollup's gas fees.
+In exchange for their role in the process, attesters are rewarded with some portion of the rollup's gas fees.
 This compensates attesters for the opportunity cost of locking their capital.
 
 This mechanism explains why light clients can know the state quickly with _some_ confidence right away, but
@@ -412,10 +412,10 @@ of capital. As time goes by and no one challenges the assertion, their confidenc
 until it reaches (near) certainty. (The point at which clients are certain about the outcome is usually called the
 "finality period" or "finality delay".)
 
-The previous generation of optimistic rollups (including Optimism and Arbitrum) relies on running an on-chain bisection
+The previous generation of optimistic rollups (including Optimism and Arbitrum) rely on running an on-chain bisection
 game over an execution trace to resolve disputes about the rollup state.
 This requires $log_2(n)$ rounds of interaction, where `n` is the length of the trace (i.e. a few hundred million).
-To handle the possibility of congestion or censorship, rollups need to set the timeout period of messages 
+To handle the possibility of congestion or censorship, rollups need to set the timeout period of messages
 conservatively - which means that a dispute could take up to a week to resolve.
 
 In the Sovereign SDK, we resolve disputes by generating a zero-knowledge proof of the outcome of the disputed block.
@@ -425,7 +425,7 @@ services might be experiencing congestion. To minimize the risk, we plan to set 
 at first (about one day) and reduce it over time as we gain confidence.
 
 Otherwise, the overall proving setup is quite similar to that of a zk-rollup. Just as in zk-rollups, proofs (and
-attestations) are posted onto the DA layer so that we have consensus about who to reward and who to slash. And,
+attestations) are posted onto the DA layer so that we have consensus about whom to reward and whom to slash. And,
 just like a zk-rollup, optimistic proofs/attestations are posted into a separate "namespace" on the DA layer
 (if possible) so that light clients can avoid downloading transaction data. The only other significant
 distinction between optimistic and zk rollups in Sovereign is that optimistic rollups use block-level proofs
