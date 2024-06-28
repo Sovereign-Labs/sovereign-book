@@ -13,8 +13,7 @@ forced inclusion; all other types will be ignored. For more details, see the
 ## Usage
 
 The Sovereign SDK limits the number of batches from unregistered sequencers
-processed per rollup slot. This measure helps users forced to register as
-sequencers due to experiencing censorship and limits the use of this mechanism
+processed per rollup slot. This measure limits the use of this mechanism
 as a denial-of-service (DOS) attack vector.
 
 ### Process for Forced Registration
