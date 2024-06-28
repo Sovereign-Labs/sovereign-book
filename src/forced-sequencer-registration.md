@@ -21,7 +21,7 @@ as a denial-of-service (DOS) attack vector.
 
 1. Create a batch containing a valid "Register Sequencer" transaction.
 2. Submit the batch to the Data Availability layer.
-3. Nodes collect and execute the transaction.
+3. Rollup nodes collect and execute the transaction.
 4. If the transaction complies with all rules, the user is registered as a
    sequencer and can submit regular transaction batches.
 
