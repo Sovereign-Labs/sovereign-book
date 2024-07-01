@@ -1,7 +1,8 @@
 # Gas Specification
 
 This document contains a detailed specification of the way gas is handled within
-Sovereign's SDK.
+Sovereign's SDK. We use `<., .>` to denote the scalar product of two
+multidimensional quantities.
 
 ## Definition
 
