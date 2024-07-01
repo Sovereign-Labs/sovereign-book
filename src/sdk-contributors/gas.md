@@ -40,7 +40,7 @@ Sovereing's SDK. In particular, sorted decreasing order of importance:
 
 ## A design for multidimensional gas
 
-Sovereign SDK's rollups use multidimensional gas unit and prices. For example,
+Sovereign SDK's rollups use multidimensional gas units and prices. For example,
 this allows to take into account the differences between native and
 zero-knowledge computational costs for the same operation. Indeed:
 
