@@ -60,9 +60,8 @@ the rollup _which are assumed to vary slowly_ (on a weekly/monthly scale):
 - Zk computation costs.
 - Storage size (which should be a function of the depth of the Jellyfish Merkle
   tree or NOMT)
-- Throughput and DA layer congestion - this dimension should track the
-  **long-term network congestion** (at the DA level) and should not be strongly
-  affected by local congestion spikes.
+- DA bandwidth - this dimension should track the **long-term DA layer
+  bandwidth** and should not be strongly affected by local congestion spikes.
 
 We have chosen to follow the
 [multi-dimensional EIP-1559](https://ethresear.ch/t/multidimensional-eip-1559/11651)
