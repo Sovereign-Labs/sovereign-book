@@ -1,7 +1,7 @@
 # Gas Specification
 
-This document contains a detailed specification of the design of the gas
-mechanism within Sovereign's SDK.
+This document contains a detailed specification of the way gas is handled within
+Sovereign's SDK.
 
 ## Definition
 
@@ -14,13 +14,12 @@ network.
 ## High level overview
 
 We have drawn a lot of inspiration from the
-[Ethereum gas model](https://ethereum.org/en/developers/docs/gas/) in our SDK's
-design for gas. Given that Ethereum's gas is well understood and widely used in
-the crypto industry, we believe that this will help users onboard more easily
-while providing strong security guarantees out-of-the box. We have nonetheless
-deliberately chosen to tweak some concepts that were ill-suited to the rollups
-built using Sovereing's SDK. In particular, sorted decreasing order of
-importance:
+[Ethereum gas model](https://ethereum.org/en/developers/docs/gas/) in our gas
+mechanism design. Given that Ethereum's gas is well understood and widely used
+in the crypto industry, we believe that this will help users onboard more easily
+while providing strong security guarantees out-of-the box. We have deliberately
+chosen to tweak some concepts that were ill-suited to the rollups built using
+Sovereing's SDK. In particular, sorted decreasing order of importance:
 
 - We are using multidimensional gas units and prices.
 - We are using a dynamic gas target. Otherwise, the rollups built with
