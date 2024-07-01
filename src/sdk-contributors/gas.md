@@ -41,7 +41,7 @@ Sovereing's SDK. In particular, sorted decreasing order of importance:
 ## A design for multidimensional gas
 
 Sovereign SDK's rollups use multidimensional gas units and prices. For example,
-this allows to take into account the differences between native and
+this allows developers to take into account the differences between native and
 zero-knowledge computational costs for the same operation. Indeed:
 
 - Hashing is orders of magnitude more expensive when performed inside a
@@ -52,7 +52,7 @@ zero-knowledge computational costs for the same operation. Indeed:
   mode than in `native` mode. But _hot_ storage accesses are practically free in
   zero-knowledge.
 
-**The number and meaning of each dimension is still up to debate**. The most
+**The number and meaning of each dimension is is still not finalized**. The most
 recent designs account for 4 dimensions that represent fundamental metrics of
 the rollup _which are assumed to vary slowly_ (on a weekly/monthly scale):
 
@@ -60,9 +60,9 @@ the rollup _which are assumed to vary slowly_ (on a weekly/monthly scale):
 - Zk computation costs.
 - Storage size (which should be a function of the depth of the Jellyfish Merkle
   tree or NOMT)
-- Throughput and network congestion - this dimension should track the
-  **long-term network congestion** and should not be strongly affected by local
-  congestion spikes.
+- Throughput and DA layer congestion - this dimension should track the
+  **long-term network congestion** (at the DA level) and should not be strongly
+  affected by local congestion spikes.
 
 We have chosen to follow the
 [multi-dimensional EIP-1559](https://ethresear.ch/t/multidimensional-eip-1559/11651)
