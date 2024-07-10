@@ -83,5 +83,5 @@ Note also that:
   batch consumes more gas than the target (and respectively up if the batch
   consumes less gas than the target).
 
-The [gas specification](./sdk-contributors/gas.md) provides a detailed
+The [gas specification](../sdk-contributors/gas.md) provides a detailed
 description of the gas mechanisms used within the SDK.
