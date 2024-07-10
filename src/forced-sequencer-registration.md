@@ -29,7 +29,7 @@ as a denial-of-service (DOS) attack vector.
 To ensure forced inclusion requests are processed correctly, the following rules
 apply:
 
-- **Transaction Limit**: Only one transaction is allowed per batch. Any
+- **Transaction Limit**: Only the first transaction in each batch is taken into account. Any
   additional transactions will be discarded.
 - **Transaction Type**: The transaction must be a "Register Sequencer"
   transaction.
