@@ -36,7 +36,7 @@ apply:
 - **Transaction Construction**: The transaction must be properly formatted and
   comply with standard transaction rules.
 - **Financial Requirements**: Users must have enough funds to cover:
-  - Pre-execution checks (including signature validation and transaction type
-    checks).
+  - Pre-execution checks (including signature validation, deserialization
+    and transaction type checks).
   - Transaction execution costs.
   - A bond required for sequencer registration.
