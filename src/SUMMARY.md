@@ -3,6 +3,7 @@
 - [Intro](./intro.md)
 - [Getting Started](./getting-started.md)
 - [Rollup Devs](./rollup-devs.md)
+  - [Gas](./rollup-devs/gas.md)
 - [DA Layer](./da-layer.md)
 - [SDK Contributors](./sdk-contributors.md)
   - [Transaction Lifecyle](./sdk-contributors/transaction-lifecycle.md)
