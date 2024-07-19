@@ -271,7 +271,7 @@ Inside the rollup, we enforce that...
   sequencer succesfully submits a blob. The sequencer may increment the virtual
   slot by more than one.
 
-- The virtual slot number is never be greater than the current (real) slot
+- The virtual slot number is never greater than the current (real) slot
   number
 
 - Transactions may only access information about the DA layer that was known at
@@ -396,7 +396,7 @@ our case, the full statement is:
 > the rollup transitions to state Z (another public input) when you apply its
 > transaction processing rules.
 
-To checkthis proof, a client of the rollup needs to check that the input block
+To check this proof, a client of the rollup needs to check that the input block
 hash X corresponds to the next DA layer block, and that the input state root Y
 corresponds to the current rollup state. If so, the client can advance its view
 of the state from Y to Z.
@@ -421,8 +421,8 @@ Each `AggregateProof` is a statement of the form:
 >   root.
 > - The block header from the first proof has `prev_hash == C`
 > - The first proof has has input state root `D`
-> - The final proof in the chain has block hash `X` and output root `Y` (where
->   `X` and `Y` are public inputs)
+> - The final proof in the chain has block hash `A` and output root `B` (where
+>   `A` and `B` are public inputs)
 
 #### Incentives
 
@@ -472,7 +472,7 @@ proofs on chain. The first prover to post a valid proof of a particular block
 gets rewarded with the majority of the `base_fee`s collected from that block.
 This is a deviation from EIP-1559, where all base fees are burned. Intuitively,
 our construction is still safe because provers "burn" money in electricity and
-hardware costs in order to create proofs. However, we also hold a burn a small
+hardware costs in order to create proofs. However, we also burn a small
 proportion of base fees as insurance in case proving costs ever fall to
 negligble levels.
 
@@ -483,7 +483,7 @@ like sequencers, data posted by un-bonded entities is ignored.) Second, light
 clients of the rollup download and verify the proof, learning the state of the
 rollup. As an implementation detail, we require proofs which get posted on chain
 to be domain separated, so that light clients can download just the proofs from
-a rollup without also needing to fetch all of hte transaction data.
+a rollup without also needing to fetch all of the transaction data.
 
 #### Summary: The proving workflow
 
