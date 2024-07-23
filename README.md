@@ -14,3 +14,19 @@ To edit an existing chapter, simply modify the corresponding Markdown file in th
 To change the book structure, modify `SUMMARY.md`.
 
 To edit the default theme, modify `theme/variables.css`.
+
+## Deploying
+
+To deploy this book, you just need to update https://github.com/Sovereign-Labs/sovereign-labs.github.io. In the
+following instructions, we assume that repository is checked out and that it shares a parent with this one:
+```ascii
+# The directory structure should look like this
+parent/
+  sovereign-book/
+  sovereign-labs.github.io/
+```
+1. (In this repository) `mdbook build`
+2. `cp ./book/* ../sovereign-labs.github.io/`
+3. `cd ../sovereign-labs.github.io/`
+4. `git commit -m "Update book"`
+5. `git push`
