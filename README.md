@@ -26,7 +26,7 @@ parent/
   sovereign-labs.github.io/
 ```
 1. (In this repository) `mdbook build`
-2. `cp ./book/* ../sovereign-labs.github.io/`
+2. `cp -r ./book/* ../sovereign-labs.github.io/`
 3. `cd ../sovereign-labs.github.io/`
 4. `git commit -m "Update book"`
 5. `git push`
