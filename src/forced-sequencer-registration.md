@@ -13,8 +13,8 @@ forced inclusion; all other types will be ignored. For more details, see the
 ## Usage
 
 The Sovereign SDK limits the number of batches from unregistered sequencers
-processed per rollup slot. This measure limits the use of this mechanism
-as a denial-of-service (DOS) attack vector.
+processed per rollup slot. This measure limits the use of this mechanism as a
+denial-of-service (DOS) attack vector.
 
 ### Process for Forced Registration
 
@@ -29,14 +29,14 @@ as a denial-of-service (DOS) attack vector.
 To ensure forced inclusion requests are processed correctly, the following rules
 apply:
 
-- **Transaction Limit**: Only the first transaction in each batch is taken into account. Any
-  additional transactions will be discarded.
+- **Transaction Limit**: Only the first transaction in each batch is taken into
+  account. Any additional transactions will be discarded.
 - **Transaction Type**: The transaction must be a "Register Sequencer"
   transaction.
 - **Transaction Construction**: The transaction must be properly formatted and
   comply with standard transaction rules.
 - **Financial Requirements**: Users must have enough funds to cover:
-  - Pre-execution checks (including signature validation, deserialization
-    and transaction type checks).
+  - Pre-execution checks (including signature validation, deserialization and
+    transaction type checks).
   - Transaction execution costs.
   - A bond required for sequencer registration.

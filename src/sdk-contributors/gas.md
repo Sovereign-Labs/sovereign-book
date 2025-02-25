@@ -23,7 +23,7 @@ chosen to tweak some concepts that were ill-suited to the rollups built using
 Sovereing's SDK. In particular, sorted decreasing order of importance:
 
 - We are using multidimensional gas units and prices.
-- We are using a dynamic gas target. Otherwise, the rollups built with
+- We plan to using a dynamic gas target. Otherwise, the rollups built with
   Sovereign's SDK follow the [EIP-1559](https://eips.ethereum.org/EIPS/eip-1559)
   specification by default.
 - Rollup transactions specify a `max_fee`, `max_priority_fee_bips`, and
@@ -53,16 +53,8 @@ zero-knowledge computational costs for the same operation. Indeed:
   mode than in `native` mode. But _hot_ storage accesses are practically free in
   zero-knowledge.
 
-**The number and meaning of each dimension is is still not finalized**. The most
-recent designs account for 4 dimensions that represent fundamental metrics of
-the rollup _which are assumed to vary slowly_ (on a weekly/monthly scale):
-
-- Native computation costs.
-- Zk computation costs.
-- Storage size (which should be a function of the depth of the Jellyfish Merkle
-  tree or NOMT)
-- DA bandwidth - this dimension should track the **long-term DA layer
-  bandwidth** and should not be strongly affected by local congestion spikes.
+In the Sovereign SDK, we currently meter consumption in two dimensions - compute
+and memory.
 
 We have chosen to follow the
 [multi-dimensional EIP-1559](https://ethresear.ch/t/multidimensional-eip-1559/11651)
@@ -81,11 +73,10 @@ design for the gas pricing adjustment formulas. In essence:
   rollup metrics we have described above. That way, Sovereign rollups can
   account for major technological improvements in computation (such as zk-proof
   generation throughtput), or storage cost.
-- Every transaction has to specify a unidimensional `max_fee` which is the
-  maximum amount of _gas tokens_ that can be used to execute a given
-  transaction. Similarly, users have to specify a `max_priority_fee_per_gas`
-  expressed in basis points which can be used to reward the transaction
-  sequencer.
+- Every transaction has to specify a scalar `max_fee` which is the maximum
+  amount of _gas tokens_ that can be used to execute a given transaction.
+  Similarly, users have to specify a `max_priority_fee_per_gas` expressed in
+  basis points which can be used to reward the transaction sequencer.
 - The final sequencer reward is:
   `seq_reward = min(max_fee - <base_fee, gas_price>, max_priority_fee_per_gas * <base_fee, gas_price>)`.
 - Users can provide an optional `gas_limit` field which is a maximum amount of

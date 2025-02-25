@@ -65,25 +65,20 @@ In practice, that means that...
 
 ## Step 2: Signing Transactions
 
-The crypto community has fifteen years of experience building wallets for L1
-blockchains. That means that existing wallets are much better than anything we
-could build in a couple of weeks. But at the same time, the user experience
-is... not great. Users lose all of their funds pretty regularly, and they still
-have to deal with complexity like storing seed phrases and inspecting
-transaction hashes.
+The SDK supports several signing/verification modes. The standard choice for
+interacting with Sovereign SDK chains is our custom `UniversalWallet`, which is
+available as a Metamask snap and a Ledger app. The `UniversalWallet` integrates
+tightly with the Sovereign SDK to render transactions in human-readable format.
+However, many chains need compatibility with legacy formats like Ethereum RLP
+transactions or Solana instructions
 
-So, we've made the pragmatic choice to be as compatible as possible with
-existing crypto wallets, while leaving the door open for future improvements.
-
-In rollups built with `sov-modules`, this is enabled by the
-`RuntimeAuthenticator` abstraction built into the
-[`stf-blueprint`](module-system/sov-modules-stf-blueprint/src/lib.rs). Using
-this trait, we allow rollup developers to bring their own transaction
+We've made the pragmatic choice to be as compatible as possible with existing
+crypto wallets using our `RuntimeAuthenticator` abstraction. By implementing the
+`RuntimeAuthenticator`trait, developers cab bring their own transaction
 deserialization and authorization logic. Even better, we allow rollups to
 support several different `Authenticator` implementations simultaneously. This
-allows developers to retain backward compatibility with existing wallets,
-without giving up the freedom to create specialized transaction formats that
-integrate more deeply with the rollup's logic and the wallet interface.
+allows developers to retain backward compatibility with legacy transaction
+formats, without compromising on support for their native functionality.
 
 ## Step 3: Sequencing
 
@@ -131,7 +126,7 @@ sequencer handles transactions before they've gone through the DA layer's
 consensus mechanism, he can re-order transactions - and potentially even halt
 the rollup by refusing to publish new transactions.
 
-To mitigate this power, we need to make a couple of adjustments to the protocol.
+To mitigate this power, we need to put a couple of safeguards in the protocol.
 
 First, we allow anyone to register as a sequencer depositing tokens into the
 sequencer registry. This is a significant departure from most existing rollups,
@@ -196,11 +191,11 @@ malicious. After a transaction has passed stateless validation, we proceed to
 make some stateful checks (i.e. checking that the transaction isn't a duplicate,
 and that the account has enough funds to pay for gas). If these checks fail, we
 charge the sequencer a small fee - just enough to cover the cost of the
-signature check.
+validatoin.
 
 This ensures that sequencers are incentivized to do their best to filter out
 invalid transactions, and that the rollup never does any computation without
-getting paid for it without being unfairly punitive.
+getting paid for it, without being unfairly punitive to sequencers.
 
 ### Soft Confirmations
 
@@ -252,27 +247,27 @@ Finally, we add two new invariants:
 2. All "forced" (non-preferred) transactions will be processed in the order they
    appeared on the DA layer
 
-To help enforce these invariants, we add a concept of a "virtual" slot number.
-The virtual slot number is a nondecreasing integer which represents block number
+To help enforce these invariants, we add a concept of a "visible" slot number.
+The visible slot number is a nondecreasing integer which represents block number
 that the preferred sequencer observed when he started building his current
 bundle. Any "forced" blobs which appear on the DA layer are processed when the
-virtual slot number advances beyond the number of the _real_ slot in which they
+visible slot number advances beyond the number of the _real_ slot in which they
 appeared.
 
 Inside the rollup, we enforce that...
 
-- The virtual slot number never lags behind the real slot number by more than
+- The visible slot number never lags behind the real slot number by more than
   some constant `K` slots
 
   - This ensures that "forced" transactions are always processed in a reasonable
     time frame
 
-- The virtual slot number increments by _at least_ one every time the preferred
+- The visible slot number increments by _at least_ one every time the preferred
   sequencer succesfully submits a blob. The sequencer may increment the virtual
-  slot by more than one.
+  slot by more than one, but the maximum increment is bounded by a small
+  constant (say, 10).
 
-- The virtual slot number is never greater than the current (real) slot
-  number
+- The visible slot number is never greater than the current (real) slot number
 
 - Transactions may only access information about the DA layer that was known at
   the time of their _virtual_ slot's creation. Otherwise, users could write
@@ -287,7 +282,7 @@ Inside the rollup, we enforce that...
 What all of this means in practice is that...
 
 - The visible state never changes unless either the preferred sequencer submits
-  a bundle, or a timeout occurs (i.e. the virtual slot lags too far). This
+  a batch, or a timeout occurs (i.e. the visible slot lags too far). This
   ensures that the preferred sequencer always knows the exact state that he's
   building on top of.
 - An honest sequencer wants to keep the virtual slot number as close to the real
@@ -334,8 +329,8 @@ sequence:
    authorization. For example, if the address is a multisig, fetch the set of
    public keys and the minimum number of signatures.
 
-3. (Stateless) Authentication: Checking that the transaction is authorized. For
-   example, checking that the signatures are valid.
+3. (Usually Stateless) Authentication: Checking that the transaction is
+   authorized. For example, checking that the signatures are valid.
 
 4. (Stateful) Authorization: Matching the results of the authentication and
    pre-validation steps to decide whether to execute. This step also reserves
@@ -445,10 +440,11 @@ etc. So, in the short term, we model prover capacity as being fixed - and we use
 EIP-1559 to adjust demand to fit that target.
 
 In the long run, we want to adjust the gas limit to reflect the actual capacity
-of available provers. To facilitate this, we track the rollup's gas usage and
-proving throughput (measured in gas per second) over time. If rollup blocks are
-full and provers are able to keep up, we gradually increase the gas limit until
-blocks are no longer full or provers start to fall behind.
+of available provers. (Note that this is not yet fully implemented). To
+facilitate this, we will track the rollup's gas usage and proving throughput
+(measured in gas per second) over time. If rollup blocks are full and provers
+are able to keep up, we will gradually increase the gas limit until blocks are
+no longer full or provers start to fall behind.
 
 This still leaves one problem... how do we incentivize provers to bring more
 hardware online? After all, adding more hardware increases the gas limit, which
