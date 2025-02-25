@@ -1,8 +1,7 @@
 # The Sovereign SDK Book
 
-The Sovereign SDK is a modular framework for building rollups. It is designed to
-be flexible enough to support _any_ application without sacrificing performance
-or ease-of-use.
+The Sovereign SDK is a batteries-included framework for building onchain
+applications.
 
 <a href="https://discord.gg/kbykCcPrcA" ><img alt="Discord" src="https://img.shields.io/discord/1050059327626555462?label=discord"/></a>
 
@@ -45,11 +44,11 @@ the Sovereign SDK to build...
 
 ## How it Works
 
-Developers write the business logic of their rollup in Rust, and the SDK handles
-all of the complexity of creating a rollup on their behalf. Under the hood, the
-SDK compiles the chain's business logic to a zero-knowledge circuit, which it
-uses to prove correct execution (if the rollup is running in "zk mode") or to
-resolve disputes about execution (if the rollup is running in "optimistic
+As a developer, you write the business logic of your rollup in Rust and the SDK
+handles all of the complexity of creating a rollup on their behalf. Under the
+hood, the SDK compiles the chain's business logic to a zero-knowledge circuit,
+which it uses to prove correct execution (if the rollup is running in "zk mode")
+or to resolve disputes about execution (if the rollup is running in "optimistic
 mode"). It also generates a complete _full node_ implementation which can
 reproduce the state of the blockchain and serve data to users.
 
