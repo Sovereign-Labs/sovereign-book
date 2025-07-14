@@ -6,7 +6,7 @@ allows users to interact with that state onchain. Modules also provide custom
 API support and built-in indexing.
 
 In this section, we'll describe how to implement a module and take full
-advantage of the Sovereign SDKs builtin functionality.
+advantage of the Sovereign SDKs built-in functionalities.
 
 ## The Module Struct
 
@@ -82,7 +82,7 @@ See the
 [`Spec` trait docs](https://github.com/Sovereign-Labs/sovereign-sdk-wip/blob/1210acb5f5d8ca408ebaea40db3a75e5d2521491/crates/module-system/sov-modules-api/src/module/spec.rs#L28-L29)
 for more details.
 
-### `#[state]`, `#[module]`, and #[id] fields
+### `#[state]`, `#[module]`, and `#[id]` fields
 
 Modules may have as many `#[state]` and `#[module]` fields as they wish, but
 they must have exactly one `#[id]`. The `ModuleInfo` macro will automatically
@@ -117,7 +117,7 @@ pub struct MyModule<S: Spec> {
 ```
 
 Note that this is only necessary if the compiler warns you that the type doesn't
-suppor `BorshSerialize` or `BorshDeserialize`. If the compiler is happy, you
+support `BorshSerialize` or `BorshDeserialize`. If the compiler is happy, you
 don't need to override the default.
 
 The last important thing to note about state is that for each kind of item
@@ -190,13 +190,13 @@ rollup is initialized. It lets the person deploying your module set any initial
 configuration and is responsible for making sure that any state values in your
 module are initialized (if necessary). Since `genesis` is only called once, you
 don't need to worry about efficiency. However, you do need to be careful not to
-do anything non-determinstic. That means no network requests, and no use of
+do anything non-deterministic. That means no network requests, and no use of
 randomness!
 
 As you can see, the `genesis` function gets passed a user-defined `Config`
 value. As a module author, you can put anything you want here. Deployers of your
 rollup will need to instantiate the config at genesis, and you can use it to do
-initialization. If your module doesn't need configuring, you can juse use the
+initialization. If your module doesn't need configuring, you can just use the
 empty type `()`.
 
 `genesis` also accepts an argument which implements the `GenesisState` trait.
@@ -205,7 +205,7 @@ its dependencies. A typical genesis config definition and genesis function
 looklike this:
 
 ```rust
-// Adapter from the `SequencerRegistry` module
+// Adapted from the `SequencerRegistry` module
 pub struct SequencerConfig<S: Spec> {
     /// The rollup address of the sequencer.
     pub seq_rollup_address: S::Address,
@@ -235,8 +235,8 @@ pub(crate) fn genesis(
 The `call` function provides the transaction processing logic for your module.
 It accepts a structured input from a user and a `Context` which contains
 metadata including the sender address. In response to a `call`, modules may
-update their state as well as emitting `Events` - structured key-value pairs
-which are returned to the user and can be queried over the REST API.
+update their state as well as emit `Events` - structured key-value pairs
+which are returned to the user and can be queried over the REST API, or streamed via the WebSocket endpoint.
 
 If your call function returns an error, all of its state changes are
 automatically reverted and any events are discarded. However, any logs generated
@@ -244,7 +244,7 @@ by the transaction will still be visible to the node operator. (More on
 `logging` later.)
 
 You can define the `CallMessage` accepted by your module to be any type you
-wish, but an enum is usually best. Be sure to implement `borsh` and `serde`
+wish, but an enum is usually the best. Be sure to implement `borsh` and `serde`
 serialization for your type, as well as `schemars::JsonSchema` and
 `sov_modules_macros::UniversalWallet`. This will ensure that it's maximally
 portable across languages and frontends, making it easy for users to securely
@@ -314,13 +314,13 @@ transactions execute in a block - but be careful, no one pays for the
 computation done by `BlockHooks`, so doing any heavy computation can make your
 rollup vulnerable to DOS attacks.
 
-`TxHooks` are useful for checking, or to allow your module to monitor actions
+`TxHooks` are useful for checking invariants, or to allow your module to monitor actions
 being taken by other modules. Unlike `BlockHooks`, `TxHooks` are paid for by the
 user who sent each transaction.
 
 The `FinalizeHook` is great for doing indexing. It can only modify
 `AccessoryState`, which makes it cheap to run but means that the results will
-only be visible via the API
+only be visible via the API.
 
 Using the hooks is somewhat unusual - most applications only need to modify
 their state in response to user actions - but it's a powerful tool in some
@@ -329,7 +329,7 @@ cases. See the documentation on
 and
 [`TxHooks`](https://github.com/Sovereign-Labs/sovereign-sdk-wip/blob/1210acb5f5d8ca408ebaea40db3a75e5d2521491/crates/module-system/sov-modules-api/src/hooks.rs#L12)
 and
-[`FinalizeHook](https://github.com/Sovereign-Labs/sovereign-sdk-wip/blob/1210acb5f5d8ca408ebaea40db3a75e5d2521491/crates/module-system/sov-modules-api/src/hooks.rs#L120)
+[`FinalizeHook`](https://github.com/Sovereign-Labs/sovereign-sdk-wip/blob/1210acb5f5d8ca408ebaea40db3a75e5d2521491/crates/module-system/sov-modules-api/src/hooks.rs#L120)
 more details.
 
 ## Advanced Functionalty - native only code
@@ -343,16 +343,16 @@ behind the `#[cfg(feature = "native")]` flag, which signals to the SDK that the
 code is not part of the module's state transition function and is not relevant
 to any questions about the rollup's current state. This means that it will be
 excluded from `zk-proof` generation (if the rollup is a `zk-rollup`) or
-challenges (if the rollup is optimistic).
+challenges (if it is an `optimistic-rollup`).
 
 ### Adding Custom REST APIs
 
 You can easily add custom APIs to your module by implementing the
 `HasCustomRestApi` trait. This trait has two methods - one which actually
-implements the routes, and an optional one which provides an `OpenApi` spec. YOu
+implements the routes, and an optional one which provides an `OpenApi` spec. You
 can see a good example in the `Bank` module:
 
-```
+```rust
 impl<S: Spec> HasCustomRestApi for Bank<S> {
     type Spec = S;
 
@@ -415,7 +415,7 @@ isn't a concern.
 To implement RPC methods, simply annotate an `impl` block on your module with
 the `#[rpc_gen(client, server)]` macro, and then write methods which accept an
 `ApiStateAcessor` as their final argument and return an `RpcResult`. You can see
-some examples in the `Evm` module.
+some examples in the [`Evm` module](fix-link).
 
 ```rust
 #[rpc_gen(client, server)]
@@ -448,9 +448,9 @@ performance.
 **State Access**
 
 The vast majority of the cost of executing a Sovereign SDK transaction comes
-from state accesses. When call `item.set(&value)`, the SDK serializes your value
+from state accesses. When calling `item.set(&value)`, the SDK serializes your value
 and stores the bytes in cache. When time you access a value using `item.get()`,
-the SDK deserializes a fresch copy of your value from the bytes held in cache,
+the SDK deserializes a fresh copy of your value from the bytes held in cache,
 falling back to disk if necessary.
 
 Each time you access a value that's not in cache, the SDK has to generate a

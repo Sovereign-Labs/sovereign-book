@@ -2,8 +2,8 @@
 
 - [Intro](./intro.md)
 - [Getting Started](./getting-started.md)
+- [Building a Module](./build-a-module.md)
 - [Rollup Devs](./rollup-devs.md)
-  - [Building a Module](./rollup-devs/build-a-module.md)
   - [Gas](./rollup-devs/gas.md)
 - [SDK Contributors](./sdk-contributors.md)
   - [Transaction Lifecyle](./sdk-contributors/transaction-lifecycle.md)
