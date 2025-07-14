@@ -91,7 +91,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="intro.html"><strong aria-hidden="true">1.</strong> Intro</a></li><li class="chapter-item expanded "><a href="getting-started.html"><strong aria-hidden="true">2.</strong> Getting Started</a></li><li class="chapter-item expanded "><a href="rollup-devs.html"><strong aria-hidden="true">3.</strong> Rollup Devs</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="rollup-devs/gas.html"><strong aria-hidden="true">3.1.</strong> Gas</a></li></ol></li><li class="chapter-item expanded "><a href="da-layer.html"><strong aria-hidden="true">4.</strong> DA Layer</a></li><li class="chapter-item expanded "><a href="forced-sequencer-registration.html"><strong aria-hidden="true">5.</strong> Forced Sequencer Registration</a></li><li class="chapter-item expanded "><a href="sdk-contributors.html"><strong aria-hidden="true">6.</strong> SDK Contributors</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="sdk-contributors/transaction-lifecycle.html"><strong aria-hidden="true">6.1.</strong> Transaction Lifecyle</a></li><li class="chapter-item expanded "><a href="sdk-contributors/abstractions.html"><strong aria-hidden="true">6.2.</strong> Main Abstractions</a></li><li class="chapter-item expanded "><a href="sdk-contributors/gas.html"><strong aria-hidden="true">6.3.</strong> Gas</a></li></ol></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="intro.html"><strong aria-hidden="true">1.</strong> Intro</a></li><li class="chapter-item expanded "><a href="getting-started.html"><strong aria-hidden="true">2.</strong> Getting Started</a></li><li class="chapter-item expanded "><a href="rollup-devs.html"><strong aria-hidden="true">3.</strong> Rollup Devs</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="rollup-devs/build-a-module.html"><strong aria-hidden="true">3.1.</strong> Building a Module</a></li><li class="chapter-item expanded "><a href="rollup-devs/gas.html"><strong aria-hidden="true">3.2.</strong> Gas</a></li></ol></li><li class="chapter-item expanded "><a href="sdk-contributors.html"><strong aria-hidden="true">4.</strong> SDK Contributors</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="sdk-contributors/transaction-lifecycle.html"><strong aria-hidden="true">4.1.</strong> Transaction Lifecyle</a></li><li class="chapter-item expanded "><a href="sdk-contributors/abstractions.html"><strong aria-hidden="true">4.2.</strong> Main Abstractions</a></li><li class="chapter-item expanded "><a href="forced-sequencer-registration.html"><strong aria-hidden="true">4.3.</strong> Forced Sequencer Registration</a></li><li class="chapter-item expanded "><a href="sdk-contributors/gas.html"><strong aria-hidden="true">4.4.</strong> Gas</a></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -197,7 +197,7 @@ chosen to tweak some concepts that were ill-suited to the rollups built using
 Sovereing's SDK. In particular, sorted decreasing order of importance:</p>
 <ul>
 <li>We are using multidimensional gas units and prices.</li>
-<li>We are using a dynamic gas target. Otherwise, the rollups built with
+<li>We plan to using a dynamic gas target. Otherwise, the rollups built with
 Sovereign's SDK follow the <a href="https://eips.ethereum.org/EIPS/eip-1559">EIP-1559</a>
 specification by default.</li>
 <li>Rollup transactions specify a <code>max_fee</code>, <code>max_priority_fee_bips</code>, and
@@ -226,17 +226,8 @@ itself (<code>Poseidon</code> or <code>MiMc</code> vs <code>Sha2</code>).</li>
 mode than in <code>native</code> mode. But <em>hot</em> storage accesses are practically free in
 zero-knowledge.</li>
 </ul>
-<p><strong>The number and meaning of each dimension is is still not finalized</strong>. The most
-recent designs account for 4 dimensions that represent fundamental metrics of
-the rollup <em>which are assumed to vary slowly</em> (on a weekly/monthly scale):</p>
-<ul>
-<li>Native computation costs.</li>
-<li>Zk computation costs.</li>
-<li>Storage size (which should be a function of the depth of the Jellyfish Merkle
-tree or NOMT)</li>
-<li>DA bandwidth - this dimension should track the <strong>long-term DA layer
-bandwidth</strong> and should not be strongly affected by local congestion spikes.</li>
-</ul>
+<p>In the Sovereign SDK, we currently meter consumption in two dimensions - compute
+and memory.</p>
 <p>We have chosen to follow the
 <a href="https://ethresear.ch/t/multidimensional-eip-1559/11651">multi-dimensional EIP-1559</a>
 design for the gas pricing adjustment formulas. In essence:</p>
@@ -254,11 +245,10 @@ The value of the <code>gas_target</code> will vary slowly to follow the evolutio
 rollup metrics we have described above. That way, Sovereign rollups can
 account for major technological improvements in computation (such as zk-proof
 generation throughtput), or storage cost.</li>
-<li>Every transaction has to specify a unidimensional <code>max_fee</code> which is the
-maximum amount of <em>gas tokens</em> that can be used to execute a given
-transaction. Similarly, users have to specify a <code>max_priority_fee_per_gas</code>
-expressed in basis points which can be used to reward the transaction
-sequencer.</li>
+<li>Every transaction has to specify a scalar <code>max_fee</code> which is the maximum
+amount of <em>gas tokens</em> that can be used to execute a given transaction.
+Similarly, users have to specify a <code>max_priority_fee_per_gas</code> expressed in
+basis points which can be used to reward the transaction sequencer.</li>
 <li>The final sequencer reward is:
 <code>seq_reward = min(max_fee - &lt;base_fee, gas_price&gt;, max_priority_fee_per_gas * &lt;base_fee, gas_price&gt;)</code>.</li>
 <li>Users can provide an optional <code>gas_limit</code> field which is a maximum amount of
@@ -340,7 +330,7 @@ starts.</li>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../sdk-contributors/abstractions.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../forced-sequencer-registration.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
@@ -351,7 +341,7 @@ starts.</li>
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../sdk-contributors/abstractions.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../forced-sequencer-registration.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 

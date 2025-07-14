@@ -91,7 +91,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="intro.html"><strong aria-hidden="true">1.</strong> Intro</a></li><li class="chapter-item expanded "><a href="getting-started.html"><strong aria-hidden="true">2.</strong> Getting Started</a></li><li class="chapter-item expanded "><a href="rollup-devs.html"><strong aria-hidden="true">3.</strong> Rollup Devs</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="rollup-devs/gas.html"><strong aria-hidden="true">3.1.</strong> Gas</a></li></ol></li><li class="chapter-item expanded "><a href="da-layer.html"><strong aria-hidden="true">4.</strong> DA Layer</a></li><li class="chapter-item expanded "><a href="forced-sequencer-registration.html"><strong aria-hidden="true">5.</strong> Forced Sequencer Registration</a></li><li class="chapter-item expanded "><a href="sdk-contributors.html"><strong aria-hidden="true">6.</strong> SDK Contributors</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="sdk-contributors/transaction-lifecycle.html"><strong aria-hidden="true">6.1.</strong> Transaction Lifecyle</a></li><li class="chapter-item expanded "><a href="sdk-contributors/abstractions.html"><strong aria-hidden="true">6.2.</strong> Main Abstractions</a></li><li class="chapter-item expanded "><a href="sdk-contributors/gas.html"><strong aria-hidden="true">6.3.</strong> Gas</a></li></ol></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="intro.html"><strong aria-hidden="true">1.</strong> Intro</a></li><li class="chapter-item expanded "><a href="getting-started.html"><strong aria-hidden="true">2.</strong> Getting Started</a></li><li class="chapter-item expanded "><a href="rollup-devs.html"><strong aria-hidden="true">3.</strong> Rollup Devs</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="rollup-devs/build-a-module.html"><strong aria-hidden="true">3.1.</strong> Building a Module</a></li><li class="chapter-item expanded "><a href="rollup-devs/gas.html"><strong aria-hidden="true">3.2.</strong> Gas</a></li></ol></li><li class="chapter-item expanded "><a href="sdk-contributors.html"><strong aria-hidden="true">4.</strong> SDK Contributors</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="sdk-contributors/transaction-lifecycle.html"><strong aria-hidden="true">4.1.</strong> Transaction Lifecyle</a></li><li class="chapter-item expanded "><a href="sdk-contributors/abstractions.html"><strong aria-hidden="true">4.2.</strong> Main Abstractions</a></li><li class="chapter-item expanded "><a href="forced-sequencer-registration.html"><strong aria-hidden="true">4.3.</strong> Forced Sequencer Registration</a></li><li class="chapter-item expanded "><a href="sdk-contributors/gas.html"><strong aria-hidden="true">4.4.</strong> Gas</a></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -232,23 +232,19 @@ expensive), running a light client (slower state access, but much cheaper and
 trustless) and trusting a full node (instant state access)</li>
 </ul>
 <h2 id="step-2-signing-transactions"><a class="header" href="#step-2-signing-transactions">Step 2: Signing Transactions</a></h2>
-<p>The crypto community has fifteen years of experience building wallets for L1
-blockchains. That means that existing wallets are much better than anything we
-could build in a couple of weeks. But at the same time, the user experience
-is... not great. Users lose all of their funds pretty regularly, and they still
-have to deal with complexity like storing seed phrases and inspecting
-transaction hashes.</p>
-<p>So, we've made the pragmatic choice to be as compatible as possible with
-existing crypto wallets, while leaving the door open for future improvements.</p>
-<p>In rollups built with <code>sov-modules</code>, this is enabled by the
-<code>RuntimeAuthenticator</code> abstraction built into the
-<a href="module-system/sov-modules-stf-blueprint/src/lib.rs"><code>stf-blueprint</code></a>. Using
-this trait, we allow rollup developers to bring their own transaction
+<p>The SDK supports several signing/verification modes. The standard choice for
+interacting with Sovereign SDK chains is our custom <code>UniversalWallet</code>, which is
+available as a Metamask snap and a Ledger app. The <code>UniversalWallet</code> integrates
+tightly with the Sovereign SDK to render transactions in human-readable format.
+However, many chains need compatibility with legacy formats like Ethereum RLP
+transactions or Solana instructions</p>
+<p>We've made the pragmatic choice to be as compatible as possible with existing
+crypto wallets using our <code>RuntimeAuthenticator</code> abstraction. By implementing the
+<code>RuntimeAuthenticator</code>trait, developers cab bring their own transaction
 deserialization and authorization logic. Even better, we allow rollups to
 support several different <code>Authenticator</code> implementations simultaneously. This
-allows developers to retain backward compatibility with existing wallets,
-without giving up the freedom to create specialized transaction formats that
-integrate more deeply with the rollup's logic and the wallet interface.</p>
+allows developers to retain backward compatibility with legacy transaction
+formats, without compromising on support for their native functionality.</p>
 <h2 id="step-3-sequencing"><a class="header" href="#step-3-sequencing">Step 3: Sequencing</a></h2>
 <p>Once a user has signed a transaction, we need to broadcast it to all full nodes
 of the rollup.</p>
@@ -288,7 +284,7 @@ DA layer, and <em>the rollup</em> gets builtin spam protection.</p>
 sequencer handles transactions before they've gone through the DA layer's
 consensus mechanism, he can re-order transactions - and potentially even halt
 the rollup by refusing to publish new transactions.</p>
-<p>To mitigate this power, we need to make a couple of adjustments to the protocol.</p>
+<p>To mitigate this power, we need to put a couple of safeguards in the protocol.</p>
 <p>First, we allow anyone to register as a sequencer depositing tokens into the
 sequencer registry. This is a significant departure from most existing rollups,
 which rely on a single trusted sequencer.</p>
@@ -341,10 +337,10 @@ malicious. After a transaction has passed stateless validation, we proceed to
 make some stateful checks (i.e. checking that the transaction isn't a duplicate,
 and that the account has enough funds to pay for gas). If these checks fail, we
 charge the sequencer a small fee - just enough to cover the cost of the
-signature check.</p>
+validatoin.</p>
 <p>This ensures that sequencers are incentivized to do their best to filter out
 invalid transactions, and that the rollup never does any computation without
-getting paid for it without being unfairly punitive.</p>
+getting paid for it, without being unfairly punitive to sequencers.</p>
 <h3 id="soft-confirmations"><a class="header" href="#soft-confirmations">Soft Confirmations</a></h3>
 <p>Now that we've talked about the minimum requirements for sequencer, we move on
 to soft-confirmations.</p>
@@ -389,16 +385,16 @@ some fixed number of blocks</p>
 appeared on the DA layer</p>
 </li>
 </ol>
-<p>To help enforce these invariants, we add a concept of a "virtual" slot number.
-The virtual slot number is a nondecreasing integer which represents block number
+<p>To help enforce these invariants, we add a concept of a "visible" slot number.
+The visible slot number is a nondecreasing integer which represents block number
 that the preferred sequencer observed when he started building his current
 bundle. Any "forced" blobs which appear on the DA layer are processed when the
-virtual slot number advances beyond the number of the <em>real</em> slot in which they
+visible slot number advances beyond the number of the <em>real</em> slot in which they
 appeared.</p>
 <p>Inside the rollup, we enforce that...</p>
 <ul>
 <li>
-<p>The virtual slot number never lags behind the real slot number by more than
+<p>The visible slot number never lags behind the real slot number by more than
 some constant <code>K</code> slots</p>
 <ul>
 <li>This ensures that "forced" transactions are always processed in a reasonable
@@ -406,13 +402,13 @@ time frame</li>
 </ul>
 </li>
 <li>
-<p>The virtual slot number increments by <em>at least</em> one every time the preferred
+<p>The visible slot number increments by <em>at least</em> one every time the preferred
 sequencer succesfully submits a blob. The sequencer may increment the virtual
-slot by more than one.</p>
+slot by more than one, but the maximum increment is bounded by a small
+constant (say, 10).</p>
 </li>
 <li>
-<p>The virtual slot number is never greater than the current (real) slot
-number</p>
+<p>The visible slot number is never greater than the current (real) slot number</p>
 </li>
 <li>
 <p>Transactions may only access information about the DA layer that was known at
@@ -429,7 +425,7 @@ historical information, we avoid this issue.</p>
 <p>What all of this means in practice is that...</p>
 <ul>
 <li>The visible state never changes unless either the preferred sequencer submits
-a bundle, or a timeout occurs (i.e. the virtual slot lags too far). This
+a batch, or a timeout occurs (i.e. the visible slot lags too far). This
 ensures that the preferred sequencer always knows the exact state that he's
 building on top of.</li>
 <li>An honest sequencer wants to keep the virtual slot number as close to the real
@@ -473,8 +469,8 @@ authorization. For example, if the address is a multisig, fetch the set of
 public keys and the minimum number of signatures.</p>
 </li>
 <li>
-<p>(Stateless) Authentication: Checking that the transaction is authorized. For
-example, checking that the signatures are valid.</p>
+<p>(Usually Stateless) Authentication: Checking that the transaction is
+authorized. For example, checking that the signatures are valid.</p>
 </li>
 <li>
 <p>(Stateful) Authorization: Matching the results of the authentication and
@@ -580,10 +576,11 @@ capacity online takes time. Deals have to be negotiated, hardware provisioned,
 etc. So, in the short term, we model prover capacity as being fixed - and we use
 EIP-1559 to adjust demand to fit that target.</p>
 <p>In the long run, we want to adjust the gas limit to reflect the actual capacity
-of available provers. To facilitate this, we track the rollup's gas usage and
-proving throughput (measured in gas per second) over time. If rollup blocks are
-full and provers are able to keep up, we gradually increase the gas limit until
-blocks are no longer full or provers start to fall behind.</p>
+of available provers. (Note that this is not yet fully implemented). To
+facilitate this, we will track the rollup's gas usage and proving throughput
+(measured in gas per second) over time. If rollup blocks are full and provers
+are able to keep up, we will gradually increase the gas limit until blocks are
+no longer full or provers start to fall behind.</p>
 <p>This still leaves one problem... how do we incentivize provers to bring more
 hardware online? After all, adding more hardware increases the gas limit, which
 increases the supply of blockspace. This causes congestion (and fees) to fall,

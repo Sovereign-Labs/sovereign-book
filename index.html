@@ -91,7 +91,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="intro.html"><strong aria-hidden="true">1.</strong> Intro</a></li><li class="chapter-item expanded "><a href="getting-started.html"><strong aria-hidden="true">2.</strong> Getting Started</a></li><li class="chapter-item expanded "><a href="rollup-devs.html"><strong aria-hidden="true">3.</strong> Rollup Devs</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="rollup-devs/gas.html"><strong aria-hidden="true">3.1.</strong> Gas</a></li></ol></li><li class="chapter-item expanded "><a href="da-layer.html"><strong aria-hidden="true">4.</strong> DA Layer</a></li><li class="chapter-item expanded "><a href="forced-sequencer-registration.html"><strong aria-hidden="true">5.</strong> Forced Sequencer Registration</a></li><li class="chapter-item expanded "><a href="sdk-contributors.html"><strong aria-hidden="true">6.</strong> SDK Contributors</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="sdk-contributors/transaction-lifecycle.html"><strong aria-hidden="true">6.1.</strong> Transaction Lifecyle</a></li><li class="chapter-item expanded "><a href="sdk-contributors/abstractions.html"><strong aria-hidden="true">6.2.</strong> Main Abstractions</a></li><li class="chapter-item expanded "><a href="sdk-contributors/gas.html"><strong aria-hidden="true">6.3.</strong> Gas</a></li></ol></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="intro.html"><strong aria-hidden="true">1.</strong> Intro</a></li><li class="chapter-item expanded "><a href="getting-started.html"><strong aria-hidden="true">2.</strong> Getting Started</a></li><li class="chapter-item expanded "><a href="rollup-devs.html"><strong aria-hidden="true">3.</strong> Rollup Devs</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="rollup-devs/build-a-module.html"><strong aria-hidden="true">3.1.</strong> Building a Module</a></li><li class="chapter-item expanded "><a href="rollup-devs/gas.html"><strong aria-hidden="true">3.2.</strong> Gas</a></li></ol></li><li class="chapter-item expanded "><a href="sdk-contributors.html"><strong aria-hidden="true">4.</strong> SDK Contributors</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="sdk-contributors/transaction-lifecycle.html"><strong aria-hidden="true">4.1.</strong> Transaction Lifecyle</a></li><li class="chapter-item expanded "><a href="sdk-contributors/abstractions.html"><strong aria-hidden="true">4.2.</strong> Main Abstractions</a></li><li class="chapter-item expanded "><a href="forced-sequencer-registration.html"><strong aria-hidden="true">4.3.</strong> Forced Sequencer Registration</a></li><li class="chapter-item expanded "><a href="sdk-contributors/gas.html"><strong aria-hidden="true">4.4.</strong> Gas</a></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -178,9 +178,8 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="the-sovereign-sdk-book"><a class="header" href="#the-sovereign-sdk-book">The Sovereign SDK Book</a></h1>
-<p>The Sovereign SDK is a modular framework for building rollups. It is designed to
-be flexible enough to support <em>any</em> application without sacrificing performance
-or ease-of-use.</p>
+<p>The Sovereign SDK is a batteries-included framework for building onchain
+applications.</p>
 <p><a href="https://discord.gg/kbykCcPrcA" ><img alt="Discord" src="https://img.shields.io/discord/1050059327626555462?label=discord"/></a></p>
 <img src="https://github.com/Sovereign-Labs/sovereign-sdk/blob/nightly/assets/banner.jpg?raw=true" style="border-radius: 10px">
 <h2 id="why-rollups"><a class="header" href="#why-rollups">Why Rollups?</a></h2>
@@ -216,11 +215,11 @@ the Sovereign SDK to build...</p>
 </ul>
 <p>... and much more.</p>
 <h2 id="how-it-works"><a class="header" href="#how-it-works">How it Works</a></h2>
-<p>Developers write the business logic of their rollup in Rust, and the SDK handles
-all of the complexity of creating a rollup on their behalf. Under the hood, the
-SDK compiles the chain's business logic to a zero-knowledge circuit, which it
-uses to prove correct execution (if the rollup is running in "zk mode") or to
-resolve disputes about execution (if the rollup is running in "optimistic
+<p>As a developer, you write the business logic of your rollup in Rust and the SDK
+handles all of the complexity of creating a rollup on their behalf. Under the
+hood, the SDK compiles the chain's business logic to a zero-knowledge circuit,
+which it uses to prove correct execution (if the rollup is running in "zk mode")
+or to resolve disputes about execution (if the rollup is running in "optimistic
 mode"). It also generates a complete <em>full node</em> implementation which can
 reproduce the state of the blockchain and serve data to users.</p>
 <p>Once the rollup is deployed, users post their <em>transactions</em> onto an underlying
