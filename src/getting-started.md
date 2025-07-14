@@ -17,15 +17,6 @@ Before you begin, ensure you have the following installed:
   - Install via [official website](https://nodejs.org/en/download)
 - **Git**: For cloning the repository
 
-### Optional Tools
-
-The following tools are optional and only needed for specific features:
-
-- **RISC Zero toolchain**: For generating zero-knowledge proofs with RISC Zero (not needed for initial development)
-- **SP1 toolchain**: For generating zero-knowledge proofs with SP1 (not needed for initial development)
-
-> **Note:** Start with the mock DA and zkVM configurations shown below. You can add the optional tools later when needed.
-
 ## Running with Mock DA
 
 ### 1. Clone the starter repository and navigate to the rollup directory:
@@ -172,7 +163,7 @@ subscription.unsubscribe();
 
 ### Interacting with different modules
 
-To interact with different modules, simply change the call message. The top-level key corresponds to the [module's variable name in the runtime](/crates/stf/src/runtime.rs#L85), and the nested key is the CallMessage enum variant in snake_case:
+To interact with different modules, simply change the call message. The top-level key corresponds to the [module's variable name in the runtime](/crates/stf/src/runtime.rs#L85), and the nested key is the [CallMessage](fix-link) enum variant in snake_case:
 
 ```js
 // Example: Call the ExampleModule's SetValue method
@@ -193,52 +184,3 @@ This time, the curl command should return:
 ### Learn more
 
 To learn more about building with Sovereign SDK, experiment with the [ExampleModule](/crates/example-module/src/lib.rs). For a deeper understanding of the abstractions, see the [Building a module](https://docs.sovereign.xyz/rollup-devs/build-a-module.html) section of the SDK book.
-
-
-## Alternative Configurations
-
-### Using Different DA Layers and zkVMs
-
-The examples above use mock DA and zkVM for simplicity. To use Celestia DA with Risc0 zkVM:
-
-```bash
-$ cargo run --bin node --no-default-features --features celestia_da,risc0
-```
-
-### Enabling the Prover
-
-Proving is disabled by default. Enable it with these environment variables:
-
-- `export SOV_PROVER_MODE=skip` - Skip verification logic
-- `export SOV_PROVER_MODE=simulate` - Run verification logic in the current process
-- `export SOV_PROVER_MODE=execute` - Run verifier in a zkVM executor
-- `export SOV_PROVER_MODE=prove` - Run verifier and create a SNARK proof
-
-### Paymaster Configuration
-
-By default, the gas costs of transactions submitted by the preferred sequencer are covered by the paymaster at address `0xA6edfca3AA985Dd3CC728BFFB700933a986aC085`. You can modify this in the [configuration file](configs/mock/genesis_with_paymaster.json#L65).
-
-To run without a paymaster, use our configuration file that does not have a paymaster setting configured:
-
-```bash
-$ cargo run --bin node -- --rollup_config_path="../../configs/mock/genesis.json"
-```
-
-## Troubleshooting
-
-### Common Issues
-
-**"Address already in use" error when starting the node**
-- Another process is using port 12346. Either kill that process or modify the `bind_port` in your [rollup configuration file](configs/mock/rollup.toml#L28)
-
-**Transaction fails with "insufficient funds"**
-- If using the default configuration with paymaster, ensure the [paymaster address](configs/mock/genesis_with_paymaster.json#L68) is correctly configured
-- If running without paymaster, ensure your account has sufficient balance for gas fees
-
-**"Module not found" errors in TypeScript**
-- Run `npm install` in the `js` directory
-- Ensure you're using Node.js 18.0 or later
-
-**Rollup node crashes on startup**
-- Try cleaning the database with `make clean-db` and restart
-- Verify you're using the correct Rust version (1.88.0 or later)
