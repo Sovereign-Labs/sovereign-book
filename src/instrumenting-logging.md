@@ -5,44 +5,34 @@ The SDK uses the `tracing` crate for structured logging, providing rich context 
 ## Basic Logging Patterns
 
 ```rust
-use tracing::{trace, debug, info, warn, error};
+// Adapted from the `Bank` module
+use tracing::trace;
 
 impl<S: Spec> MyModule<S> {
-    fn process_transaction(&self, tx: Transaction, state: &mut impl TxState<S>) -> Result<()> {
-        // Log at transaction boundaries
-        info!(tx_id = %tx.id, sender = %tx.sender, "Processing transaction");
-        
-        // Detailed execution flow
-        trace!(tx_id = %tx.id, "Validating transaction");
-        
-        if let Err(e) = self.validate(&tx) {
-            error!(
-                tx_id = %tx.id,
-                error = ?e,
-                "Transaction validation failed"
-            );
-            return Err(e);
-        }
-        
-        // State changes
-        debug!(
-            tx_id = %tx.id,
-            old_balance = %old_balance,
-            new_balance = %new_balance,
-            "Balance updated"
+    pub(crate) fn freeze(
+        &mut self,
+        token_id: TokenId,
+        context: &Context<S>,
+        state: &mut impl TxState<S>,
+    ) -> Result<()> {
+        // Logging at the start of operation
+        trace!(freezer = %sender, "Freeze token request");
+
+        // Redundant code elided here...
+
+        token
+            .freeze(sender)
+            .with_context(|| format!("Failed to freeze token_id={}", &token_id))?;
+
+        self.tokens.set(&token_id, &token, state)?;
+
+        // Logging at the end of operation
+        trace!(
+            freezer = %sender,
+            %token_id,
+            "Successfully froze tokens"
         );
-        
-        // Warnings for unusual conditions
-        if tx.amount > self.large_tx_threshold {
-            warn!(
-                tx_id = %tx.id,
-                amount = %tx.amount,
-                threshold = %self.large_tx_threshold,
-                "Large transaction detected"
-            );
-        }
-        
-        info!(tx_id = %tx.id, "Transaction completed successfully");
+
         Ok(())
     }
 }

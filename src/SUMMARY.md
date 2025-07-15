@@ -3,9 +3,13 @@
 - [Intro](intro.md)
 - [Getting Started](getting-started.md)
 
-- [Building a Module](build-a-module.md)
-  - [Advanced Topics](build-a-module-advanced.md)
-  - [Performance](build-a-module-performance.md)
+- [Writing Your Application](modules-intro.md)
+  - [Implementing a Module](modules-implementing-a-module.md)
+  - [Testing Your Module](modules-testing-your-module.md)
+  - [Integrating Your Module](modules-integrating-your-module.md)
+  - [Advanced Topics](modules-advanced.md)
+  - [Performance](modules-performance.md)
+  - [Prebuilt Modules](modules-prebuilt-modules.md)
 
 - [Instrumenting Your Rollup](instrumenting.md)
   - [Metrics](instrumenting-metrics.md)

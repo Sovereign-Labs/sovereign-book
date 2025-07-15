@@ -10,7 +10,7 @@ use sov_metrics::{track_metrics, start_timer, save_elapsed};
 
 impl<S: Spec> MyModule<S> {
     fn process_batch(&self, items: Vec<Item>) -> Result<()> {
-        // Time the entire operation
+        // Time the operation using the provided macros
         start_timer!(batch_timer);
             
         for item in items {
@@ -84,6 +84,7 @@ impl Metric for TransferMetric {
 
 // Usage in your module
 fn transfer(&self, from: &S::Address, to: &S::Address, token_id: &TokenId, amount: u64, state: &mut impl TxState<S>) -> Result<()> {
+
     start_timer!(transfer_timer);
     
     // Perform the transfer

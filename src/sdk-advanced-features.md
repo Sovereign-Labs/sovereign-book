@@ -1,13 +1,16 @@
 # Advanced Features
 
-The Sovereign SDK includes many advanced features beyond the core functionality covered in this documentation. These features enable sophisticated use cases and production-grade deployments.
+The Sovereign SDK includes many advanced features beyond the core functionality covered in this documentation.
+
+**To learn more about implementing these features in your rollup, just shoot us a message in our [support channel](https://join.slack.com/t/sovereigndevelopers/shared_invite/zt-39aolimfp-XsFK6dL6LhOFHhtXsD_kCA) or fill out our [partner form](fix-link) and we'll reach out to you.**
+
 
 ### Performance & Reliability
 
 * **Configurable delays** – Enable instant cancels & oracle updates while throttling toxic flow
 * **Automatic sequencer fail-over** – Seamless failover across data centers ensures your soft-confirmations survive even the worst outages
 * **Intra-block caching** – Cache state that's repeatedly accessed throughout a block, eliminating redundant instantiation per transaction and significantly boosting performance
-* **DevOps tooling** – Production-ready observability and deployment tools
+* **Dev-ops tooling** – Production-ready observability and deployment tools
 
 ### Integrations & Compatibility
 
@@ -16,6 +19,5 @@ The Sovereign SDK includes many advanced features beyond the core functionality 
 * **Hyperlane integration** – Bridge liquidity from any EVM, SVM, or Cosmos SDK chain
 * **Multiple DA layers** – Run with Celestia, Bitcoin, Solana, or bring your own DA solution
 
-**To learn more about implementing these advanced features in your rollup, just shoot us a message in our [support channel](https://join.slack.com/t/sovereigndevelopers/shared_invite/zt-39aolimfp-XsFK6dL6LhOFHhtXsD_kCA) or fill out our [partner form](fix-link).**
 
-We're happy to help you leverage these advanced capabilities to build production-ready rollups tailored to your exact requirements.
+We're happy to help you leverage these features to build production-ready rollups tailored to your exact requirements.
