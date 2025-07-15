@@ -1,6 +1,6 @@
 # Metrics
 
-The SDK provides a flexible and backend-agnostic framework for tracking metrics in rollups called `sov-metrics`. It allows developers to define and record metrics that are serialized in the [Telegraf line protocol](https://docs.influxdata.com/influxdb/cloud/reference/syntax/line-protocol/). Metrics are timestamped automatically and can only be tracked in **native mode**.
+The SDK includes a custom metrics system called `sov-metrics` designed specifically for rollup monitoring. It uses the [Telegraf line protocol](https://docs.influxdata.com/influxdb/cloud/reference/syntax/line-protocol/) format and integrates with Telegraf through socket listeners for efficient data collection. Metrics are automatically timestamped and sent to your configured Telegraf endpoint, which typically forwards them to InfluxDB for storage and Grafana for visualization. Metrics can only be tracked in **native mode** (not in zkVM).
 
 ## Basic Example
 
@@ -48,7 +48,8 @@ impl<S: Spec> MyModule<S> {
 To track custom metrics, implement the `Metric` trait:
 
 ```rust
-#[cfg(feature = "native")]
+// Implement your custom metric in a file of your own choosing...
+#![cfg(feature = "native")]
 use sov_metrics::Metric;
 use sov_metrics::{track_metrics, start_timer, save_elapsed};
 use std::io::Write;
@@ -82,31 +83,39 @@ impl Metric for TransferMetric {
     }
 }
 
-// Usage in your module
-fn transfer(&self, from: &S::Address, to: &S::Address, token_id: &TokenId, amount: u64, state: &mut impl TxState<S>) -> Result<()> {
+// In your module file...
+#[cfg(feature = "native")]
+use sov_metrics::{track_metrics, start_timer, save_elapsed};
+#[cfg(feature = "native")]
+use my_custom_metrics::TransferMetric;
 
-    start_timer!(transfer_timer);
-    
-    // Perform the transfer
-    self.do_transfer(from, to, token_id, amount, state)?;
-    
-    save_elapsed!(elapsed SINCE transfer_timer);
-    
-    #[cfg(feature = "native")]
-    {
-        // Track your custom metric
-        track_metrics(|tracker| {
-            tracker.submit_metric(TransferMetric {
-                from: from.to_string(),
-                to: to.to_string(),
-                token_id: token_id.clone(),
-                amount,
-                duration_ms: elapsed.as_millis() as u64,
+// Adapted from Bank module 
+impl<S: Spec> Bank<S> {
+    fn transfer(&self, from: &S::Address, to: &S::Address, token_id: &TokenId, amount: u64, state: &mut impl TxState<S>) -> Result<()> {
+
+        start_timer!(transfer_timer);
+        
+        // Perform the transfer
+        self.do_transfer(from, to, token_id, amount, state)?;
+        
+        save_elapsed!(elapsed SINCE transfer_timer);
+        
+        #[cfg(feature = "native")]
+        {
+            // Track your custom metric
+            track_metrics(|tracker| {
+                tracker.submit_metric(TransferMetric {
+                    from: from.to_string(),
+                    to: to.to_string(),
+                    token_id: token_id.clone(),
+                    amount,
+                    duration_ms: elapsed.as_millis() as u64,
+                });
             });
-        });
+        }
+        
+        Ok(())
     }
-    
-    Ok(())
 }
 ```
 
@@ -115,10 +124,16 @@ fn transfer(&self, from: &S::Address, to: &S::Address, token_id: &TokenId, amoun
 Note: While the SDK provides comprehensive metrics infrastructure, individual modules in the SDK don't currently use metrics directly. Most metrics are tracked at the system level (runner, sequencer, state transitions). The examples here show how you *could* add metrics to your custom modules.
 
 1. **Always gate with `#[cfg(feature = "native")]`** - Metrics are not available in zkVM
-2. **Use meaningful measurement names** - Follow the pattern `module_name_metric_type`
-3. **Separate fields and tags properly**:
-   - Fields: Numerical values you want to aggregate (counts, durations, amounts)
+2. **Use meaningful measurement names** 
+    - A lot of the packages that Sovereign SDK runs under the hood emit metrics. 
+    To make it easy to discern that the metrics come from a Sovereign SDK component, we 
+    follow the pattern of `sov_` in our metric names. We recommend following the 
+    pattern `sov_user_module_name_metric_type` so that it's easy to discern user level
+    metric types.
+3. **Separate tags and fields properly**:
+   - [Telegraf line protocol discerns between Tags and Fields by separating them with a single whitespace](https://docs.influxdata.com/influxdb/cloud/reference/syntax/line-protocol/#elements-of-line-protocol). Make sure to write your metrics accordingly. 
    - Tags: Categorical values for filtering (types, status, enum variants)
+   - Fields: Numerical values you want to aggregate (counts, durations, amounts)
 4. **Track business-critical metrics**:
    - Transaction volumes and types
    - Processing times for key operations

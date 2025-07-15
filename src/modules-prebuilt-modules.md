@@ -28,8 +28,10 @@ and provides standard Ethereum endpoints
 
 ### Cross-Chain Communication
 
-**sov-hyperlane-mailbox** - Cross-chain
-  messaging via Hyperlane protocol
+**sov-hyperlane-mailbox** - All five of these modules are 
+part of the Hyperlane (bridging) integration. They enable 
+any Sovereign SDK rollup to bridge messages and tokens from
+any EVM, SVM or Cosmos SDK chain.
 - **Mailbox**: Sends and receives cross-chain
   messages
 - **MerkleTreeHook**: Computes merkle root of
