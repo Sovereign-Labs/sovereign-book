@@ -1,8 +1,4 @@
-# Module Performance
-
-Building efficient modules is crucial for rollup scalability. This guide explains how the SDK handles state and computation, and how to optimize your modules for maximum throughput.
-
-## Understanding Performance
+# Understanding Performance 
 
 ### State Access
 

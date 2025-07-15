@@ -1,11 +1,6 @@
-# Building a Module - Advanced Topics
+# Advanced Topics
 
-This section covers advanced module development features that go beyond basic functionality. While the core module implementation handles state management and transaction processing, you may need additional capabilities for production use cases:
-
-- **Hooks** - Execute logic at specific points during the block lifecycle
-- **Native-only code** - Features that run exclusively on full nodes
-- **Custom REST APIs** - Expose module-specific custom REST endpoints
-- **Legacy RPC support** - JSON-RPC compatibility
+This section covers advanced module development features that go beyond basic functionality. While the core module implementation handles state management and transaction processing, you may need these additional capabilities for production use cases.
 
 All features in this section are optional. Start with the basic module implementation and add these capabilities as your requirements grow.
 
@@ -38,7 +33,7 @@ more details.
 
 ## Native-Only Code
 
-Some module functionality should only run on full nodes, not in the zkVM during proof generation. This includes:
+Some functionality should only run natively, not in the zkVM during proof generation. This includes:
 - Custom REST APIs and RPC methods
 - Metrics and logging
 - Integration with external services
@@ -49,7 +44,7 @@ Any code that shouldn't be part of state transition verification must be gated w
 ```rust
 #[cfg(feature = "native")]
 impl<S: Spec> MyModule<S> {
-    // This code only compiles for full nodes, not in zkVM
+    // This code only compiles natively, not in zkVM
     pub fn debug_state(&self, state: &impl StateAccessor<S>) {
         let total_items = self.items.len(state);
         println!("Total items: {}", total_items);
@@ -60,7 +55,6 @@ impl<S: Spec> MyModule<S> {
 This ensures that:
 - zkVM execution remains deterministic and efficient
 - Proof generation doesn't include unnecessary code
-- Full nodes can provide rich APIs and debugging capabilities
 
 ## Custom APIs 
 

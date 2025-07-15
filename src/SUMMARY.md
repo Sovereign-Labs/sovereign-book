@@ -5,7 +5,7 @@
 
 - [Building a Module](build-a-module.md)
   - [Advanced Topics](build-a-module-advanced.md)
-  - [Module Performance](build-a-module-performance.md)
+  - [Performance](build-a-module-performance.md)
 
 - [Instrumenting Your Rollup](instrumenting.md)
   - [Metrics](instrumenting-metrics.md)
