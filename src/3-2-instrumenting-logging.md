@@ -2,6 +2,8 @@
 
 The SDK uses the [`tracing`](https://docs.rs/tracing/latest/tracing/) crate for structured logging, providing rich context and efficient filtering.
 
+**Important**: Logs are emitted immediately when generated and are NOT rolled back if a transaction reverts. This means failed transactions will still have their logs recorded, which is useful for debugging or monitoring why transactions failed.
+
 ## Basic Logging Patterns
 
 ```rust
@@ -116,7 +118,31 @@ fn process_user_request(&self, user_id: UserId, request: Request) -> Result<()> 
    - Error details
    - State transitions
 
-3. **Use conditional logging for expensive operations**:
+3. **Don't log transaction reverts as errors or warnings**:
+   Transaction reverts are expected behavior. Log them at `debug!` level if needed for debugging:
+   ```rust
+   if balance < amount {
+       debug!(
+           user = %sender,
+           requested = %amount,
+           available = %balance,
+           "Transfer failed due to insufficient balance"
+       );
+       return Err(anyhow::anyhow!("Insufficient balance"));
+   }
+   ```
+
+4. **Keep frequently triggered logs at debug or trace level**:
+   Any log that gets triggered by every call to your module should use `debug!` or `trace!` to avoid log spam:
+   ```rust
+   // Good - routine operations at trace level
+   trace!(method = "transfer", from = %sender, "Processing transfer request");
+   
+   // Bad - routine operations at info level will spam logs
+   info!("Transfer request received");  // Don't do this for every call
+   ```
+
+5. **Use conditional logging for expensive operations**:
    ```rust
    #[cfg(feature = "native")]
    fn debug_state(&self, state: &impl StateAccessor<S>) {
@@ -132,30 +158,7 @@ fn process_user_request(&self, user_id: UserId, request: Request) -> Result<()> 
    }
    ```
 
-## Configuration
-
-Configure logging output in your node initialization:
-
-```rust
-// In your node initialization
-tracing_subscriber::fmt()
-    .with_env_filter(EnvFilter::from_default_env())
-    .with_target(false)
-    .with_thread_ids(true)
-    .with_level(true)
-    .json()  // For production, use JSON format
-    .init();
-```
-
 Set log levels via environment variables:
 ```bash
 RUST_LOG=info,my_module=debug cargo run
 ```
-
-## Integration with Log Aggregation
-
-For production deployments:
-- Use JSON formatting for structured logs
-- Ship logs to aggregation services (Vector, Fluentd, Logstash)
-- Query and analyze with Elasticsearch, Loki, or CloudWatch
-- Set up alerts for error patterns

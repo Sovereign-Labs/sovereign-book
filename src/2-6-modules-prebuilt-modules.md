@@ -1,59 +1,58 @@
 # Prebuilt Modules
 
-The starter rollup includes many prebuilt modules that handle everything 
-from token management, sequencer or prover incentives, paymaster logic, 
-to transaction deduplication or account management. 
-
 Here's a comprehensive list of all existing modules: 
-
-Most of the modules below come out of the box in your rollup's runtime. You can find their implementations [here](fix-link).
 
 ### User Facing Modules
 
-**sov-bank** - Token management module for
+[**sov-bank**](fix-link) - Token management module for
 creating, transferring, and burning tokens
 with unique addresses and names
 
-**sov-chain-state** - Provides access to
+[**sov-chain-state**](fix-link) - Provides access to
 blockchain state including block height, hash,
 and general chain information
 
-**sov-paymaster** - Enables third-party gas
+[**sov-paymaster**](fix-link) - Enables third-party gas
 sponsorship with per-sequencer payer
-configuration
+configuration, so that users don't need any gas 
+tokens to start transacting on your rollup
 
-**sov-evm** - Full EVM compatibility layer that
+[**sov-evm**](fix-link) - EVM compatibility layer that
 processes RLP-encoded Ethereum transactions
 and provides standard Ethereum endpoints
 
+[**sov-svm**](fix-link) - SVM compatibility layer that
+processes Solana transactions
+and provides standard Solana endpoints (maintained by the [Termina](https://www.termina.technology/) team)
+
 ### Cross-Chain Communication
 
-**sov-hyperlane-mailbox** - All five of these modules are 
+[**sov-hyperlane-mailbox**](fix-link) - All five of these modules are 
 part of the Hyperlane (bridging) integration. They enable 
 any Sovereign SDK rollup to bridge messages and tokens from
 any EVM, SVM or Cosmos SDK chain.
-- **Mailbox**: Sends and receives cross-chain
+- [**Mailbox**](fix-link): Sends and receives cross-chain
   messages
-- **MerkleTreeHook**: Computes merkle root of
+- [**MerkleTreeHook**](fix-link): Computes merkle root of
   sent messages
-- **InterchainGasPaymaster**: Handles
+- [**InterchainGasPaymaster**](fix-link): Handles
   cross-chain fee payments to relayers
-- **Warp**: Enables interchain token transfers
+- [**Warp**](fix-link): Enables interchain token transfers
     - Supports validator announcements and
   multisig ISMs
 
 ### Core Modules
 
-**sov-accounts** - Account management system
+[**sov-accounts**](fix-link) - Account management system
 that automatically creates addresses for
 first-time senders and manages
 credential-to-address mappings
 
-**sov-uniqueness** - Transaction deduplication
+[**sov-uniqueness**](fix-link) - Transaction deduplication
 logic using either nonce-based (Ethereum-style) or
 generation-based methods (for low-latency applications)
 
-**sov-blob-storage** - Deferred blob storage
+[**sov-blob-storage**](fix-link) - Deferred blob storage
 system implementing the BlobSelector rollup
 capability (which enables soft-confirmations
 without losing censorship resistance)
@@ -61,29 +60,29 @@ without losing censorship resistance)
 
 ### Incentive & Economic Modules
 
-**sov-attester-incentives** - Complete
+[**sov-attester-incentives**](fix-link) - Complete
 attestation/challenge verification workflow
 with bonding and rewards for optimistic
 rollups
 
-**sov-prover-incentives** - Prover
+[**sov-prover-incentives**](fix-link) - Prover
 registration, proof validation, slashing, and
 rewards distribution
 
-**sov-sequencer-registry** - Manages sequencer
+[**sov-sequencer-registry**](fix-link) - Manages sequencer
 registration, slashing, and rewards
 
-**sov-revenue-share** - Manages automated revenue sharing
+[**sov-revenue-share**](fix-link) - Manages automated revenue sharing
 
 ### Development & Testing
 
-**sov-synthetic-load** - Load testing module
+[**sov-synthetic-load**](fix-link) - Load testing module
 exposing heavy transaction types for
 performance testing
 
-**sov-value-setter** - Simple testing module
+[**sov-value-setter**](fix-link) - Simple testing module
 for storing and retrieving a single value
 
-**module-template** - Starter template
+[**module-template**](fix-link) - Starter template
 demonstrating proper module structure with
 state-changing methods and queries

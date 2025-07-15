@@ -315,6 +315,8 @@ Events are the primary way your module communicates with the outside world. They
 
 Events are write-only during transaction execution (you can't read them back), making them efficient for recording detailed information without impacting state transition performance.
 
+**Important**: Unlike logs or metrics, events are only emitted when transactions succeed. If a transaction reverts, no events are emitted. This makes events perfect for indexing on-chain state in a scalable way - you can listen to the events WebSocket and reconstruct the entire state in external databases, knowing that every event represents a committed state change.
+
 Here's how to define and emit events:
 
 ```rust
@@ -366,6 +368,6 @@ fn transfer(&self, from: &S::Address, to: &S::Address, amount: u64, state: &mut 
 }
 ```
 
-Errors automatically revert all state changes from the transaction. For more details on error handling patterns and when to panic vs return errors, see the [Advanced Topics](modules-advanced.html#error-handling) section.
+Errors automatically revert all state changes from the transaction. For more details on error handling patterns and when to panic vs return errors, see the [Advanced Topics](2-4-modules-advanced.html#error-handling) section.
 
 

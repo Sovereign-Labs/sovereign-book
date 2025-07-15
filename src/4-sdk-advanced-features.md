@@ -18,6 +18,7 @@ The Sovereign SDK includes many advanced features beyond the core functionality 
 * **Ethereum or Solana addresses and wallet support** – Use any address format or wallet you prefer
 * **Hyperlane integration** – Bridge liquidity from any EVM, SVM, or Cosmos SDK chain
 * **Multiple DA layers** – Run with Celestia, Bitcoin, Solana, or bring your own DA solution
+* **Multiple zkVM integrations** – Leverage the zkVM that best suits your application's performance characteristics: Risc0, SP1 (or soon any other Rust-compatible zkVM)
 
 
 We're happy to help you leverage these features to build production-ready rollups tailored to your exact requirements.
