@@ -1,6 +1,8 @@
 # Metrics
 
-The SDK includes a custom metrics system called `sov-metrics` designed specifically for rollup monitoring. It uses the [Telegraf line protocol](https://docs.influxdata.com/influxdb/cloud/reference/syntax/line-protocol/) format and integrates with Telegraf through socket listeners for efficient data collection. Metrics are automatically timestamped and sent to your configured Telegraf endpoint, which typically forwards them to InfluxDB for storage and Grafana for visualization. Metrics can only be tracked in **native mode** (not in zkVM).
+The SDK includes a custom metrics system called [`sov-metrics`](fix-link) designed specifically for rollup monitoring. It uses the [Telegraf line protocol](https://docs.influxdata.com/influxdb/cloud/reference/syntax/line-protocol/) format and integrates with Telegraf through socket listeners for efficient data collection. Metrics are automatically timestamped and sent to your configured Telegraf endpoint, which typically forwards them to InfluxDB for storage and Grafana for visualization. Metrics can only be tracked in **native mode** (not in zkVM).
+
+**Important**: Metrics are emitted immediately when tracked and are NOT rolled back if a transaction reverts. This means failed transactions will still have their metrics recorded, which can be useful for debugging and monitoring error rates.
 
 ## Basic Example
 
@@ -132,8 +134,8 @@ Note: While the SDK provides comprehensive metrics infrastructure, individual mo
     metric types.
 3. **Separate tags and fields properly**:
    - [Telegraf line protocol discerns between Tags and Fields by separating them with a single whitespace](https://docs.influxdata.com/influxdb/cloud/reference/syntax/line-protocol/#elements-of-line-protocol). Make sure to write your metrics accordingly. 
-   - Tags: Categorical values for filtering (types, status, enum variants)
-   - Fields: Numerical values you want to aggregate (counts, durations, amounts)
+   - Tags: Categorical values for filtering (types, status, enum variants), both their keys and values can only be strings
+   - Fields: Numerical values you want to aggregate (counts, durations, amounts), their keys can be strings, and values can be one of: floats, integers, unsigned integers, strings, and booleans
 4. **Track business-critical metrics**:
    - Transaction volumes and types
    - Processing times for key operations
