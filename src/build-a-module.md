@@ -65,7 +65,7 @@ pub struct Example<S: Spec> {
 ```
 
 See the
-[documentation](https://github.com/Sovereign-Labs/sovereign-sdk-wip/blob/1210acb5f5d8ca408ebaea40db3a75e5d2521491/crates/module-system/sov-modules-api/src/reexport_macros.rs#L387)
+[documentation](fix-link/crates/module-system/sov-modules-api/src/reexport_macros.rs#L387)
 on `ModuleRestApi` for more details.
 
 ### The `Spec` Generic
@@ -79,7 +79,7 @@ you can easily change things like the `Address` format used by your module later
 on.
 
 See the
-[`Spec` trait docs](https://github.com/Sovereign-Labs/sovereign-sdk-wip/blob/1210acb5f5d8ca408ebaea40db3a75e5d2521491/crates/module-system/sov-modules-api/src/module/spec.rs#L28-L29)
+[`Spec` trait docs](fix-link/crates/module-system/sov-modules-api/src/module/spec.rs#L28-L29)
 for more details.
 
 ### `#[state]`, `#[module]`, and `#[id]` fields
@@ -112,7 +112,7 @@ use some_third_party_crate::SomeType;
 pub struct MyModule<S: Spec> {
     // Redundant code elided here...
     #[state]
-    pub(crate) my_map: StateValue<SomeType, BcsCoded>,
+    pub(crate) my_map: StateValue<SomeType, BcsCodec>,
 }
 ```
 
@@ -305,190 +305,44 @@ automatically charge gas for any state accesses and deduct the cost from the
 sender's balance. However, if your module does any very heavy computation you
 may need to meter that explicitly using the `Module::charge_gas` function.
 
-## Optional Functionality - Hooks
+### Events
 
-In addition to `call` modules may _optionally_ implement `Hooks`. Hooks run at
-the begining and end of every rollup block and every transaction. `BlockHooks`
-are great for taking actions that need to happen before or after any
-transactions execute in a block - but be careful, no one pays for the
-computation done by `BlockHooks`, so doing any heavy computation can make your
-rollup vulnerable to DOS attacks.
+Events are the primary way your module communicates with the outside world. They're structured data that gets included in transaction receipts and can be:
+- Queried via REST API
+- Streamed in real-time via WebSocket subscriptions
+- Used by indexers to build databases
+- Monitored for alerts and analytics
 
-`TxHooks` are useful for checking invariants, or to allow your module to monitor actions
-being taken by other modules. Unlike `BlockHooks`, `TxHooks` are paid for by the
-user who sent each transaction.
+Events are write-only during transaction execution (you can't read them back), making them efficient for recording detailed information without impacting state transition performance.
 
-The `FinalizeHook` is great for doing indexing. It can only modify
-`AccessoryState`, which makes it cheap to run but means that the results will
-only be visible via the API.
-
-Using the hooks is somewhat unusual - most applications only need to modify
-their state in response to user actions - but it's a powerful tool in some
-cases. See the documentation on
-[`BlockHooks`](https://github.com/Sovereign-Labs/sovereign-sdk-wip/blob/1210acb5f5d8ca408ebaea40db3a75e5d2521491/crates/module-system/sov-modules-api/src/hooks.rs#L76)
-and
-[`TxHooks`](https://github.com/Sovereign-Labs/sovereign-sdk-wip/blob/1210acb5f5d8ca408ebaea40db3a75e5d2521491/crates/module-system/sov-modules-api/src/hooks.rs#L12)
-and
-[`FinalizeHook`](https://github.com/Sovereign-Labs/sovereign-sdk-wip/blob/1210acb5f5d8ca408ebaea40db3a75e5d2521491/crates/module-system/sov-modules-api/src/hooks.rs#L120)
-more details.
-
-## Advanced Functionalty - native only code
-
-In this section, we'll describe more advanced functionality - adding custom
-APIs, supporting JSON-RPC, and instrumenting your code for debugging and
-optimization.
-
-Any code that you write following the guide in this section needs to be gated
-behind the `#[cfg(feature = "native")]` flag, which signals to the SDK that the
-code is not part of the module's state transition function and is not relevant
-to any questions about the rollup's current state. This means that it will be
-excluded from `zk-proof` generation (if the rollup is a `zk-rollup`) or
-challenges (if it is an `optimistic-rollup`).
-
-### Adding Custom REST APIs
-
-You can easily add custom APIs to your module by implementing the
-`HasCustomRestApi` trait. This trait has two methods - one which actually
-implements the routes, and an optional one which provides an `OpenApi` spec. You
-can see a good example in the `Bank` module:
+Here's how to define and emit events:
 
 ```rust
-impl<S: Spec> HasCustomRestApi for Bank<S> {
-    type Spec = S;
-
-    fn custom_rest_api(&self, state: ApiState<S>) -> axum::Router<()> {
-        axum::Router::new()
-            .route(
-                "/tokens/:tokenId/total-supply",
-                get(Self::route_total_supply),
-            )
-            .with_state(state.with(self.clone()))
-    }
-
-    fn custom_openapi_spec(&self) -> Option<OpenApi> {
-        let mut open_api: OpenApi =
-            serde_yaml::from_str(include_str!("../openapi-v3.yaml")).expect("Invalid OpenAPI spec");
-        for path_item in open_api.paths.paths.values_mut() {
-            path_item.extensions = None;
-        }
-        Some(open_api)
-    }
+#[derive(Debug, BorshSerialize, BorshDeserialize, serde::Serialize, serde::Deserialize)]
+pub enum Event {
+    TokenCreated {
+        token_id: TokenId,
+        creator: S::Address,
+        initial_supply: u64,
+    },
+    TokenTransferred {
+        from: S::Address,
+        to: S::Address,
+        amount: u64,
+    },
 }
 
-async fn route_balance(
-    state: ApiState<S, Self>,
-    mut accessor: ApiStateAccessor<S>,
-    Path((token_id, user_address)): Path<(TokenId, S::Address)>,
-) -> ApiResult<Coins> {
-    let amount = state
-        .get_balance_of(&user_address, token_id, &mut accessor)
-        .unwrap_infallible() // State access can't fail because no one has to pay for gas.
-        .ok_or_else(|| errors::not_found_404("Balance", user_address))?;
-
-    Ok(Coins { amount, token_id }.into())
-}
+// In your call implementation:
+self.emit_event(
+    state,
+    Event::TokenTransferred {
+        from: sender.clone(),
+        to: recipient.clone(),
+        amount,
+    },
+);
 ```
 
-REST API methods get access to an `ApiStateAccessor`. This special struct gives
-you access to both normal and `Accessory` state values. You can freely read and
-write to state during your API calls, which makes it easy to reuse code from the
-rest of your module. However, it's important to remember API calls do _not_
-durably mutate state. Any state changes are thrown away at the end of the
-request.
+Every significant state change should emit an event. Think of events as your module's public changelog - they're what external systems use to understand what happened in each transaction.
 
-If you implement a custom REST API, your new routes will be automatically nested
-under your module's router. So, in the following example, the
-`tokens/:tokenId/total-supply` function can be found at
-`/modules/bank/tokens/:tokenId/total-supply`. Similarly, your OpenApi spec will
-get combined with the auto-generated one automatically.
 
-Note that for for custom REST APIs, you'll need to manually write an `OpenApi`
-specification if you want client support.
-
-### Legacy RPC Support
-
-In addition to custom RESTful APIs, the Sovereign SDK lets you create JSON-RPC
-methods. This is useful to provide API compatibility with existing chains like
-Ethereum and Solana, but we recommend using REST APIs whenever compatibility
-isn't a concern.
-
-To implement RPC methods, simply annotate an `impl` block on your module with
-the `#[rpc_gen(client, server)]` macro, and then write methods which accept an
-`ApiStateAcessor` as their final argument and return an `RpcResult`. You can see
-some examples in the [`Evm` module](fix-link).
-
-```rust
-#[rpc_gen(client, server)]
-impl<S: Spec> Evm<S> {
-    /// Handler for `net_version`
-    #[rpc_method(name = "eth_getStorageAt")]
-    pub fn get_storage_at(
-        &self,
-        address: Address,
-        index: U256,
-        state: &mut ApiStateAccessor<S>,
-    ) -> RpcResult<U256> {
-        let storage_slot = self
-            .account_storage
-            .get(&(&address, &index), state)
-            .unwrap_infallible()
-            .unwrap_or_default();
-        Ok(storage_slot)
-    }
-}
-```
-
-## Operationalizing
-
-In this section, we'll describe how to reason about and measure your module's
-performance.
-
-### Understanding Performance
-
-**State Access**
-
-The vast majority of the cost of executing a Sovereign SDK transaction comes
-from state accesses. When calling `item.set(&value)`, the SDK serializes your value
-and stores the bytes in cache. When time you access a value using `item.get()`,
-the SDK deserializes a fresh copy of your value from the bytes held in cache,
-falling back to disk if necessary.
-
-Each time you access a value that's not in cache, the SDK has to generate a
-merkle proof of the value, which it will consume when it's time to generate a
-zero-knowledge proof. Similarly, each time you write a new value, the SDK has to
-generate a merkle update proof. This makes reading/writing to a `hot` value, at
-least an order of magnitude cheaper than writing to a `cold` one (where `hot`
-means that the value has already been accessed in the current block.) So, if you
-have state items that are frequently accessed together, it's a good idea to
-bundle them into a single `StateValue` or store them under the same key in a
-`StateMap`.
-
-As a rule of thumb, for each 10% locality, you should be willing to add an extra
-200 bytes to your `StateValue`. In other words, if two values are accessed
-together 30% of the time, you should put them together unless either of the
-state items is bigger than 600 bytes. (Exception: If two items are always
-accessed together, you should always group them together - no questions asked).
-
-**Cryptography**
-
-The other common source of performance woes is heavy-duty cryptography. If you
-need to do any cryptographic operations, check whether the `Spec` trait provides
-a method in its `Spec::CryptoSpec` that already does what you want. If it does,
-use that - the SDK will ensure you get an implementation which is optimized for
-the SDK's peculiar requirements. If you need access to more exotic cryptography,
-you can use pretty much any existing Rust library - but be aware that the
-performance penalty might be severe when it comes time to prove your module's
-execution, which could limit your total throughput. If you do need advanced
-cryptography, you may need to pick an implementation that's suited to a
-particular `ZKVM` (like `SP1` or `Risc0`) and only use that vm with your module.
-
-### Instrumenting Your Module
-
-TODO
-
-- Metrics
-- Logging/traces
-
-```
-
-```
