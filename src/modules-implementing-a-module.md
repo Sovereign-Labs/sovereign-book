@@ -345,4 +345,27 @@ self.emit_event(
 
 Every significant state change should emit an event. Think of events as your module's public changelog - they're what external systems use to understand what happened in each transaction.
 
+### Error Handling
+
+Modules use `anyhow::Result` for error handling, providing rich context that helps both developers and users understand what went wrong:
+
+```rust
+use anyhow::{Context, Result};
+
+fn transfer(&self, from: &S::Address, to: &S::Address, amount: u64, state: &mut impl TxState<S>) -> Result<()> {
+    let balance = self.balances
+        .get(from, state)
+        .context("Failed to read sender balance")?
+        .unwrap_or(0);
+    
+    if balance < amount {
+        return Err(anyhow::anyhow!("Insufficient balance: {} < {}", balance, amount));
+    }
+    
+    // ... rest of transfer logic
+}
+```
+
+Errors automatically revert all state changes from the transaction. For more details on error handling patterns and when to panic vs return errors, see the [Advanced Topics](modules-advanced.html#error-handling) section.
+
 

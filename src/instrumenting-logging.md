@@ -1,6 +1,6 @@
 # Logging
 
-The SDK uses the `tracing` crate for structured logging, providing rich context and efficient filtering.
+The SDK uses the [`tracing`](https://docs.rs/tracing/latest/tracing/) crate for structured logging, providing rich context and efficient filtering.
 
 ## Basic Logging Patterns
 
@@ -40,71 +40,52 @@ impl<S: Spec> MyModule<S> {
 
 ## Using Spans for Context
 
-Spans provide hierarchical context for complex operations:
+Spans are like invisible context that gets automatically attached to every log line within their scope. Instead of passing context like `batch_id` or `user_id` through every function call just so you can log it, you create a span at the top level and all logs within that span automatically include that context.
+
+Think of spans as a way to say "everything that happens from here until the span ends is part of this operation." This is especially useful when debugging - you can filter logs by span fields to see everything that happened during a specific batch process or user request.
+
+Here's how you can use spans to provide hierarchical context for complex operations:
 
 ```rust
-use tracing::{instrument, Instrument};
+use tracing::instrument;
 
-#[instrument(
-    skip(self, state),
-    fields(
-        module = "my_module",
-        operation = "batch_process"
-    )
-)]
+// Example 1: Using the #[instrument] macro (easiest way)
+#[instrument(skip(self, state, items))]  // skip large/non-Debug types
 fn process_batch(&self, batch_id: BatchId, items: Vec<Item>, state: &mut impl TxState<S>) -> Result<()> {
-    info!(%batch_id, item_count = items.len(), "Starting batch processing");
+    // The #[instrument] macro automatically adds all function parameters (except skipped ones) to the span
+    // So batch_id is automatically included in all logs within this function
+    info!(item_count = items.len(), "Starting batch processing");
     
     for (idx, item) in items.iter().enumerate() {
-        // Create a child span for each item
-        let span = tracing::span!(
-            tracing::Level::DEBUG,
-            "process_item",
-            %batch_id,
-            item_index = idx,
-            item_id = %item.id
-        );
-        
-        let _enter = span.enter();
-        trace!("Processing item");
+        // This log will show: batch_id=123 item_id=456 "Processing item"
+        trace!(item_index = idx, item_id = %item.id, "Processing item");
         self.process_single_item(item, state)?;
-        trace!("Item processed");
     }
     
-    info!(%batch_id, "Batch processing completed");
+    info!("Batch processing completed");
     Ok(())
 }
-```
 
-## Structured Error Context
-
-Use `anyhow` for rich error context:
-
-```rust
-use anyhow::{Context, Result};
-
-fn validate_transfer(&self, from: &S::Address, to: &S::Address, amount: u64, state: &impl StateAccessor<S>) -> Result<()> {
-    let balance = self.balances
-        .get(from, state)
-        .context("Failed to read sender balance")?
-        .unwrap_or(0);
+// Example 2: Creating spans manually (when you need more control)
+fn process_user_request(&self, user_id: UserId, request: Request) -> Result<()> {
+    // Create a span with context that will be included in all logs
+    let span = tracing::span!(
+        tracing::Level::INFO,
+        "user_request", // span name
+        %user_id,
+        request_type = %request.request_type()
+    );
     
-    if balance < amount {
-        error!(
-            %from,
-            %balance,
-            requested_amount = %amount,
-            "Insufficient balance for transfer"
-        );
-        
-        return Err(anyhow::anyhow!("Insufficient balance"))
-            .with_context(|| format!(
-                "Account {} has balance {} but attempted to transfer {}",
-                from, balance, amount
-            ));
-    }
+    // Enter the span - all logs from here will include user_id and request_type
+    let _enter = span.enter();
     
-    trace!(%from, %to, %amount, "Transfer validated");
+    debug!("Validating request");
+    self.validate_request(&request)?;
+    
+    debug!("Processing request");
+    self.process(&request)?;
+    
+    info!("Request completed successfully");
     Ok(())
 }
 ```
@@ -135,12 +116,7 @@ fn validate_transfer(&self, from: &S::Address, to: &S::Address, amount: u64, sta
    - Error details
    - State transitions
 
-3. **Log at operation boundaries**:
-   - Start and end of major operations
-   - Before and after state changes
-   - Error conditions with full context
-
-4. **Use conditional logging for expensive operations**:
+3. **Use conditional logging for expensive operations**:
    ```rust
    #[cfg(feature = "native")]
    fn debug_state(&self, state: &impl StateAccessor<S>) {

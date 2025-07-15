@@ -31,6 +31,55 @@ and
 [`FinalizeHook`](fix-link/crates/module-system/sov-modules-api/src/hooks.rs#L120)
 more details.
 
+## Error Handling
+
+### When to Panic vs Return Errors
+
+**Panic when:**
+- You encounter a bug that indicates broken invariants
+- The error is unrecoverable and continuing would compromise state integrity
+
+When you panic, the rollup will shut down. This is correct for bugs that could corrupt your state.
+
+**Return errors when:**
+- User input is invalid
+- Business logic conditions aren't met (insufficient balance, unauthorized access, etc.)
+- Any expected failure condition
+
+Transaction errors automatically revert all state changes.
+
+### Writing Error Messages
+
+Your error messages serve both end users and developers. Use `anyhow` with context to provide meaningful errors:
+
+```rust
+use anyhow::{Context, Result};
+
+fn transfer(&self, from: &S::Address, to: &S::Address, token_id: &TokenId, amount: u64, state: &mut impl TxState<S>) -> Result<()> {
+    let balance = self.balances
+        .get(&(from, token_id), state)
+        .context("Failed to read sender balance")?
+        .unwrap_or(0);
+    
+    if balance < amount {
+        // User-facing error message
+        return Err(anyhow::anyhow!("Insufficient balance: {} < {}", balance, amount));
+    }
+    
+    let new_balance = balance - amount;
+    
+    // Add context for debugging when operations fail
+    self.balances
+        .set(&(from, token_id), &new_balance, state)
+        .with_context(|| format!("Failed to update balance for {} token {}", from, token_id))?;
+    
+    // ... rest of transfer logic
+    Ok(())
+}
+```
+
+Transaction reverts are normal and expected - log them at `debug!` level if needed for debugging, not as warnings or errors.
+
 ## Native-Only Code
 
 Some functionality should only run natively, not in the zkVM during proof generation. This includes:
