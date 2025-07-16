@@ -8,4 +8,12 @@ Modules, on the other hand, contain the actual business logic of your applicatio
 
 The starter package already includes several production-ready modules like Bank (for token management), Sequencer Registry, Accounts, and Hyperlane (for cross-chain messaging). It also provides an Example Module that serves as a template you can modify. 
 
-In this chapter, we'll walk through implementing a module from scratch, testing it thoroughly, and integrating it into your runtime. Let's dive in!
+## Let's Begin
+
+With this context in mind, we're ready to start building. The following sections will guide you through the complete lifecycle of module development:
+
+1. **Implementing a Module**: Define your module's state and business logic.
+2. **Testing Your Module**: Write robust tests to ensure your logic is correct.
+3. **Integrating Your Module**: Add your finished module to the rollup runtime.
+
+Let's dive in!

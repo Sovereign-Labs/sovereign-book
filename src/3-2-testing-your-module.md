@@ -270,20 +270,13 @@ fn setup_with_config() -> (TestUser<TestSpec>, TestRunner<TestRuntime, TestSpec>
 
 ## Additional Resources
 
-For advanced testing scenarios, the [`sov-test-utils` crate](https://docs.rs/sov-test-utils) is your primary resource. It contains all the core components covered in this guide and many more powerful tools.
+For more advanced testing scenarios, the [`sov-test-utils` crate](fix-link-https://docs.rs/sov-test-utils) is your primary resource. It contains all the testing components covered in this guide and much more.
 
-We highly recommend exploring the documentation for these key structs:
+We highly recommend exploring the documentation for the **[`TestRunner`](fix-link-https://docs.rs/sov-test-utils/latest/sov_test_utils/runtime/struct.TestRunner.html)** struct, which provides methods for more complex scenarios, including:
 
--   **[`TestRunner`](https://docs.rs/sov-test-utils/latest/sov_test_utils/runtime/struct.TestRunner.html)**: Beyond single transactions, the `TestRunner` provides methods for more complex scenarios, such as:
-    -   Executing ordered batches of transactions with `execute_batch`.
-    -   Querying archival state at specific block heights to test historical logic.
-    -   Fine-tuning gas pricing and sequencer rewards for economic testing.
-    -   Running a REST API server to test off-chain interactions with your module.
+*   Executing and asserting on batches of transactions.
+*   Querying historical state at specific block heights.
+*   Customizing gas and fee configurations.
+*   Running an integrated REST API server for off-chain testing.
 
--   **[`HighLevelOptimisticGenesisConfig`](https://docs.rs/sov-test-utils/latest/sov_test_utils/runtime/genesis/optimistic/struct.HighLevelOptimisticGenesisConfig.html)**: This builder offers granular control over the genesis state, allowing you to:
-    -   Create custom tokens with specific minters and supply caps using `add_accounts_with_token`.
-    -   Initialize multiple module configurations at once.
-
--   **[`TestUser`](https://docs.rs/sov-test-utils/latest/sov_test_utils/struct.TestUser.html)**: This helper offers more than just sending transactions. It can be used to sign arbitrary messages and automatically manages nonces for you across multiple transactions.
-
-Browsing the `sov-test-utils` documentation will reveal the full suite of tools available for testing every aspect of your module's behavior.
+The `sov-test-utils` crate provides a comprehensive toolkit for testing every aspect of your module's behavior.

@@ -59,3 +59,7 @@ Finally, specialized actors called "provers" or "attesters" generate a proof
 that the new rollup state was computed correctly and post the proof back onto
 the DA layer. This enables clients of the rollup to verify claims about the
 rollup state without running a full node for themselves.
+
+## Ready to Build?
+
+Now that you understand the power and flexibility of the Sovereign SDK, you're ready to get your hands dirty. In the next chapter, "Getting Started," we'll walk you through cloning a starter repository and running your first rollup in minutes.

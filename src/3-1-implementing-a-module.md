@@ -233,15 +233,11 @@ pub(crate) fn genesis(
 ### Call
 
 The `call` function provides the transaction processing logic for your module.
-It accepts a structured input from a user and a `Context` which contains
-metadata including the sender address. In response to a `call`, modules may
-update their state as well as emit `Events` - structured key-value pairs
-which are returned to the user and can be queried over the REST API, or streamed via the WebSocket endpoint.
+It accepts a structured input (`CallMessage`) from a user and a `Context` which contains
+metadata, including the sender's address. In response to a `call`, your module can
+update its state and emit `Events`. 
 
-If your call function returns an error, all of its state changes are
-automatically reverted and any events are discarded. However, any logs generated
-by the transaction will still be visible to the node operator. (More on
-`logging` later.)
+If your call function returns an error, the SDK automatically reverts all state changes and discards any events, ensuring that transactions are atomic.
 
 You can define the `CallMessage` accepted by your module to be any type you
 wish, but an enum is usually the best. Be sure to implement `borsh` and `serde`
@@ -250,51 +246,66 @@ serialization for your type, as well as `schemars::JsonSchema` and
 portable across languages and frontends, making it easy for users to securely
 generate, review, sign, and send transactions to your module.
 
-The `Bank` module provides a very typical example of a `call` implementation:
+Let's walk through a simple example of a module that allows an admin to set a `u32` value.
 
 ```rust
-fn call(&self, msg: CallMessage, context: &Context<Self::Spec>, state: &mut impl TxState<S>)
--> Result<(), Error> {
+// The `CallMessage` enum defines the actions users can take.
+// Deriving these traits ensures it's portable across different clients and frontends.
+#[derive(Debug, BorshSerialize, BorshDeserialize, serde::Serialize, serde::Deserialize, schemars::JsonSchema, sov_modules_macros::UniversalWallet)]
+pub enum CallMessage {
+    SetValue(u32),
+}
+```
+
+Now, let's implement the call method. This example assumes your module struct has #[state] fields for admin: StateValue<S::Address> and value: StateValue<u32>, which would be initialized in genesis.
+
+```rust
+// In your `impl<S: Spec> Module for YourModule<S>` block
+
+fn call(
+    &self,
+    msg: Self::CallMessage,
+    context: &Context<Self::Spec>,
+    state: &mut impl TxState<S>,
+) -> Result<(), Error> {
+    // The `call` method typically matches on the message variant.
     match msg {
-        call::CallMessage::Transfer { to, coins } => { Ok(self.do_transfer(context.sender(), &to, &coins.token_id, coins.amount, state)?) }
-        // Other variants omitted for brevity
+        CallMessage::SetValue(new_value) => {
+            // It's good practice to delegate logic to a private helper method.
+            self.set_value(new_value, context, state)
+        }
     }
 }
 
-fn do_transfer(&self, from: S::Address, to: S::Address, token_id: &TokenId, amount: Amount, state: &mut impl StateAccessor) -> anyhow::Result<()> {
-    if from == to || amount == 0{
-        return Ok(());
+// In a private `impl<S: Spec> YourModule<S>` block
+
+/// Sets a new value, but only if the sender is the admin.
+fn set_value(
+    &self,
+    new_value: u32,
+    context: &Context<Self::Spec>,
+    state: &mut impl TxState<S>,
+) -> Result<(), Error> {
+    // 1. Authorize: Check if the sender is allowed to perform this action.
+    let admin = self.admin.get_or_err(state)?;
+    if &admin != context.sender() {
+        return Err(anyhow::anyhow!("Only the admin can set the value.").into());
     }
-    // Use a helper to compute the new `from` balance, throwing an error on insufficient funds
-    let new_from_balance = self.decrease_balance_checked(token_id, from, amount, state)?;
 
-    // Get the current `to` balance and compute the new one
-    // Note that the `get` function can return an error if the call runs out of gas
-    let current_to_balance = self
-        .balances
-        .get(&(to, token_id), state)?
-        .unwrap_or(Amount::ZERO);
-    let to_balance = current_to_balance.checked_add(amount).with_context(|| {
-        format!(
-            "Account balance overflow for {} when adding {} to current balance {}",
-            to, amount, current_to_balance
-        )
-    })?;
+    // 2. Execute: Perform the state change.
+    self.value.set(&new_value, state)?;
 
-    // Update both balances and emit an event, reverting on error.
-    self.balances.set(&(from, token_id), &new_from_balance, state)?;
-    self.balances.set(&(to, token_id), &to_balance, state)?;
+    // 3. Emit Event: Announce the successful state change to the outside world. (We'll cover events shortly.)
     self.emit_event(
         state,
-        Event::TokenTransferred {
-            from: sender.as_token_holder().into(),
-            to: to.into(),
-            coins,
+        Event::ValueChanged { // Assumes a variant in your `Event` enum
+            new_value,
+            sender: context.sender().clone(),
         },
     );
+
     Ok(())
 }
-
 ```
 
 Just like Ethereum `smart contracts` and Solana `programs`, modules accept
@@ -370,4 +381,8 @@ fn transfer(&self, from: &S::Address, to: &S::Address, amount: u64, state: &mut 
 
 Errors automatically revert all state changes from the transaction. For more details on error handling patterns and when to panic vs return errors, see the [Advanced Topics](3-4-advanced.html#error-handling) section.
 
+## Next Steps: Ensuring Correctness
 
+You now have all the tools to define a module's state, initialize it at genesis, and handle user interactions through call methods. You've created the core business logic of your application.
+
+However, before you can integrate this module into a live rollup, you need to be confident that it works exactly as intended. In the next section, "Testing Your Module," we'll show you how to use the SDK's powerful testing framework to write comprehensive tests, covering both successful transaction paths and potential error cases.
