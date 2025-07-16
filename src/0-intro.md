@@ -3,8 +3,6 @@
 The Sovereign SDK is a batteries-included framework for building onchain
 applications.
 
-<a href="https://discord.gg/kbykCcPrcA" ><img alt="Discord" src="https://img.shields.io/discord/1050059327626555462?label=discord"/></a>
-
 <img src="https://github.com/Sovereign-Labs/sovereign-sdk/blob/nightly/assets/banner.jpg?raw=true" style="border-radius: 10px">
 
 ## Why Rollups?

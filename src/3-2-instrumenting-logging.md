@@ -46,8 +46,6 @@ Spans are like invisible context that gets automatically attached to every log l
 
 Think of spans as a way to say "everything that happens from here until the span ends is part of this operation." This is especially useful when debugging - you can filter logs by span fields to see everything that happened during a specific batch process or user request.
 
-Here's how you can use spans to provide hierarchical context for complex operations:
-
 ```rust
 use tracing::instrument;
 

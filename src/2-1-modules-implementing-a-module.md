@@ -1,6 +1,6 @@
 # Implementing a Module
 
-A module is the basic unit of functionality in the Sovereign SDK. A module is a
+A module is the basic unit of functionality in the Sovereign SDK. It is a
 collection of values stored in state, and an optional `call` function which
 allows users to interact with that state onchain. Modules also provide custom
 API support and built-in indexing.

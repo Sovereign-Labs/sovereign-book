@@ -2,7 +2,7 @@
 
 Here's a comprehensive list of all existing modules: 
 
-### User Facing Modules
+### User Facing
 
 [**sov-bank**](fix-link) - Token management module for
 creating, transferring, and burning tokens
@@ -25,7 +25,7 @@ and provides standard Ethereum endpoints
 processes Solana transactions
 and provides standard Solana endpoints (maintained by the [Termina](https://www.termina.technology/) team)
 
-### Cross-Chain Communication
+### Bridging
 
 [**sov-hyperlane-mailbox**](fix-link) - All five of these modules are 
 part of the Hyperlane (bridging) integration. They enable 
@@ -41,7 +41,7 @@ any EVM, SVM or Cosmos SDK chain.
     - Supports validator announcements and
   multisig ISMs
 
-### Core Modules
+### Core
 
 [**sov-accounts**](fix-link) - Account management system
 that automatically creates addresses for
@@ -58,7 +58,7 @@ capability (which enables soft-confirmations
 without losing censorship resistance)
 
 
-### Incentive & Economic Modules
+### Incentive & Economics
 
 [**sov-attester-incentives**](fix-link) - Complete
 attestation/challenge verification workflow
