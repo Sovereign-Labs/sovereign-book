@@ -23,7 +23,7 @@ and provides standard Ethereum endpoints
 
 [**sov-svm**](fix-link) - SVM compatibility layer that
 processes Solana transactions
-and provides standard Solana endpoints (maintained by the [Termina](https://www.termina.technology/) team)
+and provides standard Solana endpoints (built & maintained by the [Termina](https://www.termina.technology/) team)
 
 ### Bridging
 

@@ -202,7 +202,7 @@ fn test_time_delayed_operation() {
 
 ### 4. Standalone State Queries
 
-While you can query state within a transaction's assert block, you can also query the latest visible state at any point using `runner.query_visible_state`. This is useful for verifying the initial genesis state or checking state after non-transaction events like advancing slots. This can be useful if you especially have custom [`hooks`](3-4-advanced.md#hooks):
+While you can query state within a transaction's assert block, you can also query the latest visible state at any point using `runner.query_visible_state`. This is useful for verifying the initial genesis state or checking state after non-transaction events like advancing slots. This can be useful if you especially have custom [`hooks`](3-5-advanced.md#hooks):
 
 ```rust
 #[test]
@@ -292,6 +292,6 @@ The `sov-test-utils` crate provides a comprehensive toolkit for testing every as
 
 ### Ready for Primetime
 
-With a thoroughly tested module, you can be confident in your logic's correctness and robustness. You're now ready to take the final step in the development lifecycle: integrating your module into a live rollup runtime.
+With a thoroughly tested module, you can be confident in your logic's correctness and robustness. It's now time to bring your module to life by integrating it into a live rollup runtime.
 
 In the next section, "Integrating Your Module," we'll guide you through adding your module to the Runtime struct, configuring its genesis state, and making it a live component of your application.
