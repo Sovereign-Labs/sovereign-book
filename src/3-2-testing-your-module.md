@@ -35,24 +35,28 @@ generate_optimistic_runtime!(
 Set up the initial state with test users:
 
 ```rust
-use sov_test_utils::{HighLevelOptimisticGenesisConfig, TestRunner};
+use sov_test_utils::{HighLevelOptimisticGenesisConfig, TestRunner, TestUser};
 
-fn setup() -> (Vec<TestUser<TestSpec>>, TestRunner<TestRuntime, TestSpec>) {
-    // Create genesis config with test users
+pub struct TestData<S: Spec> {
+    pub admin: TestUser<S>,
+    pub user1: TestUser<S>,
+    pub user2: TestUser<S>,
+}
+
+pub fn setup() -> (TestData<TestSpec>, TestRunner<TestRuntime, TestSpec>) {
     let genesis_config = HighLevelOptimisticGenesisConfig::generate()
-        // Add 3 users with default gas balance
         .add_accounts_with_default_balance(3);
     
-    // Extract users from genesis for later use
-    let users = genesis_config.additional_accounts().to_vec();
+    let mut users = genesis_config.additional_accounts().to_vec();
+    let test_data = TestData {
+        user2: users.pop().unwrap(),
+        user1: users.pop().unwrap(),
+        admin: users.pop().unwrap(),
+    };
     
-    // Create runner with genesis
-    let runner = TestRunner::new_with_genesis(
-        genesis_config.into_genesis_params(),
-        TestRuntime::default()
-    );
+    let runner = TestRunner::new_with_genesis(/* ... */);
     
-    (users, runner)
+    (test_data, runner)
 }
 ```
 
@@ -68,9 +72,9 @@ mod tests {
     
     #[test]
     fn test_module_operation() {
-        // Setup runner and get test users 
-        let (users, mut runner) = setup();
-        let user = &users[0];
+        // Setup runner and get test user 
+        let (test_data, mut runner) = setup();
+        let user = &test_data.user1;
         
         // Execute a transaction
         runner.execute_transaction(TransactionTestCase {
@@ -120,9 +124,9 @@ Test that your module handles errors correctly:
 ```rust
 #[test]
 fn test_insufficient_balance() {
-    let (users, mut runner) = setup();
-    let sender = &users[0];
-    let receiver = &users[1];
+    let (test_data, mut runner) = setup();
+    let sender = &test_data.user1;
+    let receiver = &test_data.user2;
     
     runner.execute_transaction(TransactionTestCase {
         input: sender.create_plain_message::<TestRuntime, Bank>(
@@ -154,8 +158,8 @@ Verify that your module emits the correct events. Note that the event enum name 
 ```rust
 #[test]
 fn test_event_emission() {
-    let (users, mut runner) = setup();
-    let user = &users[0];
+    let (test_data, mut runner) = setup();
+    let user = &test_data.user1;
     
     runner.execute_transaction(TransactionTestCase {
         input: user.create_plain_message::<TestRuntime, YourModule>(
@@ -217,8 +221,13 @@ fn test_state_queries() {
 
     });
 
-    // Advanced blockchain slots
-    runner.advance_slots(100);
+    // 2. Execute a transaction that changes state
+    runner.execute_transaction(TransactionTestCase {
+        input: admin.create_plain_message::<TestRuntime, YourModule>(
+            CallMessage::CreateItem { name: "Test".into() }
+        ),
+        assert: |result, _| assert!(result.tx_receipt.is_successful()),
+    });
 
     // Query again to see the new state
     runner.query_visible_state(|state| {
@@ -280,3 +289,9 @@ We highly recommend exploring the documentation for the **[`TestRunner`](fix-lin
 *   Running an integrated REST API server for off-chain testing.
 
 The `sov-test-utils` crate provides a comprehensive toolkit for testing every aspect of your module's behavior.
+
+### Ready for Primetime
+
+With a thoroughly tested module, you can be confident in your logic's correctness and robustness. You're now ready to take the final step in the development lifecycle: integrating your module into a live rollup runtime.
+
+In the next section, "Integrating Your Module," we'll guide you through adding your module to the Runtime struct, configuring its genesis state, and making it a live component of your application.

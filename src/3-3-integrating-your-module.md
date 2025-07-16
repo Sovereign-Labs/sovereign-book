@@ -159,6 +159,10 @@ Your rollup is now operational! You can:
 - Ensure all feature flags are properly configured
 - Check that your module exports all required types
 
-## Next Steps: Wallets and Keys
+### Your Module is Live!
 
-With your module fully integrated, the next step is to interact with it. The Sovereign SDK uses Ethereum-compatible addresses and signatures, meaning you can use standard Ethereum tooling (like Metamask, Foundry, and Hardhat) to generate keys and sign transactions. We'll cover this in more detail in the "Wallets and Accounts" section.
+Congratulations! Your module is now a fully integrated part of a running rollup. You have successfully navigated the complete development lifecycle, from implementation and testing to deployment on your local machine.
+
+You've built the core logic, but now the crucial question is: how do users actually interact with it? How do they create accounts, manage keys, and sign transactions to call your new module's methods?
+
+The next section, "Wallets and Accounts," will bridge this gap. We'll explore how to leverage the SDK's Ethereum-compatible account system and use client-side tooling to sign and submit transactions to your rollup, bringing your application to life for end-users.

@@ -80,34 +80,27 @@ fn transfer(&self, from: &S::Address, to: &S::Address, token_id: &TokenId, amoun
 
 Transaction reverts are normal and expected - log them at `debug!` level if needed for debugging, not as warnings or errors.
 
-## Native-Only Code
+## Native-Only Code and Custom APIs
 
-Some functionality should only run natively, not in the zkVM during proof generation. This includes:
-- Custom REST APIs and RPC methods
-- Metrics and logging
-- Integration with external services
-- Debugging and development tools
+Some functionality should only run natively on the full nodes, not in the zkVM during proof generation. This is a critical concept for separating verifiable on-chain logic from off-chain operational tooling.
 
-Any code that shouldn't be part of state transition verification must be gated with `#[cfg(feature = "native")]`:
+Any code that shouldn't be part of the state transition verification must be gated with `#[cfg(feature = "native")]`:
 
 ```rust
 #[cfg(feature = "native")]
 impl<S: Spec> MyModule<S> {
     // This code only compiles natively, not in zkVM
     pub fn debug_state(&self, state: &impl StateAccessor<S>) {
-        let total_items = self.items.len(state);
-        println!("Total items: {}", total_items);
+        // ...
     }
 }
 ```
+This ensures that your zk-proofs remain small and your on-chain logic remains deterministic. Common use cases for native-only code include:
 
-This ensures that:
-- zkVM execution remains deterministic and efficient
-- Proof generation doesn't include unnecessary code
-
-## Custom APIs 
-
-Using the native-only pattern, you can add custom REST endpoints and RPC methods to your module.
+- Custom REST APIs and RPC methods
+- Metrics and logging integration
+- Debugging tools
+- Integrations with external services
 
 ### Adding Custom REST APIs
 
@@ -117,6 +110,7 @@ implements the routes, and an optional one which provides an `OpenApi` spec. You
 can see a good example in the `Bank` module:
 
 ```rust
+#![cfg(feature = "native")]
 impl<S: Spec> HasCustomRestApi for Bank<S> {
     type Spec = S;
 
@@ -182,6 +176,7 @@ the `#[rpc_gen(client, server)]` macro, and then write methods which accept an
 some examples in the [`Evm` module](fix-link).
 
 ```rust
+#![cfg(feature = "native")]
 #[rpc_gen(client, server)]
 impl<S: Spec> Evm<S> {
     /// Handler for `net_version`
@@ -201,3 +196,9 @@ impl<S: Spec> Evm<S> {
     }
 }
 ```
+
+### Mastering Your Module
+
+By leveraging Hooks, robust error handling, and custom APIs, you can build sophisticated, production-grade modules that are both powerful and easy to operate.
+
+With a deep understanding of module implementation, you may next want to optimize your rollup's performance. The next section on "Understanding Performance" will dive into state access patterns and cryptographic considerations that can significantly impact your application's throughput.

@@ -11,3 +11,9 @@ As a rule of thumb, for each 10% locality, you should be willing to add an extra
 ### Cryptography
 
 The other common source of performance woes is heavy-duty cryptography. If you need to do any cryptographic operations, check whether the `Spec` trait provides a method in its `Spec::CryptoSpec` that already does what you want. If it does, use that - the SDK will ensure you get an implementation which is optimized for the SDK's peculiar requirements. If you need access to more exotic cryptography, you can use pretty much any existing Rust library - but be aware that the performance penalty might be severe when it comes time to prove your module's execution, which could limit your total throughput. If you do need advanced cryptography, you may need to pick an implementation that's suited to a particular `ZKVM` (like `SP1` or `Risc0`) and only use that vm with your module.
+
+### Building for Scale
+
+By keeping these performance principles in mind, bundling hot state and using optimized cryptography, you can design your modules to be highly efficient, ensuring your rollup can scale to meet user demand.
+
+While building custom logic is powerful, you don't always have to start from scratch. The Sovereign SDK comes with a rich set of "Prebuilt Modules" for common tasks like token management, bridging, and sequencer orchestration. The next section provides an overview of these modules, which you can leverage to accelerate your development.

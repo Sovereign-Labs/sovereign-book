@@ -381,7 +381,7 @@ fn transfer(&self, from: &S::Address, to: &S::Address, amount: u64, state: &mut 
 
 Errors automatically revert all state changes from the transaction. For more details on error handling patterns and when to panic vs return errors, see the [Advanced Topics](3-4-advanced.html#error-handling) section.
 
-## Next Steps: Ensuring Correctness
+### Next Step: Ensuring Correctness
 
 You now have all the tools to define a module's state, initialize it at genesis, and handle user interactions through call methods. You've created the core business logic of your application.
 

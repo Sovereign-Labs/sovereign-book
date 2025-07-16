@@ -8,7 +8,7 @@ Modules, on the other hand, contain the actual business logic of your applicatio
 
 The starter package already includes several production-ready modules like Bank (for token management), Sequencer Registry, Accounts, and Hyperlane (for cross-chain messaging). It also provides an Example Module that serves as a template you can modify. 
 
-## Let's Begin
+### Let's Begin
 
 With this context in mind, we're ready to start building. The following sections will guide you through the complete lifecycle of module development:
 

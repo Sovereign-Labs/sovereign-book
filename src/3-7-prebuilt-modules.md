@@ -86,3 +86,9 @@ for storing and retrieving a single value
 [**module-template**](fix-link) - Starter template
 demonstrating proper module structure with
 state-changing methods and queries
+
+### Standing on the Shoulders of Giants
+
+Leveraging these prebuilt modules can save you significant development time and effort, allowing you to focus on your application's unique business logic. You've now completed the "Writing Your Application" chapter and have a comprehensive understanding of how to build, test, and deploy powerful rollups.
+
+The next major part of our book, "Instrumenting Your Rollup," will shift focus from development to operations, teaching you how to monitor your running rollup using metrics and structured logging.
