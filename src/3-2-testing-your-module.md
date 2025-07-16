@@ -20,10 +20,13 @@ The `generate_optimistic_runtime!` macro automatically includes all core modules
 ```rust
 use sov_test_utils::runtime::optimistic::generate_optimistic_runtime;
 
+// Your module's crate
+use your_module::YourModule;
+
 // Generate a runtime with core modules + your custom module
 generate_optimistic_runtime!(
     TestRuntime <=  // Your test runtime name
-    my_module: MyModule<S> // Your custom module
+    your_module: YourModule<S> // Your custom module
 );
 ```
 
@@ -65,13 +68,13 @@ mod tests {
     
     #[test]
     fn test_module_operation() {
-        // Setup runner and get test users from genesis
+        // Setup runner and get test users 
         let (users, mut runner) = setup();
         let user = &users[0];
         
         // Execute a transaction
         runner.execute_transaction(TransactionTestCase {
-            input: user.create_plain_message::<TestRuntime, MyModule>(
+            input: user.create_plain_message::<TestRuntime, YourModule>(
                 CallMessage::SetValue { value: 42 }
             ),
             assert: Box::new(|result, state| {
@@ -79,7 +82,7 @@ mod tests {
                 assert!(result.tx_receipt.is_successful());
                 
                 // Query and verify state
-                let current_value = MyModule::default()
+                let current_value = YourModule::default()
                     .get_value(state)
                     .unwrap_infallible()  // State access can't fail in tests
                     .unwrap();            // Handle the Option
@@ -126,7 +129,7 @@ fn test_insufficient_balance() {
             CallMessage::Transfer {
                 to: receiver.address(),
                 coins: Coins { 
-                    amount: 999_999_999_999, // More than they have
+                    amount: 999_999_999_999, // More than the sender has 
                     token_id: config_gas_token_id() 
                 },
             }
@@ -146,7 +149,7 @@ fn test_insufficient_balance() {
 
 ### 2. Event Testing
 
-Verify your module emits the correct events. Note that the event enum name (e.g., `TestRuntimeEvent`) is automatically generated based on your runtime name in the `generate_optimistic_runtime!` macro:
+Verify that your module emits the correct events. Note that the event enum name (e.g., `TestRuntimeEvent`) is automatically generated based on your runtime name.
 
 ```rust
 #[test]
@@ -155,7 +158,7 @@ fn test_event_emission() {
     let user = &users[0];
     
     runner.execute_transaction(TransactionTestCase {
-        input: user.create_plain_message::<TestRuntime, MyModule>(
+        input: user.create_plain_message::<TestRuntime, YourModule>(
             CallMessage::CreateItem { name: "Test".into() }
         ),
         assert: Box::new(move |result, _state| {
@@ -164,7 +167,7 @@ fn test_event_emission() {
             
             assert_eq!(
                 result.events[0],
-                TestRuntimeEvent::MyModule(my_module::Event::ItemCreated {
+                TestRuntimeEvent::YourModule(your_module::Event::ItemCreated {
                     creator: user.address(),
                     name: "Test".into()
                 })
@@ -176,70 +179,54 @@ fn test_event_emission() {
 
 ### 3. Time-Based Testing
 
-Test operations that depend on blockchain progression:
+Test operations that depend on blockchain progression by advancing slots:
 
 ```rust
 #[test]
 fn test_time_delayed_operation() {
     let (users, mut runner) = setup();
-    let user = &users[0];
-    
-    // Initiate a time-locked operation - transaction test case elided here for brevity
-    runner.execute_transaction(start_timelock);
-    
-    // Try to complete immediately - should fail
-    runner.execute_transaction(TransactionTestCase {
-        input: user.create_plain_message::<TestRuntime, MyModule>(
-            CallMessage::CompleteTimelock { id: timelock_id }
-        ),
-        assert: Box::new(|result, _| {
-            assert!(result.tx_receipt.is_reverted());
-            
-            if let TxEffect::Reverted(contents) = &result.tx_receipt.tx_effect {
-                assert!(contents.reason.to_string().contains("Not ready"));
-            }
-        }),
-    });
-    
-    // Advance blockchain time
+
+    // 1. Initiate a time-locked operation (e.g., a vesting schedule)
+
+    // 2. Advance blockchain time
     runner.advance_slots(100); // Advance 100 slots
-    
-    // Now the operation should succeed
-    runner.execute_transaction(complete_timelock);
+
+    // 3. Now, the second part of the operation should succeed
+    runner.execute_transaction(/* ... complete the operation ... */);
 }
 ```
 
-### 4. State Queries
+### 4. Standalone State Queries
 
-Query state without executing transactions:
+While you can query state within a transaction's assert block, you can also query the latest visible state at any point using `runner.query_visible_state`. This is useful for verifying the initial genesis state or checking state after non-transaction events like advancing slots. This can be useful if you especially have custom [`hooks`](3-4-advanced.md#hooks):
 
 ```rust
 #[test]
 fn test_state_queries() {
-    let (users, mut runner) = setup();
-    let user = &users[0];
-    
-    // Execute some state changes
-    runner.execute_transaction(create_item);
-    
-    // Query current state
+    let (test_data, mut runner) = setup();
+    let admin = &test_data.admin;
+
+    // Query the initial genesis state before any transactions
     runner.query_visible_state(|state| {
-        let item_count = MyModule::default()
+        // Query a value from your module
+        let item_count = YourModule::<S>::default()
+            .get_item_count(state)
+            .unwrap_infallible()
+            .unwrap();
+        assert_eq!(item_count, 0);
+
+    });
+
+    // Advanced blockchain slots
+    runner.advance_slots(100);
+
+    // Query again to see the new state
+    runner.query_visible_state(|state| {
+        let item_count = YourModule::<S>::default()
             .get_item_count(state)
             .unwrap_infallible()
             .unwrap();
         assert_eq!(item_count, 1);
-        
-        // Query from other modules
-        let user_balance = Bank::default()
-            .get_balance_of(
-                user.address(),
-                config_gas_token_id(),
-                state
-            )
-            .unwrap_infallible()
-            .unwrap();
-        assert!(user_balance > 0);
     });
 }
 ```
@@ -265,7 +252,7 @@ fn setup_with_config() -> (TestUser<TestSpec>, TestRunner<TestRuntime, TestSpec>
     // Create genesis with your module's configuration
     let genesis = GenesisConfig::from_minimal_config(
         genesis_config.into(),
-        MyModuleConfig {
+        YourModuleConfig {
             admin: admin.address(),
             initial_value: 1000,
             // Other module-specific parameters
@@ -283,12 +270,20 @@ fn setup_with_config() -> (TestUser<TestSpec>, TestRunner<TestRuntime, TestSpec>
 
 ## Additional Resources
 
-For more advanced testing scenarios and APIs, refer to the [`TestRunner`](fix-link) struct documentation in the SDK. The TestRunner provides many additional methods for:
+For advanced testing scenarios, the [`sov-test-utils` crate](https://docs.rs/sov-test-utils) is your primary resource. It contains all the core components covered in this guide and many more powerful tools.
 
-- Executing batches of transactions
-- Querying archival state at specific heights
-- Setting up REST API servers for testing
-- Custom gas configurations
-- And much more
+We highly recommend exploring the documentation for these key structs:
 
-The test utilities in the [`sov-test-utils`](fix-link) crate provide comprehensive tools for testing every aspect of your module's behavior.
+-   **[`TestRunner`](https://docs.rs/sov-test-utils/latest/sov_test_utils/runtime/struct.TestRunner.html)**: Beyond single transactions, the `TestRunner` provides methods for more complex scenarios, such as:
+    -   Executing ordered batches of transactions with `execute_batch`.
+    -   Querying archival state at specific block heights to test historical logic.
+    -   Fine-tuning gas pricing and sequencer rewards for economic testing.
+    -   Running a REST API server to test off-chain interactions with your module.
+
+-   **[`HighLevelOptimisticGenesisConfig`](https://docs.rs/sov-test-utils/latest/sov_test_utils/runtime/genesis/optimistic/struct.HighLevelOptimisticGenesisConfig.html)**: This builder offers granular control over the genesis state, allowing you to:
+    -   Create custom tokens with specific minters and supply caps using `add_accounts_with_token`.
+    -   Initialize multiple module configurations at once.
+
+-   **[`TestUser`](https://docs.rs/sov-test-utils/latest/sov_test_utils/struct.TestUser.html)**: This helper offers more than just sending transactions. It can be used to sign arbitrary messages and automatically manages nonces for you across multiple transactions.
+
+Browsing the `sov-test-utils` documentation will reveal the full suite of tools available for testing every aspect of your module's behavior.

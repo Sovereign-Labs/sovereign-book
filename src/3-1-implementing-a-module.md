@@ -368,6 +368,6 @@ fn transfer(&self, from: &S::Address, to: &S::Address, amount: u64, state: &mut 
 }
 ```
 
-Errors automatically revert all state changes from the transaction. For more details on error handling patterns and when to panic vs return errors, see the [Advanced Topics](2-4-modules-advanced.html#error-handling) section.
+Errors automatically revert all state changes from the transaction. For more details on error handling patterns and when to panic vs return errors, see the [Advanced Topics](3-4-advanced.html#error-handling) section.
 
 
