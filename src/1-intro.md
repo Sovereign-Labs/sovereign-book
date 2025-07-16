@@ -1,64 +1,46 @@
 # The Sovereign SDK Book
 
-The Sovereign SDK is a batteries-included framework for building onchain
-applications.
+Welcome to the Sovereign SDK Book, your comprehensive guide to the industry's most flexible toolkit for building high-performance, real-time rollups.
+
+We built this SDK to give developers, from solo builders to large teams, the power to create onchain applications that were previously impossible. 
+
+With transaction confirmations under 2-5 milliseconds, the Sovereign SDK is fast enough to bring complex financial systems, like Central-Limit Orderbooks (CLOBs), fully on-chain.
+
+And most importantly, after months of extensive load-testing, it's production-ready. Let's build the next Hyperliquid.
 
 <img src="https://github.com/Sovereign-Labs/sovereign-sdk/blob/nightly/assets/banner.jpg?raw=true" style="border-radius: 10px">
 
-## Why Rollups?
+## Why Build a Dedicated Rollup For Your Application?
 
-As a developer, building your application as a rollup has several advantages:
+For decades, developers have been forced to build applications on shared, general-purpose blockchains. This model forces apps with vastly different needs to compete for the same limited blockspace. Building your application as a dedicated rollup gives you three strategic advantages:
 
-1. **Dedicated throughput:** your users won't pay more just because another app
-   is generating a lot of transactions.
-1. **Scalability:** Sovereign SDK nodes scale seamlessly to thousands of
-   transactions per second on commodity hardware, and can achieve substantially
-   higher throughput on optimized hardware.
-1. **Incentive alignment:** the vast majority of the rollup fees can be
-   distributed to users and developers of the rollup, rather than subsidizing
-   token holders on L1.
-1. **MEV mitigation:** since you have full control over your rollup logic, you
-   can design your protocol to minimize MEV and capture the portions that can't
-   be eliminated.
-1. **Flexibility:** rollups enable you to express whatever logic you want,
-   without worrying about the needs of other applications. Enable cutting edge
-   EIPs and account abstraction, or ditch the EVM entirely and build an
-   app-specific chain. **With a rollup, you're in the driver's seat.**
+1.  **Dedicated Throughput:** Your users will never have to compete with a viral NFT drop. A rollup gives your application its own dedicated lane, ensuring a consistently fast and affordable user experience.
+2.  **Capture More Value:** On shared blockchains, user fees primarily benefit the chain operators (i.e. L1 validators or general-purpose L2 sequencer). With a rollup, your application and its users can capture the vast majority of that value, creating a sustainable economic engine for your project.
+3.  **Full Control & Flexibility:** Go beyond the limitations of a shared virtual machine. A rollup gives you full control over the execution environment, allowing you to define your own rules for how transactions are processed. **With a rollup, you're in the driver's seat.**
 
-## Why Sovereign?
+## Why Choose the Sovereign SDK?
 
-The Sovereign SDK is the most flexible framework for building rollups. Unlike
-other rollup frameworks, the Sovereign SDK supports rollups without a settlement
-layer. That means that you can deploy your rollup anywhere - including on
-Bitcoin and Celestia. The SDK also provides top-tier scalability and a seamless
-user experience, all without sacrificing flexibility. Teams are already using
-the Sovereign SDK to build...
+The Sovereign SDK is designed around four key principles to provide an unmatched developer experience:
 
-- An EVM chain on Bitcoin
-- A MoveVM chain on Celestia
-- Appchains on Solana
+-   **Total Customization:** While rollups promise flexibility, existing frameworks are overly restrictive. Sovereign SDK delivers on that promise with its modular Rust runtime, empowering you to customize as much or as little as needed. Easily add custom fee logic, integrate tailored authenticators, prioritize specific transaction types, or even swap out the authenticated state store—all without wrestling with legacy code.
+-   **Best-in-Class Performance:** With 2-5ms soft confirmations and throughput exceeding 10,000 TPS, the Sovereign SDK is orders of magnitude faster than competing frameworks like Orbit, the OP Stack, or the Cosmos SDK.
+-   **A Developer-Friendly Experience:** Write your logic in standard Rust, run `cargo build`, and get a complete full-node implementation with REST & WebSocket APIs, an indexer, auto-generated OpenAPI specs, and a sequencer  with automatic failover out of the box. No boilerplate or deep blockchain expertise required.
+-   **Future-Proof Architecture:** Never get locked into yesterday's tech stack. With the Sovereign SDK, you can switch data availability layers or zkVMs with just a few lines of code, ensuring your project remains agile for years to come.
 
-... and much more.
 
-## How it Works
+## How It Works
 
-As a developer, you write the business logic of your rollup in Rust and the SDK
-handles all of the complexity of creating a rollup on their behalf. Under the
-hood, the SDK compiles the chain's business logic to a zero-knowledge circuit,
-which it uses to prove correct execution (if the rollup is running in "zk mode")
-or to resolve disputes about execution (if the rollup is running in "optimistic
-mode"). It also generates a complete _full node_ implementation which can
-reproduce the state of the blockchain and serve data to users.
+As a developer, you write your rollup's business logic in Rust, and the SDK handles the complexity of creating a complete, production-ready node implementation.
 
-Once the rollup is deployed, users post their _transactions_ onto an underlying
-blockchain called a _Data Availability Layer_ ("DA Layer") for ordering. After
-transactions are ordered, the _full nodes_ of the rollup execute them to compute
-the new rollup _state_.
+The magic happens in two stages: **real-time execution** and **on-chain settlement**.
 
-Finally, specialized actors called "provers" or "attesters" generate a proof
-that the new rollup state was computed correctly and post the proof back onto
-the DA layer. This enables clients of the rollup to verify claims about the
-rollup state without running a full node for themselves.
+1.  **Real-Time Execution (Soft Confirmations):** Users send transactions to a **sequencer**. The sequencer executes these transactions instantly (typically in under 2-5ms) and returns a "soft confirmation" back to the user. This provides a real-time user experience that feels like a traditional web application.
+
+2.  **On-Chain Settlement & Verification:** Periodically, the sequencer batches thousands of these transactions and posts them to an underlying **Data Availability (DA) layer** like Celestia. From this point, the rest of the network—the full nodes—can read the ordered data and execute the transactions to independently verify the new state of the rollup.
+
+Finally, specialized actors called **provers** (in zk-rollup mode) or **attesters** (in optimistic-rollup mode) generate cryptographic proofs  or attestations that the state was computed correctly. These are posted back to the DA layer, allowing light clients and bridges to securely verify the rollup's state without having to re-execute every transaction.
+
+This two-stage process gives you the best of both worlds: the instant, centralized execution needed for high-performance applications, combined with the censorship-resistance and trust-minimized verification of a traditional blockchain.
 
 ## Ready to Build?
 
