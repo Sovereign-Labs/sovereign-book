@@ -15,7 +15,7 @@ And most importantly, after months of extensive load-testing, it's production-re
 For decades, developers have been forced to build applications on shared, general-purpose blockchains. This model forces apps with vastly different needs to compete for the same limited blockspace. Building your application as a dedicated rollup gives you three strategic advantages:
 
 1.  **Dedicated Throughput:** Your users will never have to compete with a viral NFT drop. A rollup gives your application its own dedicated lane, ensuring a consistently fast and affordable user experience.
-2.  **Capture More Value:** On shared blockchains, user fees primarily benefit the chain operators (i.e. L1 validators or general-purpose L2 sequencer). With a rollup, your application and its users can capture the vast majority of that value, creating a sustainable economic engine for your project.
+2.  **Capturing More Value:** On shared blockchains, user fees primarily benefit the chain operators (i.e. L1 validators or general-purpose L2 sequencer). With a rollup, your application and its users can capture the vast majority of that value, creating a sustainable economic engine for your project.
 3.  **Full Control & Flexibility:** Go beyond the limitations of a shared virtual machine. A rollup gives you full control over the execution environment, allowing you to define your own rules for how transactions are processed. **With a rollup, you're in the driver's seat.**
 
 ## Why Choose the Sovereign SDK?

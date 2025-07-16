@@ -10,10 +10,16 @@ The starter package already includes several production-ready modules like Bank 
 
 ### Let's Begin
 
-With this context in mind, we're ready to start building. The following sections will guide you through the complete lifecycle of module development:
+With this context in mind, we're ready to start building. This chapter will guide you through the complete journey of application development on the Sovereign SDK, from creating your first module to enabling user interactions and exploring advanced features.
 
-1. **Implementing a Module**: Define your module's state and business logic.
-2. **Testing Your Module**: Write robust tests to ensure your logic is correct.
-3. **Integrating Your Module**: Add your finished module to the rollup runtime.
+Here is the path we'll take:
+
+1.  **Implementing a Module:** First, we'll define your module's state and business logic—the heart of your application.
+2.  **Testing Your Module:** We'll then write robust tests to ensure your logic is correct and secure.
+3.  **Integrating Your Module:** Next, you'll learn how to add your finished module into a live rollup runtime.
+4.  **Wallets and Accounts:** With your module integrated, we'll explore how users can create accounts and sign transactions to interact with it.
+5.  **Advanced Topics:** From there, we'll dive into powerful features like hooks and custom APIs to extend your module's capabilities.
+6.  **Performance:** You'll learn how to optimize your module for maximum throughput and efficiency.
+7.  **Prebuilt Modules:** Finally, we'll review the rich ecosystem of existing modules you can leverage to accelerate your development.
 
 Let's dive in!
