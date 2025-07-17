@@ -1,5 +1,5 @@
 <!DOCTYPE HTML>
-<html lang="en" class="sovereign-dark" dir="ltr">
+<html lang="en" class="light" dir="ltr">
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
@@ -40,7 +40,7 @@
         <!-- Provide site root to javascript -->
         <script>
             var path_to_root = "";
-            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "sovereign-dark" : "sovereign-dark";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
         </script>
 
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
@@ -65,7 +65,7 @@
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
             var html = document.querySelector('html');
-            html.classList.remove('sovereign-dark')
+            html.classList.remove('light')
             html.classList.add(theme);
             var body = document.querySelector('body');
             body.classList.remove('no-js')
@@ -92,7 +92,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="intro.html"><strong aria-hidden="true">1.</strong> Intro</a></li><li class="chapter-item expanded "><a href="getting-started.html"><strong aria-hidden="true">2.</strong> Getting Started</a></li><li class="chapter-item expanded "><a href="rollup-devs.html"><strong aria-hidden="true">3.</strong> Rollup Devs</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="rollup-devs/build-a-module.html"><strong aria-hidden="true">3.1.</strong> Building a Module</a></li><li class="chapter-item expanded "><a href="rollup-devs/gas.html"><strong aria-hidden="true">3.2.</strong> Gas</a></li></ol></li><li class="chapter-item expanded "><a href="sdk-contributors.html"><strong aria-hidden="true">4.</strong> SDK Contributors</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="sdk-contributors/transaction-lifecycle.html"><strong aria-hidden="true">4.1.</strong> Transaction Lifecyle</a></li><li class="chapter-item expanded "><a href="sdk-contributors/abstractions.html"><strong aria-hidden="true">4.2.</strong> Main Abstractions</a></li><li class="chapter-item expanded "><a href="forced-sequencer-registration.html"><strong aria-hidden="true">4.3.</strong> Forced Sequencer Registration</a></li><li class="chapter-item expanded "><a href="sdk-contributors/gas.html"><strong aria-hidden="true">4.4.</strong> Gas</a></li></ol></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="1-intro.html"><strong aria-hidden="true">1.</strong> Intro</a></li><li class="chapter-item expanded "><a href="2-getting-started.html"><strong aria-hidden="true">2.</strong> Getting Started</a></li><li class="chapter-item expanded "><a href="3-0-intro.html"><strong aria-hidden="true">3.</strong> Writing Your Application</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="3-1-implementing-a-module.html"><strong aria-hidden="true">3.1.</strong> Implementing a Module</a></li><li class="chapter-item expanded "><a href="3-2-testing-your-module.html"><strong aria-hidden="true">3.2.</strong> Testing Your Module</a></li><li class="chapter-item expanded "><a href="3-3-adding-your-module.html"><strong aria-hidden="true">3.3.</strong> Adding Your Module to Your Runtime</a></li><li class="chapter-item expanded "><a href="3-4-signing-and-submitting-txs.html"><strong aria-hidden="true">3.4.</strong> Wallets and Accounts</a></li><li class="chapter-item expanded "><a href="3-5-advanced.html"><strong aria-hidden="true">3.5.</strong> Advanced Topics</a></li><li class="chapter-item expanded "><a href="3-6-performance.html"><strong aria-hidden="true">3.6.</strong> Performance</a></li><li class="chapter-item expanded "><a href="3-7-prebuilt-modules.html"><strong aria-hidden="true">3.7.</strong> Prebuilt Modules</a></li></ol></li><li class="chapter-item expanded "><a href="4-0-intro.html"><strong aria-hidden="true">4.</strong> Instrumenting Your Rollup</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="4-1-metrics.html"><strong aria-hidden="true">4.1.</strong> Metrics</a></li><li class="chapter-item expanded "><a href="4-2-logging.html"><strong aria-hidden="true">4.2.</strong> Logging</a></li></ol></li><li class="chapter-item expanded "><a href="5-sdk-advanced-features.html"><strong aria-hidden="true">5.</strong> SDK Advanced Features</a></li><li class="chapter-item expanded "><a href="6-0-intro.html"><strong aria-hidden="true">6.</strong> SDK Contributors</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="6-1-transaction-lifecycle.html"><strong aria-hidden="true">6.1.</strong> Transaction Lifecyle</a></li><li class="chapter-item expanded "><a href="6-2-abstractions.html"><strong aria-hidden="true">6.2.</strong> Main Abstractions</a></li><li class="chapter-item expanded "><a href="6-3-forced-sequencer-registration.html"><strong aria-hidden="true">6.3.</strong> Forced Sequencer Registration</a></li><li class="chapter-item expanded "><a href="6-4-gas.html"><strong aria-hidden="true">6.4.</strong> Gas</a></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -179,58 +179,41 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="the-sovereign-sdk-book"><a class="header" href="#the-sovereign-sdk-book">The Sovereign SDK Book</a></h1>
-<p>The Sovereign SDK is a batteries-included framework for building onchain
-applications.</p>
-<p><a href="https://discord.gg/kbykCcPrcA" ><img alt="Discord" src="https://img.shields.io/discord/1050059327626555462?label=discord"/></a></p>
+<p>Welcome to the Sovereign SDK Book, your comprehensive guide to the industry's most flexible toolkit for building high-performance, real-time rollups.</p>
+<p>We built this SDK to give developers, from solo builders to large teams, the power to create onchain applications that were previously impossible.</p>
+<p>With transaction confirmations under 2-5 milliseconds, the Sovereign SDK is fast enough to bring complex financial systems, like Central-Limit Orderbooks (CLOBs), fully on-chain.</p>
+<p>And most importantly, after months of extensive load-testing, it's production-ready. Let's build the next Hyperliquid.</p>
 <img src="https://github.com/Sovereign-Labs/sovereign-sdk/blob/nightly/assets/banner.jpg?raw=true" style="border-radius: 10px">
-<h2 id="why-rollups"><a class="header" href="#why-rollups">Why Rollups?</a></h2>
-<p>As a developer, building your application as a rollup has several advantages:</p>
+<h2 id="why-build-a-dedicated-rollup-for-your-application"><a class="header" href="#why-build-a-dedicated-rollup-for-your-application">Why Build a Dedicated Rollup For Your Application?</a></h2>
+<p>For almost a decade, developers have been forced to build applications on shared, general-purpose blockchains. This model forces apps with vastly different needs to compete for the same limited blockspace. Building your application as a dedicated rollup gives you three strategic advantages:</p>
 <ol>
-<li><strong>Dedicated throughput:</strong> your users won't pay more just because another app
-is generating a lot of transactions.</li>
-<li><strong>Scalability:</strong> Sovereign SDK nodes scale seamlessly to thousands of
-transactions per second on commodity hardware, and can achieve substantially
-higher throughput on optimized hardware.</li>
-<li><strong>Incentive alignment:</strong> the vast majority of the rollup fees can be
-distributed to users and developers of the rollup, rather than subsidizing
-token holders on L1.</li>
-<li><strong>MEV mitigation:</strong> since you have full control over your rollup logic, you
-can design your protocol to minimize MEV and capture the portions that can't
-be eliminated.</li>
-<li><strong>Flexibility:</strong> rollups enable you to express whatever logic you want,
-without worrying about the needs of other applications. Enable cutting edge
-EIPs and account abstraction, or ditch the EVM entirely and build an
-app-specific chain. <strong>With a rollup, you're in the driver's seat.</strong></li>
+<li><strong>Dedicated Throughput:</strong> Your users will never have to compete with a viral NFT drop. A rollup gives your application its own dedicated lane, ensuring a consistently fast and affordable user experience.</li>
+<li><strong>Capturing More Value:</strong> On shared blockchains, user fees primarily benefit the chain operators (i.e. L1 validators or general-purpose L2 sequencer). With a rollup, your application and its users can capture the vast majority of that value, creating a sustainable economic engine for your project.</li>
+<li><strong>Full Control &amp; Flexibility:</strong> Go beyond the limitations of a shared virtual machine. A rollup gives you full control over the execution environment, allowing you to define your own rules for how transactions are processed. <strong>With a rollup, you're in the driver's seat.</strong></li>
 </ol>
-<h2 id="why-sovereign"><a class="header" href="#why-sovereign">Why Sovereign?</a></h2>
-<p>The Sovereign SDK is the most flexible framework for building rollups. Unlike
-other rollup frameworks, the Sovereign SDK supports rollups without a settlement
-layer. That means that you can deploy your rollup anywhere - including on
-Bitcoin and Celestia. The SDK also provides top-tier scalability and a seamless
-user experience, all without sacrificing flexibility. Teams are already using
-the Sovereign SDK to build...</p>
+<h2 id="why-choose-the-sovereign-sdk"><a class="header" href="#why-choose-the-sovereign-sdk">Why Choose the Sovereign SDK?</a></h2>
+<p>The Sovereign SDK is designed around four key principles to provide an unmatched developer and user experience:</p>
 <ul>
-<li>An EVM chain on Bitcoin</li>
-<li>A MoveVM chain on Celestia</li>
-<li>Appchains on Solana</li>
+<li><strong>Total Customization:</strong> While rollups promise flexibility, existing frameworks are overly restrictive. Sovereign SDK delivers on that promise with its modular Rust runtime, empowering you to customize as much or as little as needed. Easily add custom fee logic, integrate tailored authenticators, prioritize specific transaction types, or even swap out the authenticated state store—all without wrestling with legacy code.</li>
+<li><strong>Best-in-Class Performance:</strong> With 2-5ms soft confirmations and throughput exceeding 10,000 TPS, the Sovereign SDK is orders of magnitude faster than competing frameworks like Orbit, the OP Stack, or the Cosmos SDK.</li>
+<li><strong>A Developer-Friendly Experience:</strong> Write your logic in standard Rust, run <code>cargo build</code>, and get a complete full-node implementation with REST &amp; WebSocket APIs, an indexer, auto-generated OpenAPI specs, and a sequencer  with automatic failover out of the box. No boilerplate or deep blockchain expertise required.</li>
+<li><strong>Future-Proof Architecture:</strong> Never get locked into yesterday's tech stack. With the Sovereign SDK, you can switch data availability layers or zkVMs with just a few lines of code, ensuring your project remains agile for years to come.</li>
 </ul>
-<p>... and much more.</p>
-<h2 id="how-it-works"><a class="header" href="#how-it-works">How it Works</a></h2>
-<p>As a developer, you write the business logic of your rollup in Rust and the SDK
-handles all of the complexity of creating a rollup on their behalf. Under the
-hood, the SDK compiles the chain's business logic to a zero-knowledge circuit,
-which it uses to prove correct execution (if the rollup is running in "zk mode")
-or to resolve disputes about execution (if the rollup is running in "optimistic
-mode"). It also generates a complete <em>full node</em> implementation which can
-reproduce the state of the blockchain and serve data to users.</p>
-<p>Once the rollup is deployed, users post their <em>transactions</em> onto an underlying
-blockchain called a <em>Data Availability Layer</em> ("DA Layer") for ordering. After
-transactions are ordered, the <em>full nodes</em> of the rollup execute them to compute
-the new rollup <em>state</em>.</p>
-<p>Finally, specialized actors called "provers" or "attesters" generate a proof
-that the new rollup state was computed correctly and post the proof back onto
-the DA layer. This enables clients of the rollup to verify claims about the
-rollup state without running a full node for themselves.</p>
+<h2 id="how-it-works"><a class="header" href="#how-it-works">How It Works</a></h2>
+<p>As a developer, you write your rollup's business logic in Rust, and the SDK handles the complexity of creating a complete, production-ready node implementation.</p>
+<p>The magic happens in two stages: <strong>real-time execution</strong> and <strong>on-chain settlement</strong>.</p>
+<ol>
+<li>
+<p><strong>Real-Time Execution (Soft Confirmations):</strong> Users send transactions to a <strong>sequencer</strong>. The sequencer executes these transactions instantly (typically in under 2-5ms) and returns a "soft confirmation" back to the user. This provides a real-time user experience that feels like a traditional web application.</p>
+</li>
+<li>
+<p><strong>On-Chain Settlement &amp; Verification:</strong> Periodically, the sequencer batches thousands of these transactions and posts them to an underlying <strong>Data Availability (DA) layer</strong> like Celestia. From this point, the rest of the network—the full nodes—can read the ordered data and execute the transactions to independently verify the new state of the rollup.</p>
+</li>
+</ol>
+<p>Finally, specialized actors called <strong>provers</strong> (in zk-rollup mode) or <strong>attesters</strong> (in optimistic-rollup mode) generate cryptographic proofs  or attestations that the state was computed correctly. These are posted back to the DA layer, allowing light clients and bridges to securely verify the rollup's state without having to re-execute every transaction.</p>
+<p>This two-stage process gives you the best of both worlds: the instant, centralized execution needed for high-performance applications, combined with the censorship-resistance and trust-minimized verification of a traditional blockchain.</p>
+<h2 id="ready-to-build"><a class="header" href="#ready-to-build">Ready to Build?</a></h2>
+<p>Now that you understand the power and flexibility of the Sovereign SDK, you're ready to get your hands dirty. In the next chapter, "Getting Started," we'll walk you through cloning a starter repository and running your first rollup in minutes.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="getting-started"><a class="header" href="#getting-started">Getting Started</a></h1>
 <h2 id="overview"><a class="header" href="#overview">Overview</a></h2>
 <p>This guide provides a starting point for building rollups with the Sovereign SDK.</p>
@@ -263,7 +246,7 @@ cd sov-rollup-starter/crates/rollup/
 <pre><code class="language-bash">cargo run --bin node
 </code></pre>
 <h3 id="explore-the-rest-api-endpoints-via-swagger-ui"><a class="header" href="#explore-the-rest-api-endpoints-via-swagger-ui">Explore the REST API endpoints via Swagger UI</a></h3>
-<p>The rollup includes several built-in modules: Bank (for token management), Paymaster, Hyperlane, and more. You can query any state item in these modules:</p>
+<p>The rollup starter includes several built-in modules: Bank (for token management), Paymaster, Hyperlane, and more. You can query any state item in these modules:</p>
 <pre><code class="language-bash">open http://localhost:12346/swagger-ui/#/ 
 </code></pre>
 <h3 id="example-query-the-example-modules-state-value"><a class="header" href="#example-query-the-example-modules-state-value">Example: Query the Example Module's state value:</a></h3>
@@ -281,7 +264,7 @@ npm install
 </code></pre>
 <h3 id="the-typescript-script-demonstrates-the-complete-transaction-flow"><a class="header" href="#the-typescript-script-demonstrates-the-complete-transaction-flow">The Typescript script demonstrates the complete transaction flow:</a></h3>
 <pre><code class="language-js">// 1. Initialize rollup client
-const rollup = await createStandardRollup({ // defaults to http://localhost:12346, or pass url: "custom-endpoint"
+const rollup = await createStandardRollup({ // defaults to http://localhost:12346, or pass url: "&lt;custom-endpoint&gt;"
   context: {
     defaultTxDetails: {
       max_priority_fee_bips: 0,
@@ -369,338 +352,791 @@ let setValueCall: RuntimeCall = {
   },
 };
 </code></pre>
-<p>This transaction would set the ExampleModule's state value to 10. Try setting the <a href="js/src/index.ts#L39">example file's call message</a> to the expression above and re-running the script. Then verify that the ExampleModule's value changed using <a href="getting-started.html#example-query-the-example-modules-state-value">the curl command</a> we showed earlier.</p>
+<p>This transaction would set the ExampleModule's state value to 10. Try setting the <a href="js/src/index.ts#L39">example file's call message</a> to the expression above and re-running the script. Then verify that the ExampleModule's value changed using <a href="2-getting-started.html#example-query-the-example-modules-state-value">the curl command</a> we showed earlier.</p>
 <p>This time, the curl command should return:</p>
 <pre><code class="language-bash">{"data":{"value":10},"meta":{}}
 </code></pre>
-<h3 id="learn-more"><a class="header" href="#learn-more">Learn more</a></h3>
-<p>To learn more about building with Sovereign SDK, experiment with the <a href="/crates/example-module/src/lib.rs">ExampleModule</a>. For a deeper understanding of the abstractions, see the <a href="https://docs.sovereign.xyz/rollup-devs/build-a-module.html">Building a module</a> section of the SDK book.</p>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="rollup-devs"><a class="header" href="#rollup-devs">Rollup Devs</a></h1>
-<p>The chapter will explain the key concepts needed to build your own rollup. It's
-divided into 3 sections:</p>
-<ul>
-<li><a href="build-a-module.html">Implementing your Business logic as a <code>Module</code></a></li>
-<li>Composing <code>Module</code>s to build a rollup</li>
-<li>Interacting with the chain (CLI, Snap, Rest APIs, RPC, Sequencer)</li>
-</ul>
-<!--
-TODO: cover
-
-- The `Module, ModuleInfo, BlockHooks, FinalizeHook, TxHooks, and Genesis`
-  traits, as well as `Events`, `State` storage/retrieval and `Gas`
-- The `TransactionAuthenticator` API and `HasCapabilities` , as well as the
-  capabilities themselves: `GasEnforcer`, `SequencerAuthorization`
-  `TransactionAuthorizer`, `ProofProcessor`, and `SequencerRemuneration` -->
+<h2 id="whats-next"><a class="header" href="#whats-next">What's Next?</a></h2>
+<p>You've now successfully launched a rollup, queried its state, and submitted a transaction. You've seen how the <code>bank</code> and <code>example_module</code> are just two components of a larger system.</p>
+<p>To truly make this rollup your own, you'll want to build custom logic. In the next chapter, "Writing Your Application," we'll dive deep into the heart of the Sovereign SDK and teach you how to implement your very own module from scratch.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="writing-your-application"><a class="header" href="#writing-your-application">Writing Your Application</a></h1>
+<p>At its core, a rollup is a specialized blockchain that processes transactions from a data availability (DA) layer. The logic that determines how your rollup behaves is defined by two key components: the <strong>runtime</strong> and its <strong>modules</strong>.</p>
+<p>The runtime is the orchestrator of your rollup. It receives serialized transactions from the DA layer, deserializes them, and routes them to the appropriate modules for execution. Think of it as the central nervous system that connects all your application logic together. The runtime defines which modules your rollup supports, how they interact with each other, and how the rollup's state is initialized at genesis.</p>
+<p>Modules, on the other hand, contain the actual business logic of your application. Each module manages its own state and defines the operations (called "call messages") that users can perform. For example, you might have a token module for handling transfers, a governance module for voting, or a custom trading module for your specific use case. When a user wants to interact with your rollup, they send a call message targeting a specific module, and the runtime ensures it gets delivered and executed atomically.</p>
+<p>The starter package already includes several production-ready modules like Bank (for token management), Sequencer Registry, Accounts, and Hyperlane (for cross-chain messaging). It also provides an Example Module that serves as a template you can modify.</p>
+<h3 id="lets-begin"><a class="header" href="#lets-begin">Let's Begin</a></h3>
+<p>With this context in mind, we're ready to start building. This chapter will guide you through the complete journey of application development on the Sovereign SDK, from creating your first module to enabling user interactions and exploring advanced features.</p>
+<p>Here is the path we'll take:</p>
+<ol>
+<li><a href="3-1-implementing-a-module.html"><strong>Implementing a Module:</strong></a> First, we'll define your module's state and business logic—the heart of your application.</li>
+<li><a href="3-2-testing-your-module.html"><strong>Testing Your Module:</strong></a> We'll then write robust tests to ensure your logic is correct and secure.</li>
+<li><a href="3-3-integrating-your-module.html"><strong>Integrating Your Module:</strong></a> Next, you'll learn how to add your finished module into a live rollup runtime.</li>
+<li><a href="3-4-signing-and-submitting-txs.html"><strong>Wallets and Accounts:</strong></a> With your module integrated, we'll explore how users can create accounts and sign transactions to interact with it.</li>
+<li><a href="3-5-advanced.html"><strong>Advanced Topics:</strong></a> From there, we'll dive into powerful features like hooks and custom APIs to extend your module's capabilities.</li>
+<li><a href="3-6-performance.html"><strong>Performance:</strong></a> You'll learn how to optimize your module for maximum throughput and efficiency.</li>
+<li><a href="3-7-prebuilt-modules.html"><strong>Prebuilt Modules:</strong></a> Finally, we'll review the rich ecosystem of existing modules you can leverage to accelerate your development.</li>
+</ol>
+<p>Let's dive in!</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="implementing-a-module"><a class="header" href="#implementing-a-module">Implementing a Module</a></h1>
-<p>A module is the basic unit of functionality in the Sovereign SDK. A module is a
-collection of values stored in state, and an optional <code>call</code> function which
-allows users to interact with that state onchain. Modules also provide custom
-API support and built-in indexing.</p>
-<p>In this section, we'll describe how to implement a module and take full
-advantage of the Sovereign SDKs builtin functionality.</p>
-<h2 id="the-module-struct"><a class="header" href="#the-module-struct">The Module Struct</a></h2>
-<p>A typical module definition looks like this.</p>
+<p>A module is the basic unit of functionality in the Sovereign SDK. It's a self-contained piece of onchain logic that manages its own state and defines how users can interact with it.</p>
+<p>The best way to learn how modules work is to build one. In this section, we'll create a simple but complete <code>ValueSetter</code> module from scratch. This module will allow a designated admin address to set a <code>u32</code> value in the rollup's state. After the walkthrough, we'll dive deeper into each of the concepts introduced.</p>
+<p>Think of this tutorial as your guide to the fundamental components of a module. Once you understand the concepts, we recommend starting your own module by copying the <a href="fix-link"><code>ExampleModule</code></a> provided in the starter repository. It has all the necessary dependencies and file structure pre-configured for you.</p>
+<h2 id="a-step-by-step-walkthrough-the-valuesetter-module"><a class="header" href="#a-step-by-step-walkthrough-the-valuesetter-module">A Step-by-Step Walkthrough: The <code>ValueSetter</code> Module</a></h2>
+<h3 id="1-defining-the-module-struct"><a class="header" href="#1-defining-the-module-struct">1. Defining the Module Struct</a></h3>
+<p>First, we define the module's structure and the state it will manage. This struct tells the SDK what data to store onchain.</p>
 <pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>#[derive(Clone, ModuleInfo, ModuleRestApi)]
-pub struct Example&lt;S: Spec&gt; {
-    /// The ID of the module.
+</span>use sov_modules_api::{Module, ModuleId, ModuleInfo, StateValue, Spec};
+
+// This is the struct that will represent our module.
+// It must derive `ModuleInfo` to be a valid module.
+#[derive(ModuleInfo)]
+pub struct ValueSetter&lt;S: Spec&gt; {
+    /// The `#[id]` attribute is required and uniquely identifies the module instance.
     #[id]
-    pub(crate) id: ModuleId,
+    pub id: ModuleId,
 
-    /// A reference to the Bank module, so that we can transfer tokens.
-    #[module]
-    pub(crate) bank: sov_bank::Bank&lt;S&gt;,
-
-	/// A mapping from addresses to users
+    /// The `#[state]` attribute marks a field as a state variable.
+    /// `StateValue` stores a single, typed value.
     #[state]
-    pub(crate) users: StateMap&lt;S::Address, User&lt;S&gt;&gt;,
+    pub value: StateValue&lt;u32&gt;,
+
+    /// We'll also store the address of the admin who is allowed to change the value.
+    /// S:Address is the address type of our rollup. More on `Spec` later.
+    #[state]
+    pub admin: StateValue&lt;S::Address&gt;,
 }
 <span class="boring">}</span></code></pre></pre>
-<p>There are a few things to notice in this snippet.</p>
-<h3 id="derived-traits"><a class="header" href="#derived-traits">Derived Traits</a></h3>
-<p>First, we derive the <code>ModuleInfo</code> and <code>ModuleRestApi</code> traits.</p>
+<h3 id="2-defining-types-for-the-module-trait"><a class="header" href="#2-defining-types-for-the-module-trait">2. Defining Types for the <code>Module</code> Trait</a></h3>
+<p>Next, we define the associated types required by the <code>Module</code> trait: its configuration, its callable methods, and its events.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Continuing in the same file...
+use sov_modules_api::{Context, macros::UniversalWallet};
+use serde::{Serialize, Deserialize};
+use borsh::{BorshSerialize, BorshDeserialize};
+
+// The configuration for our module at genesis. This will be deserialized from `genesis.json`.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub struct ValueSetterConfig&lt;S: Spec&gt; {
+    pub initial_value: u32,
+    pub admin: S::Address,
+}
+
+// The actions a user can take. Our module only supports one action: setting the value.
+// This `CallMessage` enum defines the module's public API.
+// Deriving these traits ensures it's portable and compatible with wallets and block explorers.
+#[derive(
+    BorshDeserialize,
+    BorshSerialize,
+    Serialize,
+    Deserialize,
+    schemars::JsonSchema,
+    UniversalWallet,
+    Clone,
+    Debug,
+    PartialEq,
+)]
+#[serde(rename_all = "snake_case")]
+pub enum CallMessage {
+    SetValue(u32),
+}
+
+// The event our module will emit after a successful action.
+#[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize, Debug, PartialEq)]
+#[serde(rename_all = "snake_case")]
+pub enum Event {
+    ValueChanged(u32),
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="3-implementing-the-module-trait-logic"><a class="header" href="#3-implementing-the-module-trait-logic">3. Implementing the <code>Module</code> Trait Logic</a></h3>
+<p>With our types defined, we can now implement the <code>Module</code> trait itself.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use anyhow::Result;
+use sov_modules_api::{GenesisState, TxState, EventEmitter, Error};
+
+// Now, we implement the `Module` trait.
+impl&lt;S: Spec&gt; Module for ValueSetter&lt;S&gt; {
+    type Spec = S;
+    type Config = ValueSetterConfig&lt;S&gt;;
+    type CallMessage = CallMessage;
+    type Event = Event;
+
+    // `genesis` is called once when the rollup is deployed to initialize the state.
+    fn genesis(&amp;mut self, _header: &amp;&lt;S::Da as sov_modules_api::DaSpec&gt;::BlockHeader, config: &amp;Self::Config, state: &amp;mut impl GenesisState&lt;S&gt;) -&gt; Result&lt;(), Error&gt; {
+        self.value.set(&amp;config.initial_value, state)
+            .map_err(Into::&lt;anyhow::Error&gt;::into)?;
+        self.admin.set(&amp;config.admin, state)
+            .map_err(Into::&lt;anyhow::Error&gt;::into)?;
+        Ok(())
+    }
+
+    // `call` is called when a user submits a transaction to the module.
+    fn call(&amp;mut self, msg: Self::CallMessage, context: &amp;Context&lt;S&gt;, state: &amp;mut impl TxState&lt;S&gt;) -&gt; Result&lt;(), Error&gt; {
+        match msg {
+            CallMessage::SetValue(new_value) =&gt; {
+                self.set_value(new_value, context, state)
+                    .map_err(Into::&lt;anyhow::Error&gt;::into)?;
+
+                Ok(())
+            }
+        }
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="4-writing-the-business-logic"><a class="header" href="#4-writing-the-business-logic">4. Writing the Business Logic</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>The final piece is to write the private set_value method containing our business logic.
+
+impl&lt;S: Spec&gt; ValueSetter&lt;S&gt; {
+    fn set_value(&amp;mut self, new_value: u32, context: &amp;Context&lt;S&gt;, state: &amp;mut impl TxState&lt;S&gt;) -&gt; Result&lt;()&gt; {
+        let admin = self.admin.get_or_err(state)??;
+
+        if &amp;admin != context.sender() {
+            return Err(anyhow::anyhow!("Only the admin can set the value.").into());
+        }
+
+        self.value.set(&amp;new_value, state)?;
+        self.emit_event(state, Event::ValueChanged(new_value));
+        Ok(())
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<p>With that, you've implemented a complete module! Now, let's break down the concepts we used in more detail.</p>
+<hr />
+<h2 id="anatomy-of-a-module-a-deeper-look"><a class="header" href="#anatomy-of-a-module-a-deeper-look">Anatomy of a Module: A Deeper Look</a></h2>
+<h3 id="derived-traits-moduleinfo-and-modulerestapi"><a class="header" href="#derived-traits-moduleinfo-and-modulerestapi">Derived Traits: <code>ModuleInfo</code> and <code>ModuleRestApi</code></a></h3>
 <p>You should always derive <code>ModuleInfo</code> on your module, since it does important
 work like laying out your state values in the database. If you forget to derive
 this trait, the SDK will throw a helpful error.</p>
-<p>The <code>ModuleRestApi</code> trait is optional but very useful. It tries to generate
-RESTful API endpoints for all of the <code>#[state]</code> items in your module. Each
-item's endpoint will have the name
-<code>{hostname}/modules/{module-name}/{field-name}/</code>, with all items automatically
-converted to <code>kebab-casing</code>. For example, you could query an item from the
-<code>known_sequencers</code> state value shown in the snippet above at the path
-<code>/modules/sequencer-registry/known-sequencers/{address}</code>.</p>
-<p>Note that <code>ModuleRestApi</code> can't always generate endpoints for you. If it can't
-figure out how to generate an endpoint for a particular state value, it will
-simply skip it by default. (Don't worry, you can always add endpoints manually
-if you need to! We'll cover this in the next section.). If you want to override
-the default behavior and throw a compiler error if endpoint generation fails,
-you can add the <code>#[rest_api(include)]</code> attribute on your state value like this:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>#[derive(Clone, ModuleInfo, ModuleRestApi)]
-pub struct Example&lt;S: Spec&gt; {
-    // Redundant code elided here...
-	#[rest_api(include)]
-    #[state]
-    pub(crate) users: StateMap&lt;S::Address, User&lt;S&gt;&gt;,
-}
-<span class="boring">}</span></code></pre></pre>
-<p>See the
-<a href="https://github.com/Sovereign-Labs/sovereign-sdk-wip/blob/1210acb5f5d8ca408ebaea40db3a75e5d2521491/crates/module-system/sov-modules-api/src/reexport_macros.rs#L387">documentation</a>
-on <code>ModuleRestApi</code> for more details.</p>
+<p>The <code>ModuleRestApi</code> trait is optional but highly recommended. It automatically generates RESTful API endpoints for the <code>#[state]</code> items in your module. Each item's endpoint will have the name <code>{hostname}/modules/{module-name}/{field-name}/</code>, with all items automatically converted to <code>kebab-casing</code>. For example, for the <code>value</code> field in our <code>ValueSetter</code> walkthrough, the SDK would generate an endpoint at the path <code>/modules/value-setter/value</code>.</p>
+<p>Note that <code>ModuleRestApi</code> can't always generate endpoints for you. If it can't figure out how to generate an endpoint for a particular state value, it will simply skip it by default. If you want to override this behavior and throw a compiler error if endpoint generation fails, you can add the <code>#[rest_api(include)]</code> attribute.</p>
 <h3 id="the-spec-generic"><a class="header" href="#the-spec-generic">The <code>Spec</code> Generic</a></h3>
-<p>Next, notice that the module is parameterized by <code>Spec</code> type. This paramter
-gives you access to a bunch of handy types and cryptographic traits that are
-used on the rollup. These includes the <code>Address</code> type used on the rollup, as
-well as information about the underlying DA layer, like its <code>Da::Address</code> type,
-<code>BlockHeader</code> type, and more. By being generic over the <code>Spec</code>, you ensure that
-you can easily change things like the <code>Address</code> format used by your module later
-on.</p>
-<p>See the
-<a href="https://github.com/Sovereign-Labs/sovereign-sdk-wip/blob/1210acb5f5d8ca408ebaea40db3a75e5d2521491/crates/module-system/sov-modules-api/src/module/spec.rs#L28-L29"><code>Spec</code> trait docs</a>
-for more details.</p>
-<h3 id="state-module-and-id-fields"><a class="header" href="#state-module-and-id-fields"><code>#[state]</code>, <code>#[module]</code>, and #[id] fields</a></h3>
-<p>Modules may have as many <code>#[state]</code> and <code>#[module]</code> fields as they wish, but
-they must have exactly one <code>#[id]</code>. The <code>ModuleInfo</code> macro will automatically
-generate a unique identifier for the module and store it in the <code>id</code> field.</p>
-<p><code>#[module]</code> fields are very straightforward. Adding a dependency on another
-module will allow your module to access any of it's public fields and/or public
-methods. The only downside is that any users of your module will also have to
-include the dependency in their rollup.</p>
-<p><code>#[state]</code> fields are the most interesting. They define the layout of the state
-that your module will store. There are three primary kinds of <code>#[state]</code>:
-<code>StateValue</code>s which store a single item, and <code>StateMap</code>s which store a mapping
-from keys to values, and <code>StateVec</code>s which store a series of elements, keyed by
-index.</p>
-<p>Each kind of state item accepts an optional <code>Codec</code> parameter, which determines
-how the state value is encoded and decoded for storage. By default, we use
-<code>Borsh</code> for everything, but the SDK also provides a <code>BcsCodec</code> which is
-compatible with the widely used <code>serde</code> library. If you want to store a type
-from a 3rd-party library in you module, you might need to specify the BcsCodec
-like this:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>use some_third_party_crate::SomeType;
-#[derive(Clone, ModuleInfo, ModuleRestApi)]
-pub struct MyModule&lt;S: Spec&gt; {
-    // Redundant code elided here...
-    #[state]
-    pub(crate) my_map: StateValue&lt;SomeType, BcsCoded&gt;,
-}
-<span class="boring">}</span></code></pre></pre>
-<p>Note that this is only necessary if the compiler warns you that the type doesn't
-suppor <code>BorshSerialize</code> or <code>BorshDeserialize</code>. If the compiler is happy, you
-don't need to override the default.</p>
-<p>The last important thing to note about state is that for each kind of item
-(<code>Value/Map/Vec</code>), we provide a corresponding <code>AccessoryState{Item}</code> type.
-Accessory state looks exactly like regular state, but it's <em>write only</em> during
-transaction execution. Items stored in accessory state can be queried via the
-API, but they don't have to be replicated by everybody running your rollup since
-transactions can't read their contents. This makes accessory state much more
-efficient than normal state for indexing and other off-chain tasks.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>use some_third_party_crate::SomeType;
-#[derive(Clone, ModuleInfo, ModuleRestApi)]
-pub struct MyModule&lt;S: Spec&gt; {
-    // Redundant code elided here...
-	/// Stores a record of the purchase history of users that can be queried from the API
-	/// but doesn't exist on-chain. This is much cheaper than maintaining the map on chain.
-    #[state]
-    pub(crate) token_buyers: AccessoryStateMap&lt;S::Address, Vec&lt;Price&gt;&gt;,
-}
-<span class="boring">}</span></code></pre></pre>
-<h2 id="module-trait-implementation"><a class="header" href="#module-trait-implementation">Module Trait Implementation</a></h2>
-<p>Once you've defined your module's state layout, you need a way for users to
-interact with it.</p>
-<p>That's where the <code>Module</code> trait comes in. This trait has two important methods,
-<code>genesis</code> and <code>call</code>. You can see a simplified version of the trait below:</p>
+<p>Modules are generic over a <code>Spec</code> type, which provides access to core rollup types. By being generic over the <code>Spec</code>, you ensure that you can easily change things like the <code>Address</code> format used by your module later on without rewriting your logic.</p>
+<p>Key types provided by <code>Spec</code> include:</p>
+<ul>
+<li><code>S::Address</code>: The address format used on the rollup.</li>
+<li><code>S::Da::Address</code>: The address format of the underlying Data Availability layer.</li>
+<li><code>S::Da::BlockHeader</code>: The block header type of the DA layer.</li>
+</ul>
+<h3 id="state-module-and-id-fields"><a class="header" href="#state-module-and-id-fields"><code>#[state]</code>, <code>#[module]</code>, and <code>#[id]</code> fields</a></h3>
+<ul>
+<li><strong><code>#[id]</code></strong>: Every module must have exactly one <code>#[id]</code> field. The <code>ModuleInfo</code> macro uses this to store the module's unique, auto-generated identifier.</li>
+<li><strong><code>#[module]</code></strong>:  This attribute declares a dependency on another module. For example, if our <code>ValueSetter</code> needed to pay a fee, we could add <code>#[module] pub bank: sov_bank::Bank&lt;S&gt;</code>, allowing us to call <code>self.bank.transfer(...)</code> in our logic.</li>
+<li><strong><code>#[state]</code></strong>: This attribute marks a field as a state variable that will be stored in the database.</li>
+</ul>
+<h3 id="state-types-in-depth"><a class="header" href="#state-types-in-depth">State Types In-Depth</a></h3>
+<p>The SDK provides several state types, each for a different use case:</p>
+<ul>
+<li><strong><code>StateValue&lt;T&gt;</code></strong>: Stores a single item of type T. We used this for <code>value</code> and <code>admin</code> variables.</li>
+<li><strong><code>StateMap&lt;K, V&gt;</code></strong>: Stores a key-value mapping.</li>
+<li><strong><code>StateVec&lt;T&gt;</code></strong>: Stores an ordered list of items, accessible by index.</li>
+</ul>
+<p>The generic types can be any deterministic Rust data structure, anything from a simple <code>u32</code> to a complex <code>BTreeMap</code>.</p>
+<p><strong>Accessory State</strong>: For each state type, there is a corresponding <code>AccessoryState*</code> variant (e.g., <code>AccessoryStateMap</code>). Accessory state is special: it can be read and written via the API, but it is <strong>write-only</strong> during a transaction. This makes it much cheaper to use for data that doesn't affect onchain logic, like indexing purchase histories for an off-chain frontend.</p>
+<p><strong>Codecs</strong>: By default, all state is serialized using Borsh. If you need to store a type from a third-party library that only supports serde, you can specify a different codec: StateValue&lt;ThirdPartyType, BcsCodec&gt;.</p>
+<h3 id="the-module-trait-and-its-methods"><a class="header" href="#the-module-trait-and-its-methods">The <code>Module</code> Trait and its Methods</a></h3>
+<p>The <code>Module</code> trait is the core of your application's onchain logic. The implementation you wrote in the walkthrough satisfies this trait's requirements.</p>
+<p>Let's look at a simplified version of the trait definition to understand its components:</p>
 <pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>trait Module {
-    /// The configuration needed to initialize the module.
+    /// The configuration needed to initialize the module, deserialized from `genesis.json`.
     type Config;
 
-    /// A module defined argument to the call method. This is usually an enum,
-    /// with  one variant for each action a user might take.
+    /// A module-defined enum representing the actions a user can take.
     type CallMessage: Debug + BorshSerialize + BorshDeserialize + Clone;
 
-    /// A module defined event resulting from a call method. Events invisible to on-chain
-    /// logic, but they're very useful for indexing.
+    /// A module-defined enum representing the events emitted by successful calls.
     type Event: Debug + BorshSerialize + BorshDeserialize + 'static + core::marker::Send;
 
-    /// Genesis is called once when a rollup is deployed.
+    /// `genesis` is called once when the rollup is deployed to initialize state.
     ///
-    /// You should use this function to initialize all of your module's `StateValue`s and run any other
-    /// one-time setup. Since this function runs only once, it's perfectly acceptible to do expensive operations
-    /// here. Note that your function should still be deterministic, however.
+    /// The logic here must be deterministic, but since it only runs once,
+    /// efficiency is not a primary concern.
     fn genesis(
-        &amp;self,
-        genesis_block_header: &amp;&lt;&lt;Self::Spec as Spec&gt;::Da as DaSpec&gt;::BlockHeader,
+        &amp;mut self,
+        genesis_rollup_header: &amp;&lt;&lt;Self::Spec as Spec&gt;::Da as DaSpec&gt;::BlockHeader,
         config: &amp;Self::Config,
         state: &amp;mut impl GenesisState&lt;Self::Spec&gt;,
-    ) -&gt; Result&lt;(), ModuleError&gt;;
+    ) -&gt; Result&lt;(), Error&gt;;
 
 
-    /// Call accepts a `CallMessage` and executes it, changing the state of the module and emitting events.
-    fn  call(&amp;self,
+    /// `call` accepts a `CallMessage` and executes it, changing the module's state.
+    fn call(
+        &amp;mut self,
         message: Self::CallMessage,
         context: &amp;Context&lt;Self::Spec&gt;,
         state: &amp;mut impl TxState&lt;Self::Spec&gt;,
-    ) -&gt; Result&lt;(), ModuleError&gt;;
+    ) -&gt; Result&lt;CallResponse, Error&gt;;
 }
 <span class="boring">}</span></code></pre></pre>
-<h3 id="genesis"><a class="header" href="#genesis">Genesis</a></h3>
-<p>As you might expect, the <code>genesis</code> function is called exactly once when the
-rollup is initialized. It lets the person deploying your module set any initial
-configuration and is responsible for making sure that any state values in your
-module are initialized (if necessary). Since <code>genesis</code> is only called once, you
-don't need to worry about efficiency. However, you do need to be careful not to
-do anything non-determinstic. That means no network requests, and no use of
-randomness!</p>
-<p>As you can see, the <code>genesis</code> function gets passed a user-defined <code>Config</code>
-value. As a module author, you can put anything you want here. Deployers of your
-rollup will need to instantiate the config at genesis, and you can use it to do
-initialization. If your module doesn't need configuring, you can juse use the
-empty type <code>()</code>.</p>
-<p><code>genesis</code> also accepts an argument which implements the <code>GenesisState</code> trait.
-This argument allows you to read and write to state values in your module and
-its dependencies. A typical genesis config definition and genesis function
-looklike this:</p>
+<h4 id="genesis"><a class="header" href="#genesis"><code>genesis</code></a></h4>
+<p>The <code>genesis</code> function is called once when the rollup is deployed. It uses the module's <code>Config</code> struct (defined as the associated <code>type Config</code>) to initialize the state. This <code>Config</code> is deserialized from the <code>genesis.json</code> file.</p>
+<h4 id="call"><a class="header" href="#call"><code>call</code></a></h4>
+<p>The <code>call</code> function provides the transaction processing logic. It accepts a structured <code>CallMessage</code> from a user and a <code>Context</code> containing metadata like the sender's address. If your <code>call</code> function returns an error, the SDK automatically reverts all state changes and discards any events, ensuring that transactions are atomic.</p>
+<p>You can define the <code>CallMessage</code> to be any type you wish, but an enum is usually best. Be sure to derive <code>borsh</code> and <code>serde</code> serialization, as well as <code>schemars::JsonSchema</code> and <code>UniversalWallet</code>. This ensures your <code>CallMessage</code> is portable across different languages and frontends.</p>
+<p><strong>A Note on Gas and Security</strong>: Just like Ethereum smart contracts, modules accept inputs that are pre-validated by the chain. Your call method does not need to worry about authenticating the transaction sender. The SDK also automatically meters gas for state accesses. You only need to manually charge gas (using <a href="fix-link"><code>Module::charge_gas(...)</code></a>) if your module performs heavy computation outside of state reads/writes.</p>
+<h3 id="events"><a class="header" href="#events">Events</a></h3>
+<p>Events are the primary way your module communicates with the outside world. They are structured data included in transaction receipts and are essential for:</p>
+<ul>
+<li>Querying via REST API.</li>
+<li>Streaming in real-time via WebSockets.</li>
+<li>Building off-chain indexers and databases.</li>
+</ul>
+<p><strong>Important</strong>: Events are only emitted when transactions succeed. If a transaction reverts, all its events are discarded. This makes events perfect for reliably indexing onchain state.</p>
+<h3 id="error-handling"><a class="header" href="#error-handling">Error Handling</a></h3>
+<p>Modules use <code>anyhow::Result</code> for error handling, providing rich context that helps both developers and users understand what went wrong.</p>
+<p>When your call method returns an Err, the SDK automatically reverts all state changes made during the transaction. This ensures that your module's logic is atomic.</p>
 <pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>// Adapter from the `SequencerRegistry` module
-pub struct SequencerConfig&lt;S: Spec&gt; {
-    /// The rollup address of the sequencer.
-    pub seq_rollup_address: S::Address,
-    /// The Data Availability (DA) address of the sequencer.
-    pub seq_da_address: &lt;S::Da as DaSpec&gt;::Address,
-    /// Initial sequencer bond
-    pub seq_bond: u128,
-}
+</span>use anyhow::{Context, Result};
 
-pub(crate) fn genesis(
-    &amp;self,
-    _genesis_rollup_header: &amp;&lt;&lt;S as Spec&gt;::Da as DaSpec&gt;::BlockHeader,
-    config: &amp;SequencerConfig,
-    state: &amp;mut impl GenesisState&lt;S&gt;,
-) -&gt; Result&lt;()&gt; {
-    self.register_staker(
-        &amp;config.seq_da_address,
-        Amount::new(config.seq_bond),
-        config.seq_rollup_address.clone(),
-        state,
-    )?;
-}
-<span class="boring">}</span></code></pre></pre>
-<h3 id="call"><a class="header" href="#call">Call</a></h3>
-<p>The <code>call</code> function provides the transaction processing logic for your module.
-It accepts a structured input from a user and a <code>Context</code> which contains
-metadata including the sender address. In response to a <code>call</code>, modules may
-update their state as well as emitting <code>Events</code> - structured key-value pairs
-which are returned to the user and can be queried over the REST API.</p>
-<p>If your call function returns an error, all of its state changes are
-automatically reverted and any events are discarded. However, any logs generated
-by the transaction will still be visible to the node operator. (More on
-<code>logging</code> later.)</p>
-<p>You can define the <code>CallMessage</code> accepted by your module to be any type you
-wish, but an enum is usually best. Be sure to implement <code>borsh</code> and <code>serde</code>
-serialization for your type, as well as <code>schemars::JsonSchema</code> and
-<code>sov_modules_macros::UniversalWallet</code>. This will ensure that it's maximally
-portable across languages and frontends, making it easy for users to securely
-generate, review, sign, and send transactions to your module.</p>
-<p>The <code>Bank</code> module provides a very typical example of a <code>call</code> implementation:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>fn call(&amp;self, msg: CallMessage, context: &amp;Context&lt;Self::Spec&gt;, state: &amp;mut impl TxState&lt;S&gt;)
--&gt; Result&lt;(), Error&gt; {
-    match msg {
-        call::CallMessage::Transfer { to, coins } =&gt; { Ok(self.do_transfer(context.sender(), &amp;to, &amp;coins.token_id, coins.amount, state)?) }
-        // Other variants omitted for brevity
+fn transfer(&amp;self, from: &amp;S::Address, amount: u64, state: &amp;mut impl TxState&lt;S&gt;) -&gt; Result&lt;()&gt; {
+    let balance = self.balances.get(from, state)?
+        .with_context(|| format!("Failed to read balance for sender {}", from))?
+        .unwrap_or(0);
+    
+    if balance &lt; amount {
+        return Err(anyhow::anyhow!("Insufficient balance: {} &lt; {}", balance, amount));
     }
-}
-
-fn do_transfer(&amp;self, from: S::Address, to: S::Address, token_id: &amp;TokenId, amount: Amount, state: &amp;mut impl StateAccessor) -&gt; anyhow::Result&lt;()&gt; {
-    if from == to || amount == 0{
-        return Ok(());
-    }
-    // Use a helper to compute the new `from` balance, throwing an error on insufficient funds
-    let new_from_balance = self.decrease_balance_checked(token_id, from, amount, state)?;
-
-    // Get the current `to` balance and compute the new one
-    // Note that the `get` function can return an error if the call runs out of gas
-    let current_to_balance = self
-        .balances
-        .get(&amp;(to, token_id), state)?
-        .unwrap_or(Amount::ZERO);
-    let to_balance = current_to_balance.checked_add(amount).with_context(|| {
-        format!(
-            "Account balance overflow for {} when adding {} to current balance {}",
-            to, amount, current_to_balance
-        )
-    })?;
-
-    // Update both balances and emit an event, reverting on error.
-    self.balances.set(&amp;(from, token_id), &amp;new_from_balance, state)?;
-    self.balances.set(&amp;(to, token_id), &amp;to_balance, state)?;
-    self.emit_event(
-        state,
-        Event::TokenTransferred {
-            from: sender.as_token_holder().into(),
-            to: to.into(),
-            coins,
-        },
-    );
+    // ...
     Ok(())
 }
-
 <span class="boring">}</span></code></pre></pre>
-<p>Just like Ethereum <code>smart contracts</code> and Solana <code>programs</code>, modules accept
-inputs that are pre-validated by the chain. That means your module does <em>not</em>
-need to worry about authenticating the transaction. In most cases, you also
-don't need to worry about manually metering resource consumption. The SDK will
-automatically charge gas for any state accesses and deduct the cost from the
-sender's balance. However, if your module does any very heavy computation you
-may need to meter that explicitly using the <code>Module::charge_gas</code> function.</p>
-<h2 id="optional-functionality---hooks"><a class="header" href="#optional-functionality---hooks">Optional Functionality - Hooks</a></h2>
-<p>In addition to <code>call</code> modules may <em>optionally</em> implement <code>Hooks</code>. Hooks run at
+<p>For more details on error handling patterns, see the <a href="3-5-advanced.html#error-handling">Advanced Topics</a> section.</p>
+<h3 id="next-step-ensuring-correctness"><a class="header" href="#next-step-ensuring-correctness">Next Step: Ensuring Correctness</a></h3>
+<p>You now have a deep understanding of how to define, implement, and structure a module. With this foundation, you're ready to test your module.</p>
+<p>In the next section, <strong>"Testing Your Module,"</strong> we'll show you how to use the SDK's powerful testing framework to write comprehensive tests for your new module.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="testing-your-module"><a class="header" href="#testing-your-module">Testing Your Module</a></h1>
+<p>Testing is crucial for building reliable modules. The SDK provides a comprehensive testing framework that makes it easy to write thorough tests for your modules.</p>
+<h2 id="test-infrastructure-overview"><a class="header" href="#test-infrastructure-overview">Test Infrastructure Overview</a></h2>
+<p>There are several key components for testing:</p>
+<ul>
+<li><strong>TestRunner</strong>: A stateful test harness that manages your runtime environment</li>
+<li><strong>TestUser</strong>: Test accounts with preconfigured balances</li>
+<li><strong>TransactionTestCase</strong>: A structured way to define test scenarios with assertions</li>
+<li><strong>Runtime Generation Macros</strong>: Automatically include all core modules</li>
+</ul>
+<h2 id="setting-up-your-test-environment"><a class="header" href="#setting-up-your-test-environment">Setting Up Your Test Environment</a></h2>
+<h3 id="1-create-your-test-runtime"><a class="header" href="#1-create-your-test-runtime">1. Create Your Test Runtime</a></h3>
+<p>The <code>generate_optimistic_runtime!</code> macro automatically includes all core modules (Bank, Accounts, SequencerRegistry, etc.), so you only need to add your custom modules:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use sov_test_utils::runtime::optimistic::generate_optimistic_runtime;
+
+// Your module's crate
+use your_module::YourModule;
+
+// Generate a runtime with core modules + your custom module
+generate_optimistic_runtime!(
+    TestRuntime &lt;=  // Your test runtime name
+    your_module: YourModule&lt;S&gt; // Your custom module
+);
+<span class="boring">}</span></code></pre></pre>
+<h3 id="2-define-your-genesis-configuration"><a class="header" href="#2-define-your-genesis-configuration">2. Define Your Genesis Configuration</a></h3>
+<p>Set up the initial state with test users:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use sov_test_utils::{HighLevelOptimisticGenesisConfig, TestRunner, TestUser};
+
+pub struct TestData&lt;S: Spec&gt; {
+    pub admin: TestUser&lt;S&gt;,
+    pub user1: TestUser&lt;S&gt;,
+    pub user2: TestUser&lt;S&gt;,
+}
+
+pub fn setup() -&gt; (TestData&lt;TestSpec&gt;, TestRunner&lt;TestRuntime, TestSpec&gt;) {
+    let genesis_config = HighLevelOptimisticGenesisConfig::generate()
+        .add_accounts_with_default_balance(3);
+    
+    let mut users = genesis_config.additional_accounts().to_vec();
+    let test_data = TestData {
+        user2: users.pop().unwrap(),
+        user1: users.pop().unwrap(),
+        admin: users.pop().unwrap(),
+    };
+    
+    let runner = TestRunner::new_with_genesis(/* ... */);
+    
+    (test_data, runner)
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="writing-your-first-test"><a class="header" href="#writing-your-first-test">Writing Your First Test</a></h2>
+<p>Here's a complete example testing a simple module operation:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[cfg(test)]
+mod tests {
+    use super::*;
+    use sov_test_utils::{TestRunner, TransactionTestCase};
+    
+    #[test]
+    fn test_module_operation() {
+        // Setup runner and get test user 
+        let (test_data, mut runner) = setup();
+        let user = &amp;test_data.user1;
+        
+        // Execute a transaction
+        runner.execute_transaction(TransactionTestCase {
+            input: user.create_plain_message::&lt;TestRuntime, YourModule&gt;(
+                CallMessage::SetValue { value: 42 }
+            ),
+            assert: Box::new(|result, state| {
+                // Verify the transaction succeeded
+                assert!(result.tx_receipt.is_successful());
+                
+                // Query and verify state
+                let current_value = YourModule::default()
+                    .get_value(state)
+                    .unwrap_infallible()  // State access can't fail in tests
+                    .unwrap();            // Handle the Option
+                assert_eq!(current_value, 42);
+            }),
+        });
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="running-your-tests"><a class="header" href="#running-your-tests">Running Your Tests</a></h2>
+<p>Execute your tests from your module's root directory using standard Rust commands:</p>
+<pre><code class="language-bash"># Navigate to your module directory 
+cd your-module/
+
+# Run all tests in your module
+cargo test
+
+# Run specific test
+cargo test test_module_operation
+
+# Run with output for debugging
+cargo test -- --nocapture
+</code></pre>
+<h2 id="testing-patterns"><a class="header" href="#testing-patterns">Testing Patterns</a></h2>
+<h3 id="1-error-scenario-testing"><a class="header" href="#1-error-scenario-testing">1. Error Scenario Testing</a></h3>
+<p>Test that your module handles errors correctly:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[test]
+fn test_insufficient_balance() {
+    let (test_data, mut runner) = setup();
+    let sender = &amp;test_data.user1;
+    let receiver = &amp;test_data.user2;
+    
+    runner.execute_transaction(TransactionTestCase {
+        input: sender.create_plain_message::&lt;TestRuntime, Bank&gt;(
+            CallMessage::Transfer {
+                to: receiver.address(),
+                coins: Coins { 
+                    amount: 999_999_999_999, // More than the sender has 
+                    token_id: config_gas_token_id() 
+                },
+            }
+        ),
+        assert: Box::new(|result, _state| {
+            // Verify the transaction reverted
+            assert!(result.tx_receipt.is_reverted());
+            
+            // Check the specific error message
+            if let TxEffect::Reverted(contents) = &amp;result.tx_receipt.tx_effect {
+                assert!(contents.reason.to_string().contains("Insufficient balance"));
+            }
+        }),
+    });
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="2-event-testing"><a class="header" href="#2-event-testing">2. Event Testing</a></h3>
+<p>Verify that your module emits the correct events. Note that the event enum name (e.g., <code>TestRuntimeEvent</code>) is automatically generated based on your runtime name.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[test]
+fn test_event_emission() {
+    let (test_data, mut runner) = setup();
+    let user = &amp;test_data.user1;
+    
+    runner.execute_transaction(TransactionTestCase {
+        input: user.create_plain_message::&lt;TestRuntime, YourModule&gt;(
+            CallMessage::CreateItem { name: "Test".into() }
+        ),
+        assert: Box::new(move |result, _state| {
+            assert!(result.tx_receipt.is_successful());
+            assert_eq!(result.events.len(), 1);
+            
+            assert_eq!(
+                result.events[0],
+                TestRuntimeEvent::YourModule(your_module::Event::ItemCreated {
+                    creator: user.address(),
+                    name: "Test".into()
+                })
+            );
+        }),
+    });
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="3-time-based-testing"><a class="header" href="#3-time-based-testing">3. Time-Based Testing</a></h3>
+<p>Test operations that depend on blockchain progression by advancing slots:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[test]
+fn test_time_delayed_operation() {
+    let (users, mut runner) = setup();
+
+    // 1. Initiate a time-locked operation (e.g., a vesting schedule)
+
+    // 2. Advance blockchain time
+    runner.advance_slots(100); // Advance 100 slots
+
+    // 3. Now, the second part of the operation should succeed
+    runner.execute_transaction(/* ... complete the operation ... */);
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="4-standalone-state-queries"><a class="header" href="#4-standalone-state-queries">4. Standalone State Queries</a></h3>
+<p>While you can query state within a transaction's assert block, you can also query the latest visible state at any point using <code>runner.query_visible_state</code>. This is useful for verifying the initial genesis state or checking state after non-transaction events like advancing slots. This can be useful if you especially have custom <a href="3-5-advanced.html#hooks"><code>hooks</code></a>:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[test]
+fn test_state_queries() {
+    let (test_data, mut runner) = setup();
+    let admin = &amp;test_data.admin;
+
+    // Query the initial genesis state before any transactions
+    runner.query_visible_state(|state| {
+        // Query a value from your module
+        let item_count = YourModule::&lt;S&gt;::default()
+            .get_item_count(state)
+            .unwrap_infallible()
+            .unwrap();
+        assert_eq!(item_count, 0);
+
+    });
+
+    // 2. Execute a transaction that changes state
+    runner.execute_transaction(TransactionTestCase {
+        input: admin.create_plain_message::&lt;TestRuntime, YourModule&gt;(
+            CallMessage::CreateItem { name: "Test".into() }
+        ),
+        assert: |result, _| assert!(result.tx_receipt.is_successful()),
+    });
+
+    // Query again to see the new state
+    runner.query_visible_state(|state| {
+        let item_count = YourModule::&lt;S&gt;::default()
+            .get_item_count(state)
+            .unwrap_infallible()
+            .unwrap();
+        assert_eq!(item_count, 1);
+    });
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="5-custom-module-genesis-configuration"><a class="header" href="#5-custom-module-genesis-configuration">5. Custom Module Genesis Configuration</a></h3>
+<p>If your module requires initialization parameters in genesis (like an admin address or initial values), you'll need to provide a custom configuration:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use sov_test_utils::{GenesisConfig};
+
+fn setup_with_config() -&gt; (TestUser&lt;TestSpec&gt;, TestRunner&lt;TestRuntime, TestSpec&gt;) {
+    let genesis_config = HighLevelOptimisticGenesisConfig::generate()
+        .add_accounts_with_default_balance(1);
+    
+    // Get the admin user
+    let admin = genesis_config
+        .additional_accounts()
+        .first()
+        .unwrap()
+        .clone();
+    
+    // Create genesis with your module's configuration
+    let genesis = GenesisConfig::from_minimal_config(
+        genesis_config.into(),
+        YourModuleConfig {
+            admin: admin.address(),
+            initial_value: 1000,
+            // Other module-specific parameters
+        },
+    );
+    
+    let runner = TestRunner::new_with_genesis(
+        genesis.into_genesis_params(),
+        TestRuntime::default()
+    );
+    
+    (admin, runner)
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="additional-resources"><a class="header" href="#additional-resources">Additional Resources</a></h2>
+<p>For more advanced testing scenarios, the <a href="fix-link-https://docs.rs/sov-test-utils"><code>sov-test-utils</code> crate</a> is your primary resource. It contains all the testing components covered in this guide and much more.</p>
+<p>We highly recommend exploring the documentation for the <strong><a href="fix-link-https://docs.rs/sov-test-utils/latest/sov_test_utils/runtime/struct.TestRunner.html"><code>TestRunner</code></a></strong> struct, which provides methods for more complex scenarios, including:</p>
+<ul>
+<li>Executing and asserting on batches of transactions.</li>
+<li>Querying historical state at specific block heights.</li>
+<li>Customizing gas and fee configurations.</li>
+<li>Running an integrated REST API server for off-chain testing.</li>
+</ul>
+<p>The <code>sov-test-utils</code> crate provides a comprehensive toolkit for testing every aspect of your module's behavior.</p>
+<h3 id="ready-for-primetime"><a class="header" href="#ready-for-primetime">Ready for Primetime</a></h3>
+<p>With a thoroughly tested module, you can be confident in your logic's correctness and robustness. It's now time to bring your module to life by integrating it into a live rollup runtime.</p>
+<p>In the next section, "Integrating Your Module," we'll guide you through adding your module to the Runtime struct, configuring its genesis state, and making it a live component of your application.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="adding-your-module-to-your-runtime"><a class="header" href="#adding-your-module-to-your-runtime">Adding Your Module to Your Runtime</a></h1>
+<p>Once you've built and tested your module, the final step is to integrate it into your rollup runtime. This section will walk you through the process of adding your module to a new rollup project based on our rollup starter template.</p>
+<h2 id="step-1-add-your-module-as-a-dependency"><a class="header" href="#step-1-add-your-module-as-a-dependency">Step 1: Add Your Module as a Dependency</a></h2>
+<p>First, add your module to the workspace dependencies in the root <code>Cargo.toml</code>:</p>
+<pre><code class="language-toml">[workspace.dependencies]
+# ... existing dependencies ...
+
+# Add your module here
+your-module = { path = "../path/to/your-module" }
+# Or if published:
+# your-module = { version = "0.1.0" }
+# Or if the module is available on Github:
+# your-module = { git = "https://github.com/your-github/your-module", rev = "dfd0624c32f5fb363c2190e9d911605663f7d693" }
+</code></pre>
+<p>Then add it to your STF crate's dependencies in <code>crates/stf/Cargo.toml</code> (where your <code>Runtime</code> is typically located in):</p>
+<pre><code class="language-toml">[dependencies]
+# ... existing dependencies ...
+
+your-module = { workspace = true }
+
+[features]
+default = []
+native = [
+    # ... existing native features ...
+    "your-module/native",
+]
+</code></pre>
+<h2 id="step-2-add-your-module-to-the-runtime-struct"><a class="header" href="#step-2-add-your-module-to-the-runtime-struct">Step 2: Add Your Module to the Runtime Struct</a></h2>
+<p>The central piece of your rollup's logic is the <a href="fix-link"><code>Runtime</code> struct</a>, usually found in <code>crates/stf/src/runtime.rs</code>. This struct lists all the modules that compose your rollup. To integrate your module, simply add it as a new field to this struct.</p>
+<p>The Runtime struct uses several derive macros (<code>#[derive(Genesis, DispatchCall, ...)]</code>) that automatically generate the boilerplate code for state initialization, transaction dispatching, and message encoding.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use your_module::YourModule;
+
+#[derive(Genesis, Hooks, DispatchCall, Event, MessageCodec, RuntimeRestApi)]
+pub struct Runtime&lt;S: Spec&gt; {
+    /// The bank module is responsible for managing tokens
+    pub bank: sov_bank::Bank&lt;S&gt;,
+    
+    /// The accounts module manages user accounts and addresses
+    pub accounts: sov_accounts::Accounts&lt;S&gt;,
+    
+    // ... other modules ...
+    
+    /// Your custom module
+    pub your_module: YourModule&lt;S&gt;,
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="step-3-configure-genesis-state"><a class="header" href="#step-3-configure-genesis-state">Step 3: Configure Genesis State</a></h2>
+<p>When your rollup is first launched, it populates its initial state from a <code>genesis.json</code> file. You need to tell the rollup how to initialize your module by adding a corresponding entry to this file.</p>
+<h3 id="understanding-genesisjson"><a class="header" href="#understanding-genesisjson">Understanding <code>genesis.json</code></a></h3>
+<p>The <code>genesis.json</code> is a simple key-value store where each key is the snake-case name of a module in your <code>Runtime</code> struct, and the value is the initial configuration for that module.</p>
+<p>When the rollup starts, it deserializes this JSON into your module's <code>Config</code> struct (which you define in your module) and passes it to your module's <code>genesis()</code> method.</p>
+<p>You will find this file in the root of your rollup project: <code>your-rollup/{DA_LAYER_NAME}/genesis.json</code>.</p>
+<h3 id="adding-your-modules-configuration"><a class="header" href="#adding-your-modules-configuration">Adding Your Module's Configuration</a></h3>
+<p>There are two cases:</p>
+<p><strong>1. Your Module Requires No Initial Configuration:</strong></p>
+<p>If your module's <code>Config</code> is an empty struct (e.g., <code>pub struct MyModuleConfig {}</code>) or can be created with <code>Default::default()</code>, you just need to add its name to <code>genesis.json</code> with an empty JSON object <code>{}</code>.</p>
+<pre><code class="language-json">// In your-rollup/genesis.json
+{
+  "bank": { ... },
+  "sequencer_registry": { ... },
+  "accounts": { ... },
+  "my_awesome_module": {}
+}
+</code></pre>
+<p><strong>2. Your Module Requires Initial Configuration:</strong></p>
+<p>If your module needs initial parameters (like an admin address or an initial value), you must provide them in the JSON object. The JSON fields must exactly match the fields of your module's <code>Config</code> struct.</p>
+<p>For example, if your module has this <code>Config</code> struct:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// In modules/my-awesome-module/src/lib.rs
+#[derive(serde::Deserialize, serde::Serialize)]
+pub struct MyAwesomeModuleConfig {
+    pub admin_address: S::Address,
+    pub initial_counter: u64,
+}
+<span class="boring">}</span></code></pre></pre>
+<p>Your <code>genesis.json</code> entry would look like this:</p>
+<pre><code class="language-json">// In your-rollup/genesis.json
+{
+  // ... other modules
+  "my_awesome_module": {
+    "admin_address": "0x633dD354F65261d7a64E10459508F8713a537149",
+    "initial_counter": 100
+  }
+}
+</code></pre>
+<h2 id="step-4-configure-rollup-constant"><a class="header" href="#step-4-configure-rollup-constant">Step 4: Configure Rollup Constant</a></h2>
+<p>The <code>constants.toml</code> file in your rollup's root directory allows you to configure chain-level parameters that don't change often. You should update this file to reflect your rollup's identity.</p>
+<pre><code class="language-toml"># Change these to make your chain unique
+CHAIN_ID = 12345  # Your unique chain ID
+CHAIN_NAME = "my-awesome-rollup"
+
+# Gas configuration
+GAS_TOKEN_NAME = "GAS"
+
+# Other compile time parameters...
+</code></pre>
+<p>These values are compiled into your rollup binary.</p>
+<h2 id="step-5-build-and-run"><a class="header" href="#step-5-build-and-run">Step 5: Build and Run</a></h2>
+<p>With everything configured, you can run your rollup with your module:</p>
+<pre><code class="language-bash"># Run the node
+cargo run --bin node
+</code></pre>
+<p>Your rollup is now operational! You can:</p>
+<ul>
+<li>Send transactions to your module</li>
+<li>Query its state via the REST API</li>
+<li>See events in transaction receipts</li>
+</ul>
+<h2 id="troubleshooting"><a class="header" href="#troubleshooting">Troubleshooting</a></h2>
+<h3 id="common-issues"><a class="header" href="#common-issues">Common Issues</a></h3>
+<p><strong>Module not found in genesis</strong></p>
+<ul>
+<li>Ensure the module name in <code>genesis.json</code> matches the field name in your Runtime struct</li>
+</ul>
+<p><strong>Serialization errors</strong></p>
+<ul>
+<li>Verify your genesis configuration matches your module's <code>Config</code> type</li>
+<li>Check that all addresses use the correct format (0x-prefixed hex)</li>
+</ul>
+<p><strong>Build errors</strong></p>
+<ul>
+<li>Ensure all feature flags are properly configured</li>
+<li>Check that your module exports all required types</li>
+</ul>
+<h3 id="your-module-is-live"><a class="header" href="#your-module-is-live">Your Module is Live!</a></h3>
+<p>Congratulations! Your module is now a fully integrated part of a running rollup. You have successfully navigated the complete development lifecycle, from implementation and testing to deployment on your local machine.</p>
+<p>You've built the core logic, but now the crucial question is: how do users actually interact with it? How do they create accounts, manage keys, and sign transactions to call your new module's methods?</p>
+<p>The next section, "Wallets and Accounts," will bridge this gap. We'll explore how to leverage the SDK's Ethereum-compatible account system and use client-side tooling to sign and submit transactions to your rollup, bringing your application to life for end-users.</p>
+<div style="break-before: page; page-break-before: always;"></div><h2 id="wallets-and-accounts"><a class="header" href="#wallets-and-accounts">Wallets and Accounts</a></h2>
+<p>Now that you've built, tested, and integrated your module, the final step is enabling users to interact with it. This section covers how accounts, wallets, and transaction signing work in the Sovereign SDK.</p>
+<p>The core design principle is <strong>Ethereum compatibility</strong>. Sovereign SDK rollups use standard Ethereum addresses and signatures (Secp256k1), which unlocks the vast Ethereum tooling ecosystem. However, there are important nuances to understand.</p>
+<h4 id="the-sovereign-sdk-transaction-type"><a class="header" href="#the-sovereign-sdk-transaction-type">The Sovereign SDK Transaction Type</a></h4>
+<p>A critical distinction to grasp is that while addresses and signatures are Ethereum-compatible, the <strong>transaction format itself is unique to your rollup</strong>. A Sovereign SDK rollup does not natively accept a raw, RLP-encoded Ethereum transaction.</p>
+<p>Instead, your rollup's <code>Runtime</code> defines a custom <code>RuntimeCall</code> enum, which represents all possible actions a user can take. When a user sends a transaction, they are essentially sending a serialized <code>RuntimeCall</code> message that has been signed with their Ethereum-compatible key.</p>
+<h4 id="signing-transactions-today-the-web3js-sdk--privy"><a class="header" href="#signing-transactions-today-the-web3js-sdk--privy">Signing Transactions Today: The <code>web3.js</code> SDK &amp; Privy</a></h4>
+<p>The primary way for users and developers to sign and submit these custom transactions today is through the Sovereign <code>web3.js</code> client library. This library provides two main signer implementations:</p>
+<p><strong>1. <code>Secp256k1Signer</code> (For Developers)</strong></p>
+<p>This is a straightforward signer for programmatic use, where you have direct access to a raw private key. It's perfect for scripting, backend services, or testing.</p>
+<pre><code class="language-ts">import { Secp256k1Signer } from "@sovereign-labs/signers";
+
+// Initialize with a raw private key
+const privKey = "0d87c12ea7c12024b3f70a26d735874608f17c8bce2b48e6fe87389310191264";
+const signer = new Secp256k1Signer(privKey);
+
+// Use the signer to send a transaction
+await rollup.call(myCallMessage, { signer });
+</code></pre>
+<p><strong>2. <code>PrivySigner</code> (For User-Facing Applications)</strong></p>
+<p>For most applications, asking users for a private key is not feasible or secure. This is where <strong>Privy</strong> comes in. Privy is a powerful wallet-as-a-service provider that allows users to create a non-custodial wallet using familiar Web2 logins like email or social accounts. They can also connect their existing wallets (like MetaMask or Phantom).</p>
+<p>The <code>sov-rollup-starter</code> repository includes a <a href="fix-link">full example of integrating the <code>PrivySigner</code></a>, making it the most realistic and user-friendly way to onboard users to your rollup today. It handles all the complexity of wallet creation and signing, allowing users to interact with your application seamlessly.</p>
+<h4 id="the-future-supporting-all-ethereum-wallets-by-leveraging-eip-712"><a class="header" href="#the-future-supporting-all-ethereum-wallets-by-leveraging-eip-712">The Future: Supporting All Ethereum Wallets by Leveraging EIP-712</a></h4>
+<p>While Privy provides an excellent experience, it is crucial to meet users where they're at and enable support for all existing Ethereum wallets (including hardware wallets). This will be enabled by implementing a new <strong>EIP-712 Authenticator</strong> for the Sovereign SDK runtime (which we hope to complete by August 24, 2025).</p>
+<p><strong>EIP-712</strong> is an Ethereum standard for signing typed, structured data. Instead of asking the user to sign a cryptic hash, EIP-712 allows wallets to display the transaction data in a human-readable, key-value format. This dramatically improves security and user experience, as users can see exactly what they are approving.</p>
+<p>For example, a signature request using EIP-712 would look like this in MetaMask:</p>
+<p><img src="/assets/message-signing.png" alt="A message signing request from Hyperliquid" /></p>
+<p>This upcoming feature, inspired by the pioneering work of Hyperliquid, will allow developers to support all Ethereum wallets.</p>
+<h3 id="next-steps-advanced-features"><a class="header" href="#next-steps-advanced-features">Next Steps: Advanced Features</a></h3>
+<p>You now have a complete picture of how to build a module and enable users to interact with it. From here, you can dive into the "Advanced Topics" to learn about hooks, custom APIs, and other powerful features that will allow you to build truly sophisticated onchain applications.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="advanced-topics"><a class="header" href="#advanced-topics">Advanced Topics</a></h1>
+<p>This section covers advanced module development features that go beyond basic functionality. While the core module implementation handles state management and transaction processing, you may need these additional capabilities for production use cases.</p>
+<p>All features in this section are optional. Start with the basic module implementation and add these capabilities as your requirements grow.</p>
+<h2 id="hooks"><a class="header" href="#hooks">Hooks</a></h2>
+<p>In addition to <code>call</code>, modules may <em>optionally</em> implement <code>Hooks</code>. Hooks can run at
 the begining and end of every rollup block and every transaction. <code>BlockHooks</code>
 are great for taking actions that need to happen before or after any
-transactions execute in a block - but be careful, no one pays for the
+transaction executes in a block - but be careful, no one pays for the
 computation done by <code>BlockHooks</code>, so doing any heavy computation can make your
 rollup vulnerable to DOS attacks.</p>
-<p><code>TxHooks</code> are useful for checking, or to allow your module to monitor actions
+<p><code>TxHooks</code> are useful for checking invariants, or to allow your module to monitor actions
 being taken by other modules. Unlike <code>BlockHooks</code>, <code>TxHooks</code> are paid for by the
 user who sent each transaction.</p>
 <p>The <code>FinalizeHook</code> is great for doing indexing. It can only modify
 <code>AccessoryState</code>, which makes it cheap to run but means that the results will
-only be visible via the API</p>
+only be visible via the API.</p>
 <p>Using the hooks is somewhat unusual - most applications only need to modify
 their state in response to user actions - but it's a powerful tool in some
 cases. See the documentation on
-<a href="https://github.com/Sovereign-Labs/sovereign-sdk-wip/blob/1210acb5f5d8ca408ebaea40db3a75e5d2521491/crates/module-system/sov-modules-api/src/hooks.rs#L76"><code>BlockHooks</code></a>
+<a href="fix-link/crates/module-system/sov-modules-api/src/hooks.rs#L76"><code>BlockHooks</code></a>
 and
-<a href="https://github.com/Sovereign-Labs/sovereign-sdk-wip/blob/1210acb5f5d8ca408ebaea40db3a75e5d2521491/crates/module-system/sov-modules-api/src/hooks.rs#L12"><code>TxHooks</code></a>
+<a href="fix-link/crates/module-system/sov-modules-api/src/hooks.rs#L12"><code>TxHooks</code></a>
 and
-<a href="https://github.com/Sovereign-Labs/sovereign-sdk-wip/blob/1210acb5f5d8ca408ebaea40db3a75e5d2521491/crates/module-system/sov-modules-api/src/hooks.rs#L120">`FinalizeHook</a>
+<a href="fix-link/crates/module-system/sov-modules-api/src/hooks.rs#L120"><code>FinalizeHook</code></a>
 more details.</p>
-<h2 id="advanced-functionalty---native-only-code"><a class="header" href="#advanced-functionalty---native-only-code">Advanced Functionalty - native only code</a></h2>
-<p>In this section, we'll describe more advanced functionality - adding custom
-APIs, supporting JSON-RPC, and instrumenting your code for debugging and
-optimization.</p>
-<p>Any code that you write following the guide in this section needs to be gated
-behind the <code>#[cfg(feature = "native")]</code> flag, which signals to the SDK that the
-code is not part of the module's state transition function and is not relevant
-to any questions about the rollup's current state. This means that it will be
-excluded from <code>zk-proof</code> generation (if the rollup is a <code>zk-rollup</code>) or
-challenges (if the rollup is optimistic).</p>
+<h2 id="error-handling-1"><a class="header" href="#error-handling-1">Error Handling</a></h2>
+<h3 id="when-to-panic-vs-return-errors"><a class="header" href="#when-to-panic-vs-return-errors">When to Panic vs Return Errors</a></h3>
+<p><strong>Panic when:</strong></p>
+<ul>
+<li>You encounter a bug that indicates broken invariants</li>
+<li>The error is unrecoverable and continuing would compromise state integrity</li>
+</ul>
+<p>When you panic, the rollup will shut down. This is correct for bugs that could corrupt your state.</p>
+<p><strong>Return errors when:</strong></p>
+<ul>
+<li>User input is invalid</li>
+<li>Business logic conditions aren't met (insufficient balance, unauthorized access, etc.)</li>
+<li>Any expected failure condition</li>
+</ul>
+<p>Transaction errors automatically revert all state changes.</p>
+<h3 id="writing-error-messages"><a class="header" href="#writing-error-messages">Writing Error Messages</a></h3>
+<p>Your error messages serve both end users and developers. Use <code>anyhow</code> with context to provide meaningful errors:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use anyhow::{Context, Result};
+
+fn transfer(&amp;self, from: &amp;S::Address, to: &amp;S::Address, token_id: &amp;TokenId, amount: u64, state: &amp;mut impl TxState&lt;S&gt;) -&gt; Result&lt;()&gt; {
+    let balance = self.balances
+        .get(&amp;(from, token_id), state)
+        .context("Failed to read sender balance")?
+        .unwrap_or(0);
+    
+    if balance &lt; amount {
+        // User-facing error message
+        return Err(anyhow::anyhow!("Insufficient balance: {} &lt; {}", balance, amount));
+    }
+    
+    let new_balance = balance - amount;
+    
+    // Add context for debugging when operations fail
+    self.balances
+        .set(&amp;(from, token_id), &amp;new_balance, state)
+        .with_context(|| format!("Failed to update balance for {} token {}", from, token_id))?;
+    
+    // ... rest of transfer logic
+    Ok(())
+}
+<span class="boring">}</span></code></pre></pre>
+<p>Transaction reverts are normal and expected - log them at <code>debug!</code> level if needed for debugging, not as warnings or errors.</p>
+<h2 id="native-only-code-and-custom-apis"><a class="header" href="#native-only-code-and-custom-apis">Native-Only Code and Custom APIs</a></h2>
+<p>Some functionality should only run natively on the full nodes, not in the zkVM during proof generation. This is a critical concept for separating verifiable on-chain logic from off-chain operational tooling.</p>
+<p>Any code that shouldn't be part of the state transition verification must be gated with <code>#[cfg(feature = "native")]</code>:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[cfg(feature = "native")]
+impl&lt;S: Spec&gt; MyModule&lt;S&gt; {
+    // This code only compiles natively, not in zkVM
+    pub fn debug_state(&amp;self, state: &amp;impl StateAccessor&lt;S&gt;) {
+        // ...
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<p>This ensures that your zk-proofs remain small and your on-chain logic remains deterministic. Common use cases for native-only code include:</p>
+<ul>
+<li>Custom REST APIs and RPC methods</li>
+<li>Metrics and logging integration</li>
+<li>Debugging tools</li>
+<li>Integrations with external services</li>
+</ul>
 <h3 id="adding-custom-rest-apis"><a class="header" href="#adding-custom-rest-apis">Adding Custom REST APIs</a></h3>
 <p>You can easily add custom APIs to your module by implementing the
 <code>HasCustomRestApi</code> trait. This trait has two methods - one which actually
-implements the routes, and an optional one which provides an <code>OpenApi</code> spec. YOu
+implements the routes, and an optional one which provides an <code>OpenApi</code> spec. You
 can see a good example in the <code>Bank</code> module:</p>
-<pre><code>impl&lt;S: Spec&gt; HasCustomRestApi for Bank&lt;S&gt; {
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span>#![cfg(feature = "native")]
+<span class="boring">fn main() {
+</span>impl&lt;S: Spec&gt; HasCustomRestApi for Bank&lt;S&gt; {
     type Spec = S;
 
     fn custom_rest_api(&amp;self, state: ApiState&lt;S&gt;) -&gt; axum::Router&lt;()&gt; {
@@ -734,7 +1170,7 @@ async fn route_balance(
 
     Ok(Coins { amount, token_id }.into())
 }
-</code></pre>
+<span class="boring">}</span></code></pre></pre>
 <p>REST API methods get access to an <code>ApiStateAccessor</code>. This special struct gives
 you access to both normal and <code>Accessory</code> state values. You can freely read and
 write to state during your API calls, which makes it easy to reuse code from the
@@ -756,9 +1192,10 @@ isn't a concern.</p>
 <p>To implement RPC methods, simply annotate an <code>impl</code> block on your module with
 the <code>#[rpc_gen(client, server)]</code> macro, and then write methods which accept an
 <code>ApiStateAcessor</code> as their final argument and return an <code>RpcResult</code>. You can see
-some examples in the <code>Evm</code> module.</p>
+some examples in the <a href="fix-link"><code>Evm</code> module</a>.</p>
 <pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
+</span>#![cfg(feature = "native")]
+<span class="boring">fn main() {
 </span>#[rpc_gen(client, server)]
 impl&lt;S: Spec&gt; Evm&lt;S&gt; {
     /// Handler for `net_version`
@@ -778,132 +1215,433 @@ impl&lt;S: Spec&gt; Evm&lt;S&gt; {
     }
 }
 <span class="boring">}</span></code></pre></pre>
-<h2 id="operationalizing"><a class="header" href="#operationalizing">Operationalizing</a></h2>
-<p>In this section, we'll describe how to reason about and measure your module's
-performance.</p>
-<h3 id="understanding-performance"><a class="header" href="#understanding-performance">Understanding Performance</a></h3>
-<p><strong>State Access</strong></p>
-<p>The vast majority of the cost of executing a Sovereign SDK transaction comes
-from state accesses. When call <code>item.set(&amp;value)</code>, the SDK serializes your value
-and stores the bytes in cache. When time you access a value using <code>item.get()</code>,
-the SDK deserializes a fresch copy of your value from the bytes held in cache,
-falling back to disk if necessary.</p>
-<p>Each time you access a value that's not in cache, the SDK has to generate a
-merkle proof of the value, which it will consume when it's time to generate a
-zero-knowledge proof. Similarly, each time you write a new value, the SDK has to
-generate a merkle update proof. This makes reading/writing to a <code>hot</code> value, at
-least an order of magnitude cheaper than writing to a <code>cold</code> one (where <code>hot</code>
-means that the value has already been accessed in the current block.) So, if you
-have state items that are frequently accessed together, it's a good idea to
-bundle them into a single <code>StateValue</code> or store them under the same key in a
-<code>StateMap</code>.</p>
-<p>As a rule of thumb, for each 10% locality, you should be willing to add an extra
-200 bytes to your <code>StateValue</code>. In other words, if two values are accessed
-together 30% of the time, you should put them together unless either of the
-state items is bigger than 600 bytes. (Exception: If two items are always
-accessed together, you should always group them together - no questions asked).</p>
-<p><strong>Cryptography</strong></p>
-<p>The other common source of performance woes is heavy-duty cryptography. If you
-need to do any cryptographic operations, check whether the <code>Spec</code> trait provides
-a method in its <code>Spec::CryptoSpec</code> that already does what you want. If it does,
-use that - the SDK will ensure you get an implementation which is optimized for
-the SDK's peculiar requirements. If you need access to more exotic cryptography,
-you can use pretty much any existing Rust library - but be aware that the
-performance penalty might be severe when it comes time to prove your module's
-execution, which could limit your total throughput. If you do need advanced
-cryptography, you may need to pick an implementation that's suited to a
-particular <code>ZKVM</code> (like <code>SP1</code> or <code>Risc0</code>) and only use that vm with your module.</p>
-<h3 id="instrumenting-your-module"><a class="header" href="#instrumenting-your-module">Instrumenting Your Module</a></h3>
-<p>TODO</p>
+<h3 id="mastering-your-module"><a class="header" href="#mastering-your-module">Mastering Your Module</a></h3>
+<p>By leveraging Hooks, robust error handling, and custom APIs, you can build sophisticated, production-grade modules that are both powerful and easy to operate.</p>
+<p>With a deep understanding of module implementation, you may next want to optimize your rollup's performance. The next section on "Understanding Performance" will dive into state access patterns and cryptographic considerations that can significantly impact your application's throughput.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="understanding-performance"><a class="header" href="#understanding-performance">Understanding Performance</a></h1>
+<h3 id="state-access"><a class="header" href="#state-access">State Access</a></h3>
+<p>The vast majority of the cost of executing a Sovereign SDK transaction comes from state accesses. When calling <code>item.set(&amp;value)</code>, the SDK serializes your value and stores the bytes in cache. When time you access a value using <code>item.get()</code>, the SDK deserializes a fresh copy of your value from the bytes held in cache, falling back to disk if necessary.</p>
+<p>Each time you access a value that's not in cache, the SDK has to generate a merkle proof of the value, which it will consume when it's time to generate a zero-knowledge proof. Similarly, each time you write a new value, the SDK has to generate a merkle update proof. This makes reading/writing to a <code>hot</code> value at least an order of magnitude cheaper than writing to a <code>cold</code> one (where <code>hot</code> means that the value has already been accessed in the current block.) So, if you have state items that are frequently accessed together, it's a good idea to bundle them into a single <code>StateValue</code> or store them under the same key in a <code>StateMap</code>.</p>
+<p>As a rule of thumb, for each 10% locality, you should be willing to add an extra 200 bytes to your <code>StateValue</code>. In other words, if two values are accessed together 30% of the time, you should put them together unless either of the state items is bigger than 600 bytes. (Exception: If two items are always accessed together, you should always group them together - no questions asked).</p>
+<h3 id="cryptography"><a class="header" href="#cryptography">Cryptography</a></h3>
+<p>The other common source of performance woes is heavy-duty cryptography. If you need to do any cryptographic operations, check whether the <code>Spec</code> trait provides a method in its <code>Spec::CryptoSpec</code> that already does what you want. If it does, use that - the SDK will ensure you get an implementation which is optimized for the SDK's peculiar requirements. If you need access to more exotic cryptography, you can use pretty much any existing Rust library - but be aware that the performance penalty might be severe when it comes time to prove your module's execution, which could limit your total throughput. If you do need advanced cryptography, you may need to pick an implementation that's suited to a particular <code>ZKVM</code> (like <code>SP1</code> or <code>Risc0</code>) and only use that vm with your module.</p>
+<h3 id="building-for-scale"><a class="header" href="#building-for-scale">Building for Scale</a></h3>
+<p>By keeping these performance principles in mind, bundling hot state and using optimized cryptography, you can design your modules to be highly efficient, ensuring your rollup can scale to meet user demand.</p>
+<p>While building custom logic is powerful, you don't always have to start from scratch. The Sovereign SDK comes with a rich set of "Prebuilt Modules" for common tasks like token management, bridging, and sequencer orchestration. The next section provides an overview of these modules, which you can leverage to accelerate your development.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="prebuilt-modules"><a class="header" href="#prebuilt-modules">Prebuilt Modules</a></h1>
+<p>Here's a comprehensive list of all existing modules:</p>
+<h3 id="user-facing"><a class="header" href="#user-facing">User Facing</a></h3>
+<p><a href="fix-link"><strong>sov-bank</strong></a> - Token management module for
+creating, transferring, and burning tokens
+with unique addresses and names</p>
+<p><a href="fix-link"><strong>sov-chain-state</strong></a> - Provides access to
+blockchain state including block height, hash,
+and general chain information</p>
+<p><a href="fix-link"><strong>sov-paymaster</strong></a> - Enables third-party gas
+sponsorship with per-sequencer payer
+configuration, so that users don't need any gas
+tokens to start transacting on your rollup</p>
+<p><a href="fix-link"><strong>sov-evm</strong></a> - EVM compatibility layer that
+processes RLP-encoded Ethereum transactions
+and provides standard Ethereum endpoints</p>
+<p><a href="fix-link"><strong>sov-svm</strong></a> - SVM compatibility layer that
+processes Solana transactions
+and provides standard Solana endpoints (built &amp; maintained by the <a href="https://www.termina.technology/">Termina</a> team)</p>
+<h3 id="bridging"><a class="header" href="#bridging">Bridging</a></h3>
+<p><a href="fix-link"><strong>sov-hyperlane-mailbox</strong></a> - All five of these modules are
+part of the Hyperlane (bridging) integration. They enable
+any Sovereign SDK rollup to bridge messages and tokens from
+any EVM, SVM or Cosmos SDK chain.</p>
 <ul>
-<li>Metrics</li>
-<li>Logging/traces</li>
+<li><a href="fix-link"><strong>Mailbox</strong></a>: Sends and receives cross-chain
+messages</li>
+<li><a href="fix-link"><strong>MerkleTreeHook</strong></a>: Computes merkle root of
+sent messages</li>
+<li><a href="fix-link"><strong>InterchainGasPaymaster</strong></a>: Handles
+cross-chain fee payments to relayers</li>
+<li><a href="fix-link"><strong>Warp</strong></a>: Enables interchain token transfers
+<ul>
+<li>Supports validator announcements and
+multisig ISMs</li>
 </ul>
-<pre><code>
-</code></pre>
-<div style="break-before: page; page-break-before: always;"></div><h2 id="gas-overview-and-blessed-values"><a class="header" href="#gas-overview-and-blessed-values">Gas overview and blessed values</a></h2>
-<p>Sovereign's SDK transactions should specify gas parameters in a similar way to
-Ethereum. When submitting a transaction, you need to specify a handful of gas
-parameters (that are stored in a structure called <code>TxDetails</code>) that depend on
-the rollup settings but also on the type of call message to execute. We also
-have to make sure that the sender holds enough gas tokens in its bank balance to
-make sure that the transaction is not rejected due to insufficient funds.
-Finally, sequencers need to stake enough tokens to pay for the transaction
-pre-execution checks (like signature verification, deserialization, etc.).</p>
-<p>This can be quite overwhelming at first glance, hence we provide here a quick
-summary of the gas parameters with their respective blessed values (this should
-be enough to execute most transactions that are not compute/storage intensive),</p>
-<p>First, let's look at the gas parameters that are required to submit a
-transaction (in the <code>TxDetails</code> structure):</p>
+</li>
+</ul>
+<h3 id="core"><a class="header" href="#core">Core</a></h3>
+<p><a href="fix-link"><strong>sov-accounts</strong></a> - Account management system
+that automatically creates addresses for
+first-time senders and manages
+credential-to-address mappings</p>
+<p><a href="fix-link"><strong>sov-uniqueness</strong></a> - Transaction deduplication
+logic using either nonce-based (Ethereum-style) or
+generation-based methods (for low-latency applications)</p>
+<p><a href="fix-link"><strong>sov-blob-storage</strong></a> - Deferred blob storage
+system implementing the BlobSelector rollup
+capability (which enables soft-confirmations
+without losing censorship resistance)</p>
+<h3 id="incentive--economics"><a class="header" href="#incentive--economics">Incentive &amp; Economics</a></h3>
+<p><a href="fix-link"><strong>sov-attester-incentives</strong></a> - Complete
+attestation/challenge verification workflow
+with bonding and rewards for optimistic
+rollups</p>
+<p><a href="fix-link"><strong>sov-prover-incentives</strong></a> - Prover
+registration, proof validation, slashing, and
+rewards distribution</p>
+<p><a href="fix-link"><strong>sov-sequencer-registry</strong></a> - Manages sequencer
+registration, slashing, and rewards</p>
+<p><a href="fix-link"><strong>sov-revenue-share</strong></a> - Manages automated revenue sharing</p>
+<h3 id="development--testing"><a class="header" href="#development--testing">Development &amp; Testing</a></h3>
+<p><a href="fix-link"><strong>sov-synthetic-load</strong></a> - Load testing module
+exposing heavy transaction types for
+performance testing</p>
+<p><a href="fix-link"><strong>sov-value-setter</strong></a> - Simple testing module
+for storing and retrieving a single value</p>
+<p><a href="fix-link"><strong>module-template</strong></a> - Starter template
+demonstrating proper module structure with
+state-changing methods and queries</p>
+<h3 id="standing-on-the-shoulders-of-giants"><a class="header" href="#standing-on-the-shoulders-of-giants">Standing on the Shoulders of Giants</a></h3>
+<p>Leveraging these prebuilt modules can save you significant development time and effort, allowing you to focus on your application's unique business logic. You've now completed the "Writing Your Application" chapter and have a comprehensive understanding of how to build, test, and deploy powerful rollups.</p>
+<p>The next major part of our book, "Instrumenting Your Rollup," will shift focus from development to operations, teaching you how to monitor your running rollup using metrics and structured logging.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="instrumenting-your-rollup"><a class="header" href="#instrumenting-your-rollup">Instrumenting Your Rollup</a></h1>
+<p>Proper instrumentation is essential for monitoring, debugging, and optimizing your rollup in production. The Sovereign SDK provides comprehensive observability tools that help you understand your rollup's behavior and performance.</p>
+<p>This section covers:</p>
+<ul>
+<li><strong><a href="/instrumenting/metrics.html">Metrics</a></strong> - Track performance indicators and business metrics</li>
+<li><strong><a href="/instrumenting/logging.html">Logging</a></strong> - Debug and monitor your rollup's execution</li>
+</ul>
+<p>[TODO: Insert section on spinning up Grafana dashboards to monitor your rollup seamlessly]</p>
+<h2 id="important-native-only-features"><a class="header" href="#important-native-only-features">Important: Native-Only Features</a></h2>
+<p>All instrumentation code must be gated with <code>#[cfg(feature = "native")]</code> to ensure it only runs on full nodes, not in the zkVM during proof generation. This allows you to instrument generously without affecting proof generation performance.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="metrics"><a class="header" href="#metrics">Metrics</a></h1>
+<p>The SDK includes a custom metrics system called <a href="fix-link"><code>sov-metrics</code></a> designed specifically for rollup monitoring. It uses the <a href="https://docs.influxdata.com/influxdb/cloud/reference/syntax/line-protocol/">Telegraf line protocol</a> format and integrates with Telegraf through socket listeners for efficient data collection. Metrics are automatically timestamped and sent to your configured Telegraf endpoint, which typically forwards them to InfluxDB for storage and Grafana for visualization. Metrics can only be tracked in <strong>native mode</strong> (not in zkVM).</p>
+<p><strong>Important</strong>: Metrics are emitted immediately when tracked and are NOT rolled back if a transaction reverts. This means failed transactions will still have their metrics recorded, which can be useful for debugging and monitoring error rates.</p>
+<h2 id="basic-example"><a class="header" href="#basic-example">Basic Example</a></h2>
 <pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use sov_modules_api::Spec;
-use sov_modules_api::transaction::PriorityFeeBips;
+</span>#[cfg(feature = "native")]
+use sov_metrics::{track_metrics, start_timer, save_elapsed};
 
-/// Contains details related to fees and gas handling.
-pub struct TxDetails&lt;S: Spec&gt; {
-    /// The maximum priority fee that can be paid for this transaction expressed as a basis point percentage of the gas consumed by the transaction.
-    /// Ie if the transaction has consumed `100` gas tokens, and the priority fee is set to `100_000` (10%), the
-    /// gas tip will be `10` tokens.
-    pub max_priority_fee_bips: PriorityFeeBips,
-    /// The maximum fee that can be paid for this transaction expressed as a the gas token amount
-    pub max_fee: u64,
-    /// The gas limit of the transaction.
-    /// This is an optional field that can be used to provide a limit of the gas usage of the transaction
-    /// across the different gas dimensions. If provided, this quantity will be used along
-    /// with the current gas price (`gas_limit *_scalar gas_price`) to compute the transaction fee and compare it to the `max_fee`.
-    /// If the scalar product of the gas limit and the gas price is greater than the `max_fee`, the transaction will be rejected.
-    /// Then up to `gas_limit *_scalar gas_price` gas tokens can be spent on gas execution in the transaction execution - if the
-    /// transaction spends more than that amount, it will run out of gas and be reverted.
-    pub gas_limit: Option&lt;S::Gas&gt;,
-    /// The ID of the target chain.
-    pub chain_id: u64,
+impl&lt;S: Spec&gt; MyModule&lt;S&gt; {
+    fn process_batch(&amp;self, items: Vec&lt;Item&gt;) -&gt; Result&lt;()&gt; {
+        // Time the operation using the provided macros
+        start_timer!(batch_timer);
+            
+        for item in items {
+            self.process_item(item)?;
+        }
+            
+        save_elapsed!(elapsed SINCE batch_timer);
+
+        #[cfg(feature = "native")] 
+        {
+            // Track batch size
+            track_metrics(|tracker| {
+                tracker.submit_inline(
+                    "mymodule_batch_size",
+                    format!("items={}", items.len()),
+                );
+            });
+            
+            // Track processing time
+            track_metrics(|tracker| {
+                tracker.submit_inline(
+                    "mymodule_batch_processing_time",
+                    format!("duration_ms={}", elapsed.as_millis()),
+                );
+            });
+        }
+        
+        Ok(())
+    }
 }
 <span class="boring">}</span></code></pre></pre>
+<h2 id="tracking-custom-metrics"><a class="header" href="#tracking-custom-metrics">Tracking Custom Metrics</a></h2>
+<p>To track custom metrics, implement the <code>Metric</code> trait:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Implement your custom metric in a file of your own choosing...
+#![cfg(feature = "native")]
+use sov_metrics::Metric;
+use sov_metrics::{track_metrics, start_timer, save_elapsed};
+use std::io::Write;
+
+#[derive(Debug)]
+struct TransferMetric {
+    from: String,
+    to: String,
+    token_id: TokenId,
+    amount: u64,
+    duration_ms: u64,
+}
+
+impl Metric for TransferMetric {
+    fn measurement_name(&amp;self) -&gt; &amp;'static str {
+        "mymodule_transfers"
+    }
+    
+    fn serialize_for_telegraf(&amp;self, buffer: &amp;mut Vec&lt;u8&gt;) -&gt; std::io::Result&lt;()&gt; {
+        // Format: measurement_name,tag1=value1,tag2=value2 field1=value1,field2=value2
+        write!(
+            buffer,
+            "{},from={},to={},token_id={} amount={},duration_ms={}",
+            self.measurement_name(),
+            self.from,
+            self.to,
+            self.token_id,
+            self.amount,
+            self.duration_ms
+        )
+    }
+}
+
+// In your module file...
+#[cfg(feature = "native")]
+use sov_metrics::{track_metrics, start_timer, save_elapsed};
+#[cfg(feature = "native")]
+use my_custom_metrics::TransferMetric;
+
+// Adapted from Bank module 
+impl&lt;S: Spec&gt; Bank&lt;S&gt; {
+    fn transfer(&amp;self, from: &amp;S::Address, to: &amp;S::Address, token_id: &amp;TokenId, amount: u64, state: &amp;mut impl TxState&lt;S&gt;) -&gt; Result&lt;()&gt; {
+
+        start_timer!(transfer_timer);
+        
+        // Perform the transfer
+        self.do_transfer(from, to, token_id, amount, state)?;
+        
+        save_elapsed!(elapsed SINCE transfer_timer);
+        
+        #[cfg(feature = "native")]
+        {
+            // Track your custom metric
+            track_metrics(|tracker| {
+                tracker.submit_metric(TransferMetric {
+                    from: from.to_string(),
+                    to: to.to_string(),
+                    token_id: token_id.clone(),
+                    amount,
+                    duration_ms: elapsed.as_millis() as u64,
+                });
+            });
+        }
+        
+        Ok(())
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="best-practices"><a class="header" href="#best-practices">Best Practices</a></h2>
+<p>Note: While the SDK provides comprehensive metrics infrastructure, individual modules in the SDK don't currently use metrics directly. Most metrics are tracked at the system level (runner, sequencer, state transitions). The examples here show how you <em>could</em> add metrics to your custom modules.</p>
+<ol>
+<li><strong>Always gate with <code>#[cfg(feature = "native")]</code></strong> - Metrics are not available in zkVM</li>
+<li><strong>Use meaningful measurement names</strong>
 <ul>
-<li>The <code>max_fee</code> parameter is the maximum amount of gas expressed in gas tokens
-that can be charged for the transaction execution.</li>
-<li>The <code>max_priority_fee</code> parameter is the maximum percentage (expressed in basis
-points) of the total gas consumed by the transaction execution that should be
-paid to reward the sequencer. This parameter can have any value because there
-is a safety mechanism that prevents the user from paying more than the
-<code>max_fee</code> in total.</li>
-<li>The <code>gas_limit</code> parameter is the maximum amount of gas (expressed in
-multidimensional gas units) that can be consumed by the transaction execution.
-This parameter is optional and can be left unspecified. In the future, we will
-add support for automatically computing this parameter from transaction
-simulation.</li>
-<li>The <code>user_balance</code> parameter is the balance of the sender's account (for the
-gas token) in the rollup's bank.</li>
-<li>The <code>sequencer_balance</code> parameter is the balance of the sequencer's account
-(for the gas token) in the rollup's bank.</li>
-<li>The <code>sequencer_stake</code> parameter is the staked amount of the sequencer in the
-<code>sequencer_registry</code> module.</li>
+<li>A lot of the packages that Sovereign SDK runs under the hood emit metrics.
+To make it easy to discern that the metrics come from a Sovereign SDK component, we
+follow the pattern of <code>sov_</code> in our metric names. We recommend following the
+pattern <code>sov_user_module_name_metric_type</code> so that it's easy to discern user level
+metric types.</li>
 </ul>
-<p><em>Blessed gas parameters:</em></p>
-<div class="table-wrapper"><table><thead><tr><th>Parameter</th><th>Value</th></tr></thead><tbody>
-<tr><td>max_fee</td><td>100_000_000</td></tr>
-<tr><td>max_priority_fee</td><td>any (50_000 is a reasonable choice)</td></tr>
-<tr><td>gas_limit</td><td>None</td></tr>
-<tr><td>user_balance</td><td>1_000_000_000</td></tr>
-<tr><td>sequencer_balance</td><td>1_000_000_000</td></tr>
-<tr><td>sequencer_stake</td><td>100_000_000</td></tr>
-</tbody></table>
-</div>
-<p>Note also that:</p>
+</li>
+<li><strong>Separate tags and fields properly</strong>:
 <ul>
-<li>The <code>base_fee_per_gas</code> parameter (whose initial value <code>INITIAL_GAS_LIMIT</code> is
-set by the rollup in the <code>constants.toml</code>) roughtly corresponds to the
-rollup's gas price and is an internal parameter of the rollup.</li>
-<li>A batch can consume up to <code>INITIAL_GAS_LIMIT</code> gas units of gas, and the gas
-target is <code>1/ELASTICITY_MULTIPLIER</code> times that value (for each dimension).</li>
-<li>The <code>base_fee_per_gas</code> is dynamically adjusted based on the gas consumption of
-the batch. The adjustment follows the EIP-1559 which makes it goes down if the
-batch consumes more gas than the target (and respectively up if the batch
-consumes less gas than the target).</li>
+<li><a href="https://docs.influxdata.com/influxdb/cloud/reference/syntax/line-protocol/#elements-of-line-protocol">Telegraf line protocol discerns between Tags and Fields by separating them with a single whitespace</a>. Make sure to write your metrics accordingly.</li>
+<li>Tags: Categorical values for filtering (types, status, enum variants), both their keys and values can only be strings</li>
+<li>Fields: Numerical values you want to aggregate (counts, durations, amounts), their keys can be strings, and values can be one of: floats, integers, unsigned integers, strings, and booleans</li>
 </ul>
-<p>The <a href="rollup-devs/../sdk-contributors/gas.html">gas specification</a> provides a detailed
-description of the gas mechanisms used within the SDK.</p>
+</li>
+<li><strong>Track business-critical metrics</strong>:
+<ul>
+<li>Transaction volumes and types</li>
+<li>Processing times for key operations</li>
+<li>Error rates and types</li>
+</ul>
+</li>
+<li><strong>Avoid high-cardinality tags</strong> - Don't use unique identifiers like transaction hashes as tags</li>
+</ol>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="logging"><a class="header" href="#logging">Logging</a></h1>
+<p>The SDK uses the <a href="https://docs.rs/tracing/latest/tracing/"><code>tracing</code></a> crate for structured logging, providing rich context and efficient filtering.</p>
+<p><strong>Important</strong>: Logs are emitted immediately when generated and are NOT rolled back if a transaction reverts. This means failed transactions will still have their logs recorded, which is useful for debugging or monitoring why transactions failed.</p>
+<h2 id="basic-logging-patterns"><a class="header" href="#basic-logging-patterns">Basic Logging Patterns</a></h2>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Adapted from the `Bank` module
+use tracing::trace;
+
+impl&lt;S: Spec&gt; MyModule&lt;S&gt; {
+    pub(crate) fn freeze(
+        &amp;mut self,
+        token_id: TokenId,
+        context: &amp;Context&lt;S&gt;,
+        state: &amp;mut impl TxState&lt;S&gt;,
+    ) -&gt; Result&lt;()&gt; {
+        // Logging at the start of operation
+        trace!(freezer = %sender, "Freeze token request");
+
+        // Redundant code elided here...
+
+        token
+            .freeze(sender)
+            .with_context(|| format!("Failed to freeze token_id={}", &amp;token_id))?;
+
+        self.tokens.set(&amp;token_id, &amp;token, state)?;
+
+        // Logging at the end of operation
+        trace!(
+            freezer = %sender,
+            %token_id,
+            "Successfully froze tokens"
+        );
+
+        Ok(())
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="using-spans-for-context"><a class="header" href="#using-spans-for-context">Using Spans for Context</a></h2>
+<p>Spans are like invisible context that gets automatically attached to every log line within their scope. Instead of passing context like <code>batch_id</code> or <code>user_id</code> through every function call just so you can log it, you create a span at the top level and all logs within that span automatically include that context.</p>
+<p>Think of spans as a way to say "everything that happens from here until the span ends is part of this operation." This is especially useful when debugging - you can filter logs by span fields to see everything that happened during a specific batch process or user request.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use tracing::instrument;
+
+// Example 1: Using the #[instrument] macro (easiest way)
+#[instrument(skip(self, state, items))]  // skip large/non-Debug types
+fn process_batch(&amp;self, batch_id: BatchId, items: Vec&lt;Item&gt;, state: &amp;mut impl TxState&lt;S&gt;) -&gt; Result&lt;()&gt; {
+    // The #[instrument] macro automatically adds all function parameters (except skipped ones) to the span
+    // So batch_id is automatically included in all logs within this function
+    info!(item_count = items.len(), "Starting batch processing");
+    
+    for (idx, item) in items.iter().enumerate() {
+        // This log will show: batch_id=123 item_id=456 "Processing item"
+        trace!(item_index = idx, item_id = %item.id, "Processing item");
+        self.process_single_item(item, state)?;
+    }
+    
+    info!("Batch processing completed");
+    Ok(())
+}
+
+// Example 2: Creating spans manually (when you need more control)
+fn process_user_request(&amp;self, user_id: UserId, request: Request) -&gt; Result&lt;()&gt; {
+    // Create a span with context that will be included in all logs
+    let span = tracing::span!(
+        tracing::Level::INFO,
+        "user_request", // span name
+        %user_id,
+        request_type = %request.request_type()
+    );
+    
+    // Enter the span - all logs from here will include user_id and request_type
+    let _enter = span.enter();
+    
+    debug!("Validating request");
+    self.validate_request(&amp;request)?;
+    
+    debug!("Processing request");
+    self.process(&amp;request)?;
+    
+    info!("Request completed successfully");
+    Ok(())
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="log-levels"><a class="header" href="#log-levels">Log Levels</a></h2>
+<ul>
+<li><code>error!</code> - Unrecoverable errors that affect module operation</li>
+<li><code>warn!</code> - Recoverable issues or unusual conditions</li>
+<li><code>info!</code> - High-level operations (tx processing, module lifecycle)</li>
+<li><code>debug!</code> - Detailed operational data (state changes, intermediate values)</li>
+<li><code>trace!</code> - Very detailed execution flow</li>
+</ul>
+<h2 id="best-practices-1"><a class="header" href="#best-practices-1">Best Practices</a></h2>
+<ol>
+<li>
+<p><strong>Structure your logs</strong>:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Good - structured, filterable
+debug!(user = %address, action = "deposit", amount = %value, "Processing deposit");
+
+// Avoid - unstructured string interpolation
+debug!("Processing deposit for {} of amount {}", address, value);
+<span class="boring">}</span></code></pre></pre>
+</li>
+<li>
+<p><strong>Include relevant context</strong>:</p>
+<ul>
+<li>Transaction/operation IDs</li>
+<li>User addresses (when relevant)</li>
+<li>Amounts and values</li>
+<li>Error details</li>
+<li>State transitions</li>
+</ul>
+</li>
+<li>
+<p><strong>Don't log transaction reverts as errors or warnings</strong>:
+Transaction reverts are expected behavior. Log them at <code>debug!</code> level if needed for debugging:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>if balance &lt; amount {
+    debug!(
+        user = %sender,
+        requested = %amount,
+        available = %balance,
+        "Transfer failed due to insufficient balance"
+    );
+    return Err(anyhow::anyhow!("Insufficient balance"));
+}
+<span class="boring">}</span></code></pre></pre>
+</li>
+<li>
+<p><strong>Keep frequently triggered logs at debug or trace level</strong>:
+Any log that gets triggered by every call to your module should use <code>debug!</code> or <code>trace!</code> to avoid log spam:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Good - routine operations at trace level
+trace!(method = "transfer", from = %sender, "Processing transfer request");
+
+// Bad - routine operations at info level will spam logs
+info!("Transfer request received");  // Don't do this for every call
+<span class="boring">}</span></code></pre></pre>
+</li>
+<li>
+<p><strong>Use conditional logging for expensive operations</strong>:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[cfg(feature = "native")]
+fn debug_state(&amp;self, state: &amp;impl StateAccessor&lt;S&gt;) {
+    if tracing::enabled!(tracing::Level::TRACE) {
+        let total_accounts = self.count_accounts(state);
+        let total_balance = self.calculate_total_balance(state);
+        trace!(
+            %total_accounts,
+            %total_balance,
+            "Module state snapshot"
+        );
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+</li>
+</ol>
+<p>Set log levels via environment variables:</p>
+<pre><code class="language-bash">RUST_LOG=info,my_module=debug cargo run
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="advanced-features"><a class="header" href="#advanced-features">Advanced Features</a></h1>
+<p>The Sovereign SDK includes many advanced features beyond the core functionality covered in this documentation.</p>
+<p><strong>To learn more about implementing these features in your rollup, just shoot us a message in our <a href="https://join.slack.com/t/sovereigndevelopers/shared_invite/zt-39aolimfp-XsFK6dL6LhOFHhtXsD_kCA">support channel</a> or fill out our <a href="fix-link">partner form</a> and we'll reach out to you.</strong></p>
+<h3 id="performance--reliability"><a class="header" href="#performance--reliability">Performance &amp; Reliability</a></h3>
+<ul>
+<li><strong>Configurable delays</strong> – Enable instant cancels &amp; oracle updates while throttling toxic flow</li>
+<li><strong>Automatic sequencer fail-over</strong> – Seamless failover across data centers ensures your soft-confirmations survive even the worst outages</li>
+<li><strong>Intra-block caching</strong> – Cache state that's repeatedly accessed throughout a block, eliminating redundant instantiation per transaction and significantly boosting performance</li>
+<li><strong>Dev-ops tooling</strong> – Production-ready observability and deployment tools</li>
+</ul>
+<h3 id="integrations--compatibility"><a class="header" href="#integrations--compatibility">Integrations &amp; Compatibility</a></h3>
+<ul>
+<li><strong>Privy integration</strong> – Click-to-sign flow using Privy</li>
+<li><strong>Ethereum or Solana addresses and wallet support</strong> – Use any address format or wallet you prefer</li>
+<li><strong>Hyperlane integration</strong> – Bridge liquidity from any EVM, SVM, or Cosmos SDK chain</li>
+<li><strong>Multiple DA layers</strong> – Run with Celestia, Bitcoin, Solana, or bring your own DA solution</li>
+<li><strong>Multiple zkVM integrations</strong> – Leverage the zkVM that best suits your application's performance characteristics: Risc0, SP1 (or soon any other Rust-compatible zkVM)</li>
+</ul>
+<p>We're happy to help you leverage these features to build production-ready rollups tailored to your exact requirements.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="sdk-contributors"><a class="header" href="#sdk-contributors">SDK Contributors</a></h1>
 <p>This section provides an overview of the Sovereign SDK aimed at core
 contributors to the framework. It describes the primary components of the SDK at
@@ -926,7 +1664,7 @@ state.</p>
 rollup state and post it onto the <code>DA layer</code>. Finally, light clients of the
 rollup (end-users and/or bridges on other blockchains) verify the proof and see
 the results of the transaction.</p>
-<p><img src="sdk-contributors/../assets/tx-lifecycle.png" alt="Diagram of the Transaction Lifecycle" /></p>
+<p><img src="../assets/tx-lifecycle.png" alt="Diagram of the Transaction Lifecycle" /></p>
 <h1 id="sdk-design-philosophy"><a class="header" href="#sdk-design-philosophy">SDK Design Philosophy</a></h1>
 <p>Now that we've established the basic transaction lifecycle, we have the
 background we need to really dig into the design of the Sovereign SDK.</p>
@@ -1447,7 +2185,7 @@ orchestrated to keep the incentives of the participants in balance.</p>
 <p>Once the setup is secure, our next priority is enabling the broadest set of use
 cases. We try to provide maximum flexibility, and abstract as much functionality
 as possible into reusable components. You can read more about how we achieve
-flexibility at the level of Rust code in the <a href="sdk-contributors/./abstractions.html">abstractions</a>
+flexibility at the level of Rust code in the <a href="./abstractions.html">abstractions</a>
 chapter.</p>
 <p>Finally, we optimize performance. This means eliminating redundant computation,
 carefully managing state access patterns, and considering the strengths and
@@ -1521,7 +2259,7 @@ any <code>Da Service</code> on top of any (rust-compatible) proof system and get
 functional rollup. The <code>rollup-interface</code> crate is what makes this possible.
 Every other crate in the SDK depends on it, because it defines the core
 abstractions that are shared between all SDK rollups.</p>
-<p><img src="sdk-contributors/../assets/dependency-graph.png" alt="A digram showing how the rollup interface supports the entire Sovereign SDK" /></p>
+<p><img src="../assets/dependency-graph.png" alt="A digram showing how the rollup interface supports the entire Sovereign SDK" /></p>
 <p>Inside of the rollup interface, the <code>native</code> vs zero-knowledge distinction
 appears in numerous places. For example, the <code>DA layer</code> abstraction has two
 components - a <code>DaService</code>, which runs as part of <code>native</code> full node execution
@@ -1865,7 +2603,7 @@ they're stored in a separate merkle tree which is more tightly access
 controlled. This mechanism allows the rollup to store data that is inaccessible
 during transaction execution, which is necessary to enable soft-confirmations
 without sacrificing censorship resistance. For more details, see the section on
-soft-confirmations in the <a href="sdk-contributors/./transaction-lifecycle.html">transaction lifecycle</a>
+soft-confirmations in the <a href="./transaction-lifecycle.html">transaction lifecycle</a>
 documentation. The global "state root" returned by the <code>sov-modules</code> from the
 <code>StateTransitionFunction</code> implementation is the hash of the kernel state root
 with the regular state root. We do our best to hide this detail from users of
@@ -1921,7 +2659,7 @@ information from the change set and make it available via RPC.</p>
 </li>
 </ol>
 <p>For more details on the process of applying individual transactions, see the
-<a href="sdk-contributors/./transaction-lifecycle.html">transaction lifecycle</a> document.</p>
+<a href="./transaction-lifecycle.html">transaction lifecycle</a> document.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="sequencer-registration-via-forced-inclusion"><a class="header" href="#sequencer-registration-via-forced-inclusion">Sequencer Registration via Forced Inclusion</a></h1>
 <p>Forced inclusion is a strategic mechanism in rollups designed to circumvent
 sequencers that censor user transactions. It allows users to directly submit
@@ -1930,7 +2668,7 @@ going through a sequencer.</p>
 <p>The Sovereign SDK supports this feature under specific conditions and
 guidelines. Crucially, only "Register Sequencer" transactions are accepted for
 forced inclusion; all other types will be ignored. For more details, see the
-<a href="forced-sequencer-registration.html#rules">Rules</a> section.</p>
+<a href="6-3-forced-sequencer-registration.html#rules">Rules</a> section.</p>
 <h2 id="usage"><a class="header" href="#usage">Usage</a></h2>
 <p>The Sovereign SDK limits the number of batches from unregistered sequencers
 processed per rollup slot. This measure limits the use of this mechanism as a

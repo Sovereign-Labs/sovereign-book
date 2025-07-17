@@ -1,5 +1,5 @@
 <!DOCTYPE HTML>
-<html lang="en" class="sovereign-dark" dir="ltr">
+<html lang="en" class="light" dir="ltr">
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
@@ -39,7 +39,7 @@
         <!-- Provide site root to javascript -->
         <script>
             var path_to_root = "";
-            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "sovereign-dark" : "sovereign-dark";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
         </script>
 
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
@@ -64,7 +64,7 @@
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
             var html = document.querySelector('html');
-            html.classList.remove('sovereign-dark')
+            html.classList.remove('light')
             html.classList.add(theme);
             var body = document.querySelector('body');
             body.classList.remove('no-js')
@@ -91,7 +91,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="intro.html"><strong aria-hidden="true">1.</strong> Intro</a></li><li class="chapter-item expanded "><a href="getting-started.html"><strong aria-hidden="true">2.</strong> Getting Started</a></li><li class="chapter-item expanded "><a href="rollup-devs.html"><strong aria-hidden="true">3.</strong> Rollup Devs</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="rollup-devs/build-a-module.html"><strong aria-hidden="true">3.1.</strong> Building a Module</a></li><li class="chapter-item expanded "><a href="rollup-devs/gas.html"><strong aria-hidden="true">3.2.</strong> Gas</a></li></ol></li><li class="chapter-item expanded "><a href="sdk-contributors.html"><strong aria-hidden="true">4.</strong> SDK Contributors</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="sdk-contributors/transaction-lifecycle.html"><strong aria-hidden="true">4.1.</strong> Transaction Lifecyle</a></li><li class="chapter-item expanded "><a href="sdk-contributors/abstractions.html"><strong aria-hidden="true">4.2.</strong> Main Abstractions</a></li><li class="chapter-item expanded "><a href="forced-sequencer-registration.html"><strong aria-hidden="true">4.3.</strong> Forced Sequencer Registration</a></li><li class="chapter-item expanded "><a href="sdk-contributors/gas.html"><strong aria-hidden="true">4.4.</strong> Gas</a></li></ol></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="1-intro.html"><strong aria-hidden="true">1.</strong> Intro</a></li><li class="chapter-item expanded "><a href="2-getting-started.html"><strong aria-hidden="true">2.</strong> Getting Started</a></li><li class="chapter-item expanded "><a href="3-0-intro.html"><strong aria-hidden="true">3.</strong> Writing Your Application</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="3-1-implementing-a-module.html"><strong aria-hidden="true">3.1.</strong> Implementing a Module</a></li><li class="chapter-item expanded "><a href="3-2-testing-your-module.html"><strong aria-hidden="true">3.2.</strong> Testing Your Module</a></li><li class="chapter-item expanded "><a href="3-3-adding-your-module.html"><strong aria-hidden="true">3.3.</strong> Adding Your Module to Your Runtime</a></li><li class="chapter-item expanded "><a href="3-4-signing-and-submitting-txs.html"><strong aria-hidden="true">3.4.</strong> Wallets and Accounts</a></li><li class="chapter-item expanded "><a href="3-5-advanced.html"><strong aria-hidden="true">3.5.</strong> Advanced Topics</a></li><li class="chapter-item expanded "><a href="3-6-performance.html"><strong aria-hidden="true">3.6.</strong> Performance</a></li><li class="chapter-item expanded "><a href="3-7-prebuilt-modules.html"><strong aria-hidden="true">3.7.</strong> Prebuilt Modules</a></li></ol></li><li class="chapter-item expanded "><a href="4-0-intro.html"><strong aria-hidden="true">4.</strong> Instrumenting Your Rollup</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="4-1-metrics.html"><strong aria-hidden="true">4.1.</strong> Metrics</a></li><li class="chapter-item expanded "><a href="4-2-logging.html"><strong aria-hidden="true">4.2.</strong> Logging</a></li></ol></li><li class="chapter-item expanded "><a href="5-sdk-advanced-features.html"><strong aria-hidden="true">5.</strong> SDK Advanced Features</a></li><li class="chapter-item expanded "><a href="6-0-intro.html"><strong aria-hidden="true">6.</strong> SDK Contributors</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="6-1-transaction-lifecycle.html"><strong aria-hidden="true">6.1.</strong> Transaction Lifecyle</a></li><li class="chapter-item expanded "><a href="6-2-abstractions.html"><strong aria-hidden="true">6.2.</strong> Main Abstractions</a></li><li class="chapter-item expanded "><a href="6-3-forced-sequencer-registration.html"><strong aria-hidden="true">6.3.</strong> Forced Sequencer Registration</a></li><li class="chapter-item expanded "><a href="6-4-gas.html"><strong aria-hidden="true">6.4.</strong> Gas</a></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -209,7 +209,7 @@ cd sov-rollup-starter/crates/rollup/
 <pre><code class="language-bash">cargo run --bin node
 </code></pre>
 <h3 id="explore-the-rest-api-endpoints-via-swagger-ui"><a class="header" href="#explore-the-rest-api-endpoints-via-swagger-ui">Explore the REST API endpoints via Swagger UI</a></h3>
-<p>The rollup includes several built-in modules: Bank (for token management), Paymaster, Hyperlane, and more. You can query any state item in these modules:</p>
+<p>The rollup starter includes several built-in modules: Bank (for token management), Paymaster, Hyperlane, and more. You can query any state item in these modules:</p>
 <pre><code class="language-bash">open http://localhost:12346/swagger-ui/#/ 
 </code></pre>
 <h3 id="example-query-the-example-modules-state-value"><a class="header" href="#example-query-the-example-modules-state-value">Example: Query the Example Module's state value:</a></h3>
@@ -227,7 +227,7 @@ npm install
 </code></pre>
 <h3 id="the-typescript-script-demonstrates-the-complete-transaction-flow"><a class="header" href="#the-typescript-script-demonstrates-the-complete-transaction-flow">The Typescript script demonstrates the complete transaction flow:</a></h3>
 <pre><code class="language-js">// 1. Initialize rollup client
-const rollup = await createStandardRollup({ // defaults to http://localhost:12346, or pass url: "custom-endpoint"
+const rollup = await createStandardRollup({ // defaults to http://localhost:12346, or pass url: "&lt;custom-endpoint&gt;"
   context: {
     defaultTxDetails: {
       max_priority_fee_bips: 0,
@@ -319,18 +319,19 @@ let setValueCall: RuntimeCall = {
 <p>This time, the curl command should return:</p>
 <pre><code class="language-bash">{"data":{"value":10},"meta":{}}
 </code></pre>
-<h3 id="learn-more"><a class="header" href="#learn-more">Learn more</a></h3>
-<p>To learn more about building with Sovereign SDK, experiment with the <a href="/crates/example-module/src/lib.rs">ExampleModule</a>. For a deeper understanding of the abstractions, see the <a href="https://docs.sovereign.xyz/rollup-devs/build-a-module.html">Building a module</a> section of the SDK book.</p>
+<h2 id="whats-next"><a class="header" href="#whats-next">What's Next?</a></h2>
+<p>You've now successfully launched a rollup, queried its state, and submitted a transaction. You've seen how the <code>bank</code> and <code>example_module</code> are just two components of a larger system.</p>
+<p>To truly make this rollup your own, you'll want to build custom logic. In the next chapter, "Writing Your Application," we'll dive deep into the heart of the Sovereign SDK and teach you how to implement your very own module from scratch.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="intro.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="1-intro.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="rollup-devs.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="3-0-intro.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -340,11 +341,11 @@ let setValueCall: RuntimeCall = {
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="intro.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="1-intro.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="rollup-devs.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="3-0-intro.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

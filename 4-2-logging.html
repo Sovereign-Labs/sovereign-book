@@ -3,8 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Page not found - The Sovereign SDK Book</title>
-        <base href="/">
+        <title>Logging - The Sovereign SDK Book</title>
 
 
         <!-- Custom HTML head -->
@@ -178,14 +177,184 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="document-not-found-404"><a class="header" href="#document-not-found-404">Document not found (404)</a></h1>
-<p>This URL is invalid, sorry. Please use the navigation bar or search to continue.</p>
+                        <h1 id="logging"><a class="header" href="#logging">Logging</a></h1>
+<p>The SDK uses the <a href="https://docs.rs/tracing/latest/tracing/"><code>tracing</code></a> crate for structured logging, providing rich context and efficient filtering.</p>
+<p><strong>Important</strong>: Logs are emitted immediately when generated and are NOT rolled back if a transaction reverts. This means failed transactions will still have their logs recorded, which is useful for debugging or monitoring why transactions failed.</p>
+<h2 id="basic-logging-patterns"><a class="header" href="#basic-logging-patterns">Basic Logging Patterns</a></h2>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Adapted from the `Bank` module
+use tracing::trace;
+
+impl&lt;S: Spec&gt; MyModule&lt;S&gt; {
+    pub(crate) fn freeze(
+        &amp;mut self,
+        token_id: TokenId,
+        context: &amp;Context&lt;S&gt;,
+        state: &amp;mut impl TxState&lt;S&gt;,
+    ) -&gt; Result&lt;()&gt; {
+        // Logging at the start of operation
+        trace!(freezer = %sender, "Freeze token request");
+
+        // Redundant code elided here...
+
+        token
+            .freeze(sender)
+            .with_context(|| format!("Failed to freeze token_id={}", &amp;token_id))?;
+
+        self.tokens.set(&amp;token_id, &amp;token, state)?;
+
+        // Logging at the end of operation
+        trace!(
+            freezer = %sender,
+            %token_id,
+            "Successfully froze tokens"
+        );
+
+        Ok(())
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="using-spans-for-context"><a class="header" href="#using-spans-for-context">Using Spans for Context</a></h2>
+<p>Spans are like invisible context that gets automatically attached to every log line within their scope. Instead of passing context like <code>batch_id</code> or <code>user_id</code> through every function call just so you can log it, you create a span at the top level and all logs within that span automatically include that context.</p>
+<p>Think of spans as a way to say "everything that happens from here until the span ends is part of this operation." This is especially useful when debugging - you can filter logs by span fields to see everything that happened during a specific batch process or user request.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use tracing::instrument;
+
+// Example 1: Using the #[instrument] macro (easiest way)
+#[instrument(skip(self, state, items))]  // skip large/non-Debug types
+fn process_batch(&amp;self, batch_id: BatchId, items: Vec&lt;Item&gt;, state: &amp;mut impl TxState&lt;S&gt;) -&gt; Result&lt;()&gt; {
+    // The #[instrument] macro automatically adds all function parameters (except skipped ones) to the span
+    // So batch_id is automatically included in all logs within this function
+    info!(item_count = items.len(), "Starting batch processing");
+    
+    for (idx, item) in items.iter().enumerate() {
+        // This log will show: batch_id=123 item_id=456 "Processing item"
+        trace!(item_index = idx, item_id = %item.id, "Processing item");
+        self.process_single_item(item, state)?;
+    }
+    
+    info!("Batch processing completed");
+    Ok(())
+}
+
+// Example 2: Creating spans manually (when you need more control)
+fn process_user_request(&amp;self, user_id: UserId, request: Request) -&gt; Result&lt;()&gt; {
+    // Create a span with context that will be included in all logs
+    let span = tracing::span!(
+        tracing::Level::INFO,
+        "user_request", // span name
+        %user_id,
+        request_type = %request.request_type()
+    );
+    
+    // Enter the span - all logs from here will include user_id and request_type
+    let _enter = span.enter();
+    
+    debug!("Validating request");
+    self.validate_request(&amp;request)?;
+    
+    debug!("Processing request");
+    self.process(&amp;request)?;
+    
+    info!("Request completed successfully");
+    Ok(())
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="log-levels"><a class="header" href="#log-levels">Log Levels</a></h2>
+<ul>
+<li><code>error!</code> - Unrecoverable errors that affect module operation</li>
+<li><code>warn!</code> - Recoverable issues or unusual conditions</li>
+<li><code>info!</code> - High-level operations (tx processing, module lifecycle)</li>
+<li><code>debug!</code> - Detailed operational data (state changes, intermediate values)</li>
+<li><code>trace!</code> - Very detailed execution flow</li>
+</ul>
+<h2 id="best-practices"><a class="header" href="#best-practices">Best Practices</a></h2>
+<ol>
+<li>
+<p><strong>Structure your logs</strong>:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Good - structured, filterable
+debug!(user = %address, action = "deposit", amount = %value, "Processing deposit");
+
+// Avoid - unstructured string interpolation
+debug!("Processing deposit for {} of amount {}", address, value);
+<span class="boring">}</span></code></pre></pre>
+</li>
+<li>
+<p><strong>Include relevant context</strong>:</p>
+<ul>
+<li>Transaction/operation IDs</li>
+<li>User addresses (when relevant)</li>
+<li>Amounts and values</li>
+<li>Error details</li>
+<li>State transitions</li>
+</ul>
+</li>
+<li>
+<p><strong>Don't log transaction reverts as errors or warnings</strong>:
+Transaction reverts are expected behavior. Log them at <code>debug!</code> level if needed for debugging:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>if balance &lt; amount {
+    debug!(
+        user = %sender,
+        requested = %amount,
+        available = %balance,
+        "Transfer failed due to insufficient balance"
+    );
+    return Err(anyhow::anyhow!("Insufficient balance"));
+}
+<span class="boring">}</span></code></pre></pre>
+</li>
+<li>
+<p><strong>Keep frequently triggered logs at debug or trace level</strong>:
+Any log that gets triggered by every call to your module should use <code>debug!</code> or <code>trace!</code> to avoid log spam:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Good - routine operations at trace level
+trace!(method = "transfer", from = %sender, "Processing transfer request");
+
+// Bad - routine operations at info level will spam logs
+info!("Transfer request received");  // Don't do this for every call
+<span class="boring">}</span></code></pre></pre>
+</li>
+<li>
+<p><strong>Use conditional logging for expensive operations</strong>:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[cfg(feature = "native")]
+fn debug_state(&amp;self, state: &amp;impl StateAccessor&lt;S&gt;) {
+    if tracing::enabled!(tracing::Level::TRACE) {
+        let total_accounts = self.count_accounts(state);
+        let total_balance = self.calculate_total_balance(state);
+        trace!(
+            %total_accounts,
+            %total_balance,
+            "Module state snapshot"
+        );
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+</li>
+</ol>
+<p>Set log levels via environment variables:</p>
+<pre><code class="language-bash">RUST_LOG=info,my_module=debug cargo run
+</code></pre>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="4-1-metrics.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
 
+                            <a rel="next prefetch" href="5-sdk-advanced-features.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
 
                         <div style="clear: both"></div>
                     </nav>
@@ -193,7 +362,13 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="4-1-metrics.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
 
+                    <a rel="next prefetch" href="5-sdk-advanced-features.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
             </nav>
 
         </div>

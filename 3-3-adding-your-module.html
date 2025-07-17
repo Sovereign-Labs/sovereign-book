@@ -3,8 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Page not found - The Sovereign SDK Book</title>
-        <base href="/">
+        <title>Adding Your Module to Your Runtime - The Sovereign SDK Book</title>
 
 
         <!-- Custom HTML head -->
@@ -178,14 +177,149 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="document-not-found-404"><a class="header" href="#document-not-found-404">Document not found (404)</a></h1>
-<p>This URL is invalid, sorry. Please use the navigation bar or search to continue.</p>
+                        <h1 id="adding-your-module-to-your-runtime"><a class="header" href="#adding-your-module-to-your-runtime">Adding Your Module to Your Runtime</a></h1>
+<p>Once you've built and tested your module, the final step is to integrate it into your rollup runtime. This section will walk you through the process of adding your module to a new rollup project based on our rollup starter template.</p>
+<h2 id="step-1-add-your-module-as-a-dependency"><a class="header" href="#step-1-add-your-module-as-a-dependency">Step 1: Add Your Module as a Dependency</a></h2>
+<p>First, add your module to the workspace dependencies in the root <code>Cargo.toml</code>:</p>
+<pre><code class="language-toml">[workspace.dependencies]
+# ... existing dependencies ...
+
+# Add your module here
+your-module = { path = "../path/to/your-module" }
+# Or if published:
+# your-module = { version = "0.1.0" }
+# Or if the module is available on Github:
+# your-module = { git = "https://github.com/your-github/your-module", rev = "dfd0624c32f5fb363c2190e9d911605663f7d693" }
+</code></pre>
+<p>Then add it to your STF crate's dependencies in <code>crates/stf/Cargo.toml</code> (where your <code>Runtime</code> is typically located in):</p>
+<pre><code class="language-toml">[dependencies]
+# ... existing dependencies ...
+
+your-module = { workspace = true }
+
+[features]
+default = []
+native = [
+    # ... existing native features ...
+    "your-module/native",
+]
+</code></pre>
+<h2 id="step-2-add-your-module-to-the-runtime-struct"><a class="header" href="#step-2-add-your-module-to-the-runtime-struct">Step 2: Add Your Module to the Runtime Struct</a></h2>
+<p>The central piece of your rollup's logic is the <a href="fix-link"><code>Runtime</code> struct</a>, usually found in <code>crates/stf/src/runtime.rs</code>. This struct lists all the modules that compose your rollup. To integrate your module, simply add it as a new field to this struct.</p>
+<p>The Runtime struct uses several derive macros (<code>#[derive(Genesis, DispatchCall, ...)]</code>) that automatically generate the boilerplate code for state initialization, transaction dispatching, and message encoding.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use your_module::YourModule;
+
+#[derive(Genesis, Hooks, DispatchCall, Event, MessageCodec, RuntimeRestApi)]
+pub struct Runtime&lt;S: Spec&gt; {
+    /// The bank module is responsible for managing tokens
+    pub bank: sov_bank::Bank&lt;S&gt;,
+    
+    /// The accounts module manages user accounts and addresses
+    pub accounts: sov_accounts::Accounts&lt;S&gt;,
+    
+    // ... other modules ...
+    
+    /// Your custom module
+    pub your_module: YourModule&lt;S&gt;,
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="step-3-configure-genesis-state"><a class="header" href="#step-3-configure-genesis-state">Step 3: Configure Genesis State</a></h2>
+<p>When your rollup is first launched, it populates its initial state from a <code>genesis.json</code> file. You need to tell the rollup how to initialize your module by adding a corresponding entry to this file.</p>
+<h3 id="understanding-genesisjson"><a class="header" href="#understanding-genesisjson">Understanding <code>genesis.json</code></a></h3>
+<p>The <code>genesis.json</code> is a simple key-value store where each key is the snake-case name of a module in your <code>Runtime</code> struct, and the value is the initial configuration for that module.</p>
+<p>When the rollup starts, it deserializes this JSON into your module's <code>Config</code> struct (which you define in your module) and passes it to your module's <code>genesis()</code> method.</p>
+<p>You will find this file in the root of your rollup project: <code>your-rollup/{DA_LAYER_NAME}/genesis.json</code>.</p>
+<h3 id="adding-your-modules-configuration"><a class="header" href="#adding-your-modules-configuration">Adding Your Module's Configuration</a></h3>
+<p>There are two cases:</p>
+<p><strong>1. Your Module Requires No Initial Configuration:</strong></p>
+<p>If your module's <code>Config</code> is an empty struct (e.g., <code>pub struct MyModuleConfig {}</code>) or can be created with <code>Default::default()</code>, you just need to add its name to <code>genesis.json</code> with an empty JSON object <code>{}</code>.</p>
+<pre><code class="language-json">// In your-rollup/genesis.json
+{
+  "bank": { ... },
+  "sequencer_registry": { ... },
+  "accounts": { ... },
+  "my_awesome_module": {}
+}
+</code></pre>
+<p><strong>2. Your Module Requires Initial Configuration:</strong></p>
+<p>If your module needs initial parameters (like an admin address or an initial value), you must provide them in the JSON object. The JSON fields must exactly match the fields of your module's <code>Config</code> struct.</p>
+<p>For example, if your module has this <code>Config</code> struct:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// In modules/my-awesome-module/src/lib.rs
+#[derive(serde::Deserialize, serde::Serialize)]
+pub struct MyAwesomeModuleConfig {
+    pub admin_address: S::Address,
+    pub initial_counter: u64,
+}
+<span class="boring">}</span></code></pre></pre>
+<p>Your <code>genesis.json</code> entry would look like this:</p>
+<pre><code class="language-json">// In your-rollup/genesis.json
+{
+  // ... other modules
+  "my_awesome_module": {
+    "admin_address": "0x633dD354F65261d7a64E10459508F8713a537149",
+    "initial_counter": 100
+  }
+}
+</code></pre>
+<h2 id="step-4-configure-rollup-constant"><a class="header" href="#step-4-configure-rollup-constant">Step 4: Configure Rollup Constant</a></h2>
+<p>The <code>constants.toml</code> file in your rollup's root directory allows you to configure chain-level parameters that don't change often. You should update this file to reflect your rollup's identity.</p>
+<pre><code class="language-toml"># Change these to make your chain unique
+CHAIN_ID = 12345  # Your unique chain ID
+CHAIN_NAME = "my-awesome-rollup"
+
+# Gas configuration
+GAS_TOKEN_NAME = "GAS"
+
+# Other compile time parameters...
+</code></pre>
+<p>These values are compiled into your rollup binary.</p>
+<h2 id="step-5-build-and-run"><a class="header" href="#step-5-build-and-run">Step 5: Build and Run</a></h2>
+<p>With everything configured, you can run your rollup with your module:</p>
+<pre><code class="language-bash"># Run the node
+cargo run --bin node
+</code></pre>
+<p>Your rollup is now operational! You can:</p>
+<ul>
+<li>Send transactions to your module</li>
+<li>Query its state via the REST API</li>
+<li>See events in transaction receipts</li>
+</ul>
+<h2 id="troubleshooting"><a class="header" href="#troubleshooting">Troubleshooting</a></h2>
+<h3 id="common-issues"><a class="header" href="#common-issues">Common Issues</a></h3>
+<p><strong>Module not found in genesis</strong></p>
+<ul>
+<li>Ensure the module name in <code>genesis.json</code> matches the field name in your Runtime struct</li>
+</ul>
+<p><strong>Serialization errors</strong></p>
+<ul>
+<li>Verify your genesis configuration matches your module's <code>Config</code> type</li>
+<li>Check that all addresses use the correct format (0x-prefixed hex)</li>
+</ul>
+<p><strong>Build errors</strong></p>
+<ul>
+<li>Ensure all feature flags are properly configured</li>
+<li>Check that your module exports all required types</li>
+</ul>
+<h3 id="your-module-is-live"><a class="header" href="#your-module-is-live">Your Module is Live!</a></h3>
+<p>Congratulations! Your module is now a fully integrated part of a running rollup. You have successfully navigated the complete development lifecycle, from implementation and testing to deployment on your local machine.</p>
+<p>You've built the core logic, but now the crucial question is: how do users actually interact with it? How do they create accounts, manage keys, and sign transactions to call your new module's methods?</p>
+<p>The next section, "Wallets and Accounts," will bridge this gap. We'll explore how to leverage the SDK's Ethereum-compatible account system and use client-side tooling to sign and submit transactions to your rollup, bringing your application to life for end-users.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="3-2-testing-your-module.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
 
+                            <a rel="next prefetch" href="3-4-signing-and-submitting-txs.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
 
                         <div style="clear: both"></div>
                     </nav>
@@ -193,7 +327,13 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="3-2-testing-your-module.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
 
+                    <a rel="next prefetch" href="3-4-signing-and-submitting-txs.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
             </nav>
 
         </div>

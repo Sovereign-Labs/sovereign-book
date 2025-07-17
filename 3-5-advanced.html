@@ -3,8 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Page not found - The Sovereign SDK Book</title>
-        <base href="/">
+        <title>Advanced Topics - The Sovereign SDK Book</title>
 
 
         <!-- Custom HTML head -->
@@ -178,14 +177,197 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="document-not-found-404"><a class="header" href="#document-not-found-404">Document not found (404)</a></h1>
-<p>This URL is invalid, sorry. Please use the navigation bar or search to continue.</p>
+                        <h1 id="advanced-topics"><a class="header" href="#advanced-topics">Advanced Topics</a></h1>
+<p>This section covers advanced module development features that go beyond basic functionality. While the core module implementation handles state management and transaction processing, you may need these additional capabilities for production use cases.</p>
+<p>All features in this section are optional. Start with the basic module implementation and add these capabilities as your requirements grow.</p>
+<h2 id="hooks"><a class="header" href="#hooks">Hooks</a></h2>
+<p>In addition to <code>call</code>, modules may <em>optionally</em> implement <code>Hooks</code>. Hooks can run at
+the begining and end of every rollup block and every transaction. <code>BlockHooks</code>
+are great for taking actions that need to happen before or after any
+transaction executes in a block - but be careful, no one pays for the
+computation done by <code>BlockHooks</code>, so doing any heavy computation can make your
+rollup vulnerable to DOS attacks.</p>
+<p><code>TxHooks</code> are useful for checking invariants, or to allow your module to monitor actions
+being taken by other modules. Unlike <code>BlockHooks</code>, <code>TxHooks</code> are paid for by the
+user who sent each transaction.</p>
+<p>The <code>FinalizeHook</code> is great for doing indexing. It can only modify
+<code>AccessoryState</code>, which makes it cheap to run but means that the results will
+only be visible via the API.</p>
+<p>Using the hooks is somewhat unusual - most applications only need to modify
+their state in response to user actions - but it's a powerful tool in some
+cases. See the documentation on
+<a href="fix-link/crates/module-system/sov-modules-api/src/hooks.rs#L76"><code>BlockHooks</code></a>
+and
+<a href="fix-link/crates/module-system/sov-modules-api/src/hooks.rs#L12"><code>TxHooks</code></a>
+and
+<a href="fix-link/crates/module-system/sov-modules-api/src/hooks.rs#L120"><code>FinalizeHook</code></a>
+more details.</p>
+<h2 id="error-handling"><a class="header" href="#error-handling">Error Handling</a></h2>
+<h3 id="when-to-panic-vs-return-errors"><a class="header" href="#when-to-panic-vs-return-errors">When to Panic vs Return Errors</a></h3>
+<p><strong>Panic when:</strong></p>
+<ul>
+<li>You encounter a bug that indicates broken invariants</li>
+<li>The error is unrecoverable and continuing would compromise state integrity</li>
+</ul>
+<p>When you panic, the rollup will shut down. This is correct for bugs that could corrupt your state.</p>
+<p><strong>Return errors when:</strong></p>
+<ul>
+<li>User input is invalid</li>
+<li>Business logic conditions aren't met (insufficient balance, unauthorized access, etc.)</li>
+<li>Any expected failure condition</li>
+</ul>
+<p>Transaction errors automatically revert all state changes.</p>
+<h3 id="writing-error-messages"><a class="header" href="#writing-error-messages">Writing Error Messages</a></h3>
+<p>Your error messages serve both end users and developers. Use <code>anyhow</code> with context to provide meaningful errors:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use anyhow::{Context, Result};
+
+fn transfer(&amp;self, from: &amp;S::Address, to: &amp;S::Address, token_id: &amp;TokenId, amount: u64, state: &amp;mut impl TxState&lt;S&gt;) -&gt; Result&lt;()&gt; {
+    let balance = self.balances
+        .get(&amp;(from, token_id), state)
+        .context("Failed to read sender balance")?
+        .unwrap_or(0);
+    
+    if balance &lt; amount {
+        // User-facing error message
+        return Err(anyhow::anyhow!("Insufficient balance: {} &lt; {}", balance, amount));
+    }
+    
+    let new_balance = balance - amount;
+    
+    // Add context for debugging when operations fail
+    self.balances
+        .set(&amp;(from, token_id), &amp;new_balance, state)
+        .with_context(|| format!("Failed to update balance for {} token {}", from, token_id))?;
+    
+    // ... rest of transfer logic
+    Ok(())
+}
+<span class="boring">}</span></code></pre></pre>
+<p>Transaction reverts are normal and expected - log them at <code>debug!</code> level if needed for debugging, not as warnings or errors.</p>
+<h2 id="native-only-code-and-custom-apis"><a class="header" href="#native-only-code-and-custom-apis">Native-Only Code and Custom APIs</a></h2>
+<p>Some functionality should only run natively on the full nodes, not in the zkVM during proof generation. This is a critical concept for separating verifiable on-chain logic from off-chain operational tooling.</p>
+<p>Any code that shouldn't be part of the state transition verification must be gated with <code>#[cfg(feature = "native")]</code>:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[cfg(feature = "native")]
+impl&lt;S: Spec&gt; MyModule&lt;S&gt; {
+    // This code only compiles natively, not in zkVM
+    pub fn debug_state(&amp;self, state: &amp;impl StateAccessor&lt;S&gt;) {
+        // ...
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<p>This ensures that your zk-proofs remain small and your on-chain logic remains deterministic. Common use cases for native-only code include:</p>
+<ul>
+<li>Custom REST APIs and RPC methods</li>
+<li>Metrics and logging integration</li>
+<li>Debugging tools</li>
+<li>Integrations with external services</li>
+</ul>
+<h3 id="adding-custom-rest-apis"><a class="header" href="#adding-custom-rest-apis">Adding Custom REST APIs</a></h3>
+<p>You can easily add custom APIs to your module by implementing the
+<code>HasCustomRestApi</code> trait. This trait has two methods - one which actually
+implements the routes, and an optional one which provides an <code>OpenApi</code> spec. You
+can see a good example in the <code>Bank</code> module:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span>#![cfg(feature = "native")]
+<span class="boring">fn main() {
+</span>impl&lt;S: Spec&gt; HasCustomRestApi for Bank&lt;S&gt; {
+    type Spec = S;
+
+    fn custom_rest_api(&amp;self, state: ApiState&lt;S&gt;) -&gt; axum::Router&lt;()&gt; {
+        axum::Router::new()
+            .route(
+                "/tokens/:tokenId/total-supply",
+                get(Self::route_total_supply),
+            )
+            .with_state(state.with(self.clone()))
+    }
+
+    fn custom_openapi_spec(&amp;self) -&gt; Option&lt;OpenApi&gt; {
+        let mut open_api: OpenApi =
+            serde_yaml::from_str(include_str!("../openapi-v3.yaml")).expect("Invalid OpenAPI spec");
+        for path_item in open_api.paths.paths.values_mut() {
+            path_item.extensions = None;
+        }
+        Some(open_api)
+    }
+}
+
+async fn route_balance(
+    state: ApiState&lt;S, Self&gt;,
+    mut accessor: ApiStateAccessor&lt;S&gt;,
+    Path((token_id, user_address)): Path&lt;(TokenId, S::Address)&gt;,
+) -&gt; ApiResult&lt;Coins&gt; {
+    let amount = state
+        .get_balance_of(&amp;user_address, token_id, &amp;mut accessor)
+        .unwrap_infallible() // State access can't fail because no one has to pay for gas.
+        .ok_or_else(|| errors::not_found_404("Balance", user_address))?;
+
+    Ok(Coins { amount, token_id }.into())
+}
+<span class="boring">}</span></code></pre></pre>
+<p>REST API methods get access to an <code>ApiStateAccessor</code>. This special struct gives
+you access to both normal and <code>Accessory</code> state values. You can freely read and
+write to state during your API calls, which makes it easy to reuse code from the
+rest of your module. However, it's important to remember API calls do <em>not</em>
+durably mutate state. Any state changes are thrown away at the end of the
+request.</p>
+<p>If you implement a custom REST API, your new routes will be automatically nested
+under your module's router. So, in the following example, the
+<code>tokens/:tokenId/total-supply</code> function can be found at
+<code>/modules/bank/tokens/:tokenId/total-supply</code>. Similarly, your OpenApi spec will
+get combined with the auto-generated one automatically.</p>
+<p>Note that for for custom REST APIs, you'll need to manually write an <code>OpenApi</code>
+specification if you want client support.</p>
+<h3 id="legacy-rpc-support"><a class="header" href="#legacy-rpc-support">Legacy RPC Support</a></h3>
+<p>In addition to custom RESTful APIs, the Sovereign SDK lets you create JSON-RPC
+methods. This is useful to provide API compatibility with existing chains like
+Ethereum and Solana, but we recommend using REST APIs whenever compatibility
+isn't a concern.</p>
+<p>To implement RPC methods, simply annotate an <code>impl</code> block on your module with
+the <code>#[rpc_gen(client, server)]</code> macro, and then write methods which accept an
+<code>ApiStateAcessor</code> as their final argument and return an <code>RpcResult</code>. You can see
+some examples in the <a href="fix-link"><code>Evm</code> module</a>.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span>#![cfg(feature = "native")]
+<span class="boring">fn main() {
+</span>#[rpc_gen(client, server)]
+impl&lt;S: Spec&gt; Evm&lt;S&gt; {
+    /// Handler for `net_version`
+    #[rpc_method(name = "eth_getStorageAt")]
+    pub fn get_storage_at(
+        &amp;self,
+        address: Address,
+        index: U256,
+        state: &amp;mut ApiStateAccessor&lt;S&gt;,
+    ) -&gt; RpcResult&lt;U256&gt; {
+        let storage_slot = self
+            .account_storage
+            .get(&amp;(&amp;address, &amp;index), state)
+            .unwrap_infallible()
+            .unwrap_or_default();
+        Ok(storage_slot)
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="mastering-your-module"><a class="header" href="#mastering-your-module">Mastering Your Module</a></h3>
+<p>By leveraging Hooks, robust error handling, and custom APIs, you can build sophisticated, production-grade modules that are both powerful and easy to operate.</p>
+<p>With a deep understanding of module implementation, you may next want to optimize your rollup's performance. The next section on "Understanding Performance" will dive into state access patterns and cryptographic considerations that can significantly impact your application's throughput.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="3-4-signing-and-submitting-txs.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
 
+                            <a rel="next prefetch" href="3-6-performance.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
 
                         <div style="clear: both"></div>
                     </nav>
@@ -193,7 +375,13 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="3-4-signing-and-submitting-txs.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
 
+                    <a rel="next prefetch" href="3-6-performance.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
             </nav>
 
         </div>

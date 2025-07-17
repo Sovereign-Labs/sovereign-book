@@ -3,8 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Page not found - The Sovereign SDK Book</title>
-        <base href="/">
+        <title>Prebuilt Modules - The Sovereign SDK Book</title>
 
 
         <!-- Custom HTML head -->
@@ -178,14 +177,91 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="document-not-found-404"><a class="header" href="#document-not-found-404">Document not found (404)</a></h1>
-<p>This URL is invalid, sorry. Please use the navigation bar or search to continue.</p>
+                        <h1 id="prebuilt-modules"><a class="header" href="#prebuilt-modules">Prebuilt Modules</a></h1>
+<p>Here's a comprehensive list of all existing modules:</p>
+<h3 id="user-facing"><a class="header" href="#user-facing">User Facing</a></h3>
+<p><a href="fix-link"><strong>sov-bank</strong></a> - Token management module for
+creating, transferring, and burning tokens
+with unique addresses and names</p>
+<p><a href="fix-link"><strong>sov-chain-state</strong></a> - Provides access to
+blockchain state including block height, hash,
+and general chain information</p>
+<p><a href="fix-link"><strong>sov-paymaster</strong></a> - Enables third-party gas
+sponsorship with per-sequencer payer
+configuration, so that users don't need any gas
+tokens to start transacting on your rollup</p>
+<p><a href="fix-link"><strong>sov-evm</strong></a> - EVM compatibility layer that
+processes RLP-encoded Ethereum transactions
+and provides standard Ethereum endpoints</p>
+<p><a href="fix-link"><strong>sov-svm</strong></a> - SVM compatibility layer that
+processes Solana transactions
+and provides standard Solana endpoints (built &amp; maintained by the <a href="https://www.termina.technology/">Termina</a> team)</p>
+<h3 id="bridging"><a class="header" href="#bridging">Bridging</a></h3>
+<p><a href="fix-link"><strong>sov-hyperlane-mailbox</strong></a> - All five of these modules are
+part of the Hyperlane (bridging) integration. They enable
+any Sovereign SDK rollup to bridge messages and tokens from
+any EVM, SVM or Cosmos SDK chain.</p>
+<ul>
+<li><a href="fix-link"><strong>Mailbox</strong></a>: Sends and receives cross-chain
+messages</li>
+<li><a href="fix-link"><strong>MerkleTreeHook</strong></a>: Computes merkle root of
+sent messages</li>
+<li><a href="fix-link"><strong>InterchainGasPaymaster</strong></a>: Handles
+cross-chain fee payments to relayers</li>
+<li><a href="fix-link"><strong>Warp</strong></a>: Enables interchain token transfers
+<ul>
+<li>Supports validator announcements and
+multisig ISMs</li>
+</ul>
+</li>
+</ul>
+<h3 id="core"><a class="header" href="#core">Core</a></h3>
+<p><a href="fix-link"><strong>sov-accounts</strong></a> - Account management system
+that automatically creates addresses for
+first-time senders and manages
+credential-to-address mappings</p>
+<p><a href="fix-link"><strong>sov-uniqueness</strong></a> - Transaction deduplication
+logic using either nonce-based (Ethereum-style) or
+generation-based methods (for low-latency applications)</p>
+<p><a href="fix-link"><strong>sov-blob-storage</strong></a> - Deferred blob storage
+system implementing the BlobSelector rollup
+capability (which enables soft-confirmations
+without losing censorship resistance)</p>
+<h3 id="incentive--economics"><a class="header" href="#incentive--economics">Incentive &amp; Economics</a></h3>
+<p><a href="fix-link"><strong>sov-attester-incentives</strong></a> - Complete
+attestation/challenge verification workflow
+with bonding and rewards for optimistic
+rollups</p>
+<p><a href="fix-link"><strong>sov-prover-incentives</strong></a> - Prover
+registration, proof validation, slashing, and
+rewards distribution</p>
+<p><a href="fix-link"><strong>sov-sequencer-registry</strong></a> - Manages sequencer
+registration, slashing, and rewards</p>
+<p><a href="fix-link"><strong>sov-revenue-share</strong></a> - Manages automated revenue sharing</p>
+<h3 id="development--testing"><a class="header" href="#development--testing">Development &amp; Testing</a></h3>
+<p><a href="fix-link"><strong>sov-synthetic-load</strong></a> - Load testing module
+exposing heavy transaction types for
+performance testing</p>
+<p><a href="fix-link"><strong>sov-value-setter</strong></a> - Simple testing module
+for storing and retrieving a single value</p>
+<p><a href="fix-link"><strong>module-template</strong></a> - Starter template
+demonstrating proper module structure with
+state-changing methods and queries</p>
+<h3 id="standing-on-the-shoulders-of-giants"><a class="header" href="#standing-on-the-shoulders-of-giants">Standing on the Shoulders of Giants</a></h3>
+<p>Leveraging these prebuilt modules can save you significant development time and effort, allowing you to focus on your application's unique business logic. You've now completed the "Writing Your Application" chapter and have a comprehensive understanding of how to build, test, and deploy powerful rollups.</p>
+<p>The next major part of our book, "Instrumenting Your Rollup," will shift focus from development to operations, teaching you how to monitor your running rollup using metrics and structured logging.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="3-6-performance.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
 
+                            <a rel="next prefetch" href="4-0-intro.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
 
                         <div style="clear: both"></div>
                     </nav>
@@ -193,7 +269,13 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="3-6-performance.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
 
+                    <a rel="next prefetch" href="4-0-intro.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
             </nav>
 
         </div>

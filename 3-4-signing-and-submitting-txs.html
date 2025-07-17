@@ -3,8 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Page not found - The Sovereign SDK Book</title>
-        <base href="/">
+        <title>Wallets and Accounts - The Sovereign SDK Book</title>
 
 
         <!-- Custom HTML head -->
@@ -178,14 +177,48 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="document-not-found-404"><a class="header" href="#document-not-found-404">Document not found (404)</a></h1>
-<p>This URL is invalid, sorry. Please use the navigation bar or search to continue.</p>
+                        <h2 id="wallets-and-accounts"><a class="header" href="#wallets-and-accounts">Wallets and Accounts</a></h2>
+<p>Now that you've built, tested, and integrated your module, the final step is enabling users to interact with it. This section covers how accounts, wallets, and transaction signing work in the Sovereign SDK.</p>
+<p>The core design principle is <strong>Ethereum compatibility</strong>. Sovereign SDK rollups use standard Ethereum addresses and signatures (Secp256k1), which unlocks the vast Ethereum tooling ecosystem. However, there are important nuances to understand.</p>
+<h4 id="the-sovereign-sdk-transaction-type"><a class="header" href="#the-sovereign-sdk-transaction-type">The Sovereign SDK Transaction Type</a></h4>
+<p>A critical distinction to grasp is that while addresses and signatures are Ethereum-compatible, the <strong>transaction format itself is unique to your rollup</strong>. A Sovereign SDK rollup does not natively accept a raw, RLP-encoded Ethereum transaction.</p>
+<p>Instead, your rollup's <code>Runtime</code> defines a custom <code>RuntimeCall</code> enum, which represents all possible actions a user can take. When a user sends a transaction, they are essentially sending a serialized <code>RuntimeCall</code> message that has been signed with their Ethereum-compatible key.</p>
+<h4 id="signing-transactions-today-the-web3js-sdk--privy"><a class="header" href="#signing-transactions-today-the-web3js-sdk--privy">Signing Transactions Today: The <code>web3.js</code> SDK &amp; Privy</a></h4>
+<p>The primary way for users and developers to sign and submit these custom transactions today is through the Sovereign <code>web3.js</code> client library. This library provides two main signer implementations:</p>
+<p><strong>1. <code>Secp256k1Signer</code> (For Developers)</strong></p>
+<p>This is a straightforward signer for programmatic use, where you have direct access to a raw private key. It's perfect for scripting, backend services, or testing.</p>
+<pre><code class="language-ts">import { Secp256k1Signer } from "@sovereign-labs/signers";
+
+// Initialize with a raw private key
+const privKey = "0d87c12ea7c12024b3f70a26d735874608f17c8bce2b48e6fe87389310191264";
+const signer = new Secp256k1Signer(privKey);
+
+// Use the signer to send a transaction
+await rollup.call(myCallMessage, { signer });
+</code></pre>
+<p><strong>2. <code>PrivySigner</code> (For User-Facing Applications)</strong></p>
+<p>For most applications, asking users for a private key is not feasible or secure. This is where <strong>Privy</strong> comes in. Privy is a powerful wallet-as-a-service provider that allows users to create a non-custodial wallet using familiar Web2 logins like email or social accounts. They can also connect their existing wallets (like MetaMask or Phantom).</p>
+<p>The <code>sov-rollup-starter</code> repository includes a <a href="fix-link">full example of integrating the <code>PrivySigner</code></a>, making it the most realistic and user-friendly way to onboard users to your rollup today. It handles all the complexity of wallet creation and signing, allowing users to interact with your application seamlessly.</p>
+<h4 id="the-future-supporting-all-ethereum-wallets-by-leveraging-eip-712"><a class="header" href="#the-future-supporting-all-ethereum-wallets-by-leveraging-eip-712">The Future: Supporting All Ethereum Wallets by Leveraging EIP-712</a></h4>
+<p>While Privy provides an excellent experience, it is crucial to meet users where they're at and enable support for all existing Ethereum wallets (including hardware wallets). This will be enabled by implementing a new <strong>EIP-712 Authenticator</strong> for the Sovereign SDK runtime (which we hope to complete by August 24, 2025).</p>
+<p><strong>EIP-712</strong> is an Ethereum standard for signing typed, structured data. Instead of asking the user to sign a cryptic hash, EIP-712 allows wallets to display the transaction data in a human-readable, key-value format. This dramatically improves security and user experience, as users can see exactly what they are approving.</p>
+<p>For example, a signature request using EIP-712 would look like this in MetaMask:</p>
+<p><img src="/assets/message-signing.png" alt="A message signing request from Hyperliquid" /></p>
+<p>This upcoming feature, inspired by the pioneering work of Hyperliquid, will allow developers to support all Ethereum wallets.</p>
+<h3 id="next-steps-advanced-features"><a class="header" href="#next-steps-advanced-features">Next Steps: Advanced Features</a></h3>
+<p>You now have a complete picture of how to build a module and enable users to interact with it. From here, you can dive into the "Advanced Topics" to learn about hooks, custom APIs, and other powerful features that will allow you to build truly sophisticated onchain applications.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="3-3-adding-your-module.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
 
+                            <a rel="next prefetch" href="3-5-advanced.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
 
                         <div style="clear: both"></div>
                     </nav>
@@ -193,7 +226,13 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="3-3-adding-your-module.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
 
+                    <a rel="next prefetch" href="3-5-advanced.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
             </nav>
 
         </div>

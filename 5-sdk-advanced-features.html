@@ -1,9 +1,9 @@
 <!DOCTYPE HTML>
-<html lang="en" class="sovereign-dark" dir="ltr">
+<html lang="en" class="light" dir="ltr">
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Intro - The Sovereign SDK Book</title>
+        <title>SDK Advanced Features - The Sovereign SDK Book</title>
 
 
         <!-- Custom HTML head -->
@@ -39,7 +39,7 @@
         <!-- Provide site root to javascript -->
         <script>
             var path_to_root = "";
-            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "sovereign-dark" : "sovereign-dark";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
         </script>
 
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
@@ -64,7 +64,7 @@
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
             var html = document.querySelector('html');
-            html.classList.remove('sovereign-dark')
+            html.classList.remove('light')
             html.classList.add(theme);
             var body = document.querySelector('body');
             body.classList.remove('no-js')
@@ -91,7 +91,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="intro.html"><strong aria-hidden="true">1.</strong> Intro</a></li><li class="chapter-item expanded "><a href="getting-started.html"><strong aria-hidden="true">2.</strong> Getting Started</a></li><li class="chapter-item expanded "><a href="rollup-devs.html"><strong aria-hidden="true">3.</strong> Rollup Devs</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="rollup-devs/build-a-module.html"><strong aria-hidden="true">3.1.</strong> Building a Module</a></li><li class="chapter-item expanded "><a href="rollup-devs/gas.html"><strong aria-hidden="true">3.2.</strong> Gas</a></li></ol></li><li class="chapter-item expanded "><a href="sdk-contributors.html"><strong aria-hidden="true">4.</strong> SDK Contributors</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="sdk-contributors/transaction-lifecycle.html"><strong aria-hidden="true">4.1.</strong> Transaction Lifecyle</a></li><li class="chapter-item expanded "><a href="sdk-contributors/abstractions.html"><strong aria-hidden="true">4.2.</strong> Main Abstractions</a></li><li class="chapter-item expanded "><a href="forced-sequencer-registration.html"><strong aria-hidden="true">4.3.</strong> Forced Sequencer Registration</a></li><li class="chapter-item expanded "><a href="sdk-contributors/gas.html"><strong aria-hidden="true">4.4.</strong> Gas</a></li></ol></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="1-intro.html"><strong aria-hidden="true">1.</strong> Intro</a></li><li class="chapter-item expanded "><a href="2-getting-started.html"><strong aria-hidden="true">2.</strong> Getting Started</a></li><li class="chapter-item expanded "><a href="3-0-intro.html"><strong aria-hidden="true">3.</strong> Writing Your Application</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="3-1-implementing-a-module.html"><strong aria-hidden="true">3.1.</strong> Implementing a Module</a></li><li class="chapter-item expanded "><a href="3-2-testing-your-module.html"><strong aria-hidden="true">3.2.</strong> Testing Your Module</a></li><li class="chapter-item expanded "><a href="3-3-adding-your-module.html"><strong aria-hidden="true">3.3.</strong> Adding Your Module to Your Runtime</a></li><li class="chapter-item expanded "><a href="3-4-signing-and-submitting-txs.html"><strong aria-hidden="true">3.4.</strong> Wallets and Accounts</a></li><li class="chapter-item expanded "><a href="3-5-advanced.html"><strong aria-hidden="true">3.5.</strong> Advanced Topics</a></li><li class="chapter-item expanded "><a href="3-6-performance.html"><strong aria-hidden="true">3.6.</strong> Performance</a></li><li class="chapter-item expanded "><a href="3-7-prebuilt-modules.html"><strong aria-hidden="true">3.7.</strong> Prebuilt Modules</a></li></ol></li><li class="chapter-item expanded "><a href="4-0-intro.html"><strong aria-hidden="true">4.</strong> Instrumenting Your Rollup</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="4-1-metrics.html"><strong aria-hidden="true">4.1.</strong> Metrics</a></li><li class="chapter-item expanded "><a href="4-2-logging.html"><strong aria-hidden="true">4.2.</strong> Logging</a></li></ol></li><li class="chapter-item expanded "><a href="5-sdk-advanced-features.html"><strong aria-hidden="true">5.</strong> SDK Advanced Features</a></li><li class="chapter-item expanded "><a href="6-0-intro.html"><strong aria-hidden="true">6.</strong> SDK Contributors</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="6-1-transaction-lifecycle.html"><strong aria-hidden="true">6.1.</strong> Transaction Lifecyle</a></li><li class="chapter-item expanded "><a href="6-2-abstractions.html"><strong aria-hidden="true">6.2.</strong> Main Abstractions</a></li><li class="chapter-item expanded "><a href="6-3-forced-sequencer-registration.html"><strong aria-hidden="true">6.3.</strong> Forced Sequencer Registration</a></li><li class="chapter-item expanded "><a href="6-4-gas.html"><strong aria-hidden="true">6.4.</strong> Gas</a></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -177,66 +177,35 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="the-sovereign-sdk-book"><a class="header" href="#the-sovereign-sdk-book">The Sovereign SDK Book</a></h1>
-<p>The Sovereign SDK is a batteries-included framework for building onchain
-applications.</p>
-<p><a href="https://discord.gg/kbykCcPrcA" ><img alt="Discord" src="https://img.shields.io/discord/1050059327626555462?label=discord"/></a></p>
-<img src="https://github.com/Sovereign-Labs/sovereign-sdk/blob/nightly/assets/banner.jpg?raw=true" style="border-radius: 10px">
-<h2 id="why-rollups"><a class="header" href="#why-rollups">Why Rollups?</a></h2>
-<p>As a developer, building your application as a rollup has several advantages:</p>
-<ol>
-<li><strong>Dedicated throughput:</strong> your users won't pay more just because another app
-is generating a lot of transactions.</li>
-<li><strong>Scalability:</strong> Sovereign SDK nodes scale seamlessly to thousands of
-transactions per second on commodity hardware, and can achieve substantially
-higher throughput on optimized hardware.</li>
-<li><strong>Incentive alignment:</strong> the vast majority of the rollup fees can be
-distributed to users and developers of the rollup, rather than subsidizing
-token holders on L1.</li>
-<li><strong>MEV mitigation:</strong> since you have full control over your rollup logic, you
-can design your protocol to minimize MEV and capture the portions that can't
-be eliminated.</li>
-<li><strong>Flexibility:</strong> rollups enable you to express whatever logic you want,
-without worrying about the needs of other applications. Enable cutting edge
-EIPs and account abstraction, or ditch the EVM entirely and build an
-app-specific chain. <strong>With a rollup, you're in the driver's seat.</strong></li>
-</ol>
-<h2 id="why-sovereign"><a class="header" href="#why-sovereign">Why Sovereign?</a></h2>
-<p>The Sovereign SDK is the most flexible framework for building rollups. Unlike
-other rollup frameworks, the Sovereign SDK supports rollups without a settlement
-layer. That means that you can deploy your rollup anywhere - including on
-Bitcoin and Celestia. The SDK also provides top-tier scalability and a seamless
-user experience, all without sacrificing flexibility. Teams are already using
-the Sovereign SDK to build...</p>
+                        <h1 id="advanced-features"><a class="header" href="#advanced-features">Advanced Features</a></h1>
+<p>The Sovereign SDK includes many advanced features beyond the core functionality covered in this documentation.</p>
+<p><strong>To learn more about implementing these features in your rollup, just shoot us a message in our <a href="https://join.slack.com/t/sovereigndevelopers/shared_invite/zt-39aolimfp-XsFK6dL6LhOFHhtXsD_kCA">support channel</a> or fill out our <a href="fix-link">partner form</a> and we'll reach out to you.</strong></p>
+<h3 id="performance--reliability"><a class="header" href="#performance--reliability">Performance &amp; Reliability</a></h3>
 <ul>
-<li>An EVM chain on Bitcoin</li>
-<li>A MoveVM chain on Celestia</li>
-<li>Appchains on Solana</li>
+<li><strong>Configurable delays</strong> – Enable instant cancels &amp; oracle updates while throttling toxic flow</li>
+<li><strong>Automatic sequencer fail-over</strong> – Seamless failover across data centers ensures your soft-confirmations survive even the worst outages</li>
+<li><strong>Intra-block caching</strong> – Cache state that's repeatedly accessed throughout a block, eliminating redundant instantiation per transaction and significantly boosting performance</li>
+<li><strong>Dev-ops tooling</strong> – Production-ready observability and deployment tools</li>
 </ul>
-<p>... and much more.</p>
-<h2 id="how-it-works"><a class="header" href="#how-it-works">How it Works</a></h2>
-<p>As a developer, you write the business logic of your rollup in Rust and the SDK
-handles all of the complexity of creating a rollup on their behalf. Under the
-hood, the SDK compiles the chain's business logic to a zero-knowledge circuit,
-which it uses to prove correct execution (if the rollup is running in "zk mode")
-or to resolve disputes about execution (if the rollup is running in "optimistic
-mode"). It also generates a complete <em>full node</em> implementation which can
-reproduce the state of the blockchain and serve data to users.</p>
-<p>Once the rollup is deployed, users post their <em>transactions</em> onto an underlying
-blockchain called a <em>Data Availability Layer</em> ("DA Layer") for ordering. After
-transactions are ordered, the <em>full nodes</em> of the rollup execute them to compute
-the new rollup <em>state</em>.</p>
-<p>Finally, specialized actors called "provers" or "attesters" generate a proof
-that the new rollup state was computed correctly and post the proof back onto
-the DA layer. This enables clients of the rollup to verify claims about the
-rollup state without running a full node for themselves.</p>
+<h3 id="integrations--compatibility"><a class="header" href="#integrations--compatibility">Integrations &amp; Compatibility</a></h3>
+<ul>
+<li><strong>Privy integration</strong> – Click-to-sign flow using Privy</li>
+<li><strong>Ethereum or Solana addresses and wallet support</strong> – Use any address format or wallet you prefer</li>
+<li><strong>Hyperlane integration</strong> – Bridge liquidity from any EVM, SVM, or Cosmos SDK chain</li>
+<li><strong>Multiple DA layers</strong> – Run with Celestia, Bitcoin, Solana, or bring your own DA solution</li>
+<li><strong>Multiple zkVM integrations</strong> – Leverage the zkVM that best suits your application's performance characteristics: Risc0, SP1 (or soon any other Rust-compatible zkVM)</li>
+</ul>
+<p>We're happy to help you leverage these features to build production-ready rollups tailored to your exact requirements.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="4-2-logging.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
 
-                            <a rel="next prefetch" href="getting-started.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="6-0-intro.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -246,8 +215,11 @@ rollup state without running a full node for themselves.</p>
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="4-2-logging.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
 
-                    <a rel="next prefetch" href="getting-started.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="6-0-intro.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

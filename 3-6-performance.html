@@ -1,9 +1,9 @@
 <!DOCTYPE HTML>
-<html lang="en" class="sovereign-dark" dir="ltr">
+<html lang="en" class="light" dir="ltr">
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Forced Sequencer Registration - The Sovereign SDK Book</title>
+        <title>Performance - The Sovereign SDK Book</title>
 
 
         <!-- Custom HTML head -->
@@ -39,7 +39,7 @@
         <!-- Provide site root to javascript -->
         <script>
             var path_to_root = "";
-            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "sovereign-dark" : "sovereign-dark";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
         </script>
 
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
@@ -64,7 +64,7 @@
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
             var html = document.querySelector('html');
-            html.classList.remove('sovereign-dark')
+            html.classList.remove('light')
             html.classList.add(theme);
             var body = document.querySelector('body');
             body.classList.remove('no-js')
@@ -91,7 +91,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="intro.html"><strong aria-hidden="true">1.</strong> Intro</a></li><li class="chapter-item expanded "><a href="getting-started.html"><strong aria-hidden="true">2.</strong> Getting Started</a></li><li class="chapter-item expanded "><a href="rollup-devs.html"><strong aria-hidden="true">3.</strong> Rollup Devs</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="rollup-devs/build-a-module.html"><strong aria-hidden="true">3.1.</strong> Building a Module</a></li><li class="chapter-item expanded "><a href="rollup-devs/gas.html"><strong aria-hidden="true">3.2.</strong> Gas</a></li></ol></li><li class="chapter-item expanded "><a href="sdk-contributors.html"><strong aria-hidden="true">4.</strong> SDK Contributors</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="sdk-contributors/transaction-lifecycle.html"><strong aria-hidden="true">4.1.</strong> Transaction Lifecyle</a></li><li class="chapter-item expanded "><a href="sdk-contributors/abstractions.html"><strong aria-hidden="true">4.2.</strong> Main Abstractions</a></li><li class="chapter-item expanded "><a href="forced-sequencer-registration.html"><strong aria-hidden="true">4.3.</strong> Forced Sequencer Registration</a></li><li class="chapter-item expanded "><a href="sdk-contributors/gas.html"><strong aria-hidden="true">4.4.</strong> Gas</a></li></ol></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="1-intro.html"><strong aria-hidden="true">1.</strong> Intro</a></li><li class="chapter-item expanded "><a href="2-getting-started.html"><strong aria-hidden="true">2.</strong> Getting Started</a></li><li class="chapter-item expanded "><a href="3-0-intro.html"><strong aria-hidden="true">3.</strong> Writing Your Application</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="3-1-implementing-a-module.html"><strong aria-hidden="true">3.1.</strong> Implementing a Module</a></li><li class="chapter-item expanded "><a href="3-2-testing-your-module.html"><strong aria-hidden="true">3.2.</strong> Testing Your Module</a></li><li class="chapter-item expanded "><a href="3-3-adding-your-module.html"><strong aria-hidden="true">3.3.</strong> Adding Your Module to Your Runtime</a></li><li class="chapter-item expanded "><a href="3-4-signing-and-submitting-txs.html"><strong aria-hidden="true">3.4.</strong> Wallets and Accounts</a></li><li class="chapter-item expanded "><a href="3-5-advanced.html"><strong aria-hidden="true">3.5.</strong> Advanced Topics</a></li><li class="chapter-item expanded "><a href="3-6-performance.html"><strong aria-hidden="true">3.6.</strong> Performance</a></li><li class="chapter-item expanded "><a href="3-7-prebuilt-modules.html"><strong aria-hidden="true">3.7.</strong> Prebuilt Modules</a></li></ol></li><li class="chapter-item expanded "><a href="4-0-intro.html"><strong aria-hidden="true">4.</strong> Instrumenting Your Rollup</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="4-1-metrics.html"><strong aria-hidden="true">4.1.</strong> Metrics</a></li><li class="chapter-item expanded "><a href="4-2-logging.html"><strong aria-hidden="true">4.2.</strong> Logging</a></li></ol></li><li class="chapter-item expanded "><a href="5-sdk-advanced-features.html"><strong aria-hidden="true">5.</strong> SDK Advanced Features</a></li><li class="chapter-item expanded "><a href="6-0-intro.html"><strong aria-hidden="true">6.</strong> SDK Contributors</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="6-1-transaction-lifecycle.html"><strong aria-hidden="true">6.1.</strong> Transaction Lifecyle</a></li><li class="chapter-item expanded "><a href="6-2-abstractions.html"><strong aria-hidden="true">6.2.</strong> Main Abstractions</a></li><li class="chapter-item expanded "><a href="6-3-forced-sequencer-registration.html"><strong aria-hidden="true">6.3.</strong> Forced Sequencer Registration</a></li><li class="chapter-item expanded "><a href="6-4-gas.html"><strong aria-hidden="true">6.4.</strong> Gas</a></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -177,56 +177,26 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="sequencer-registration-via-forced-inclusion"><a class="header" href="#sequencer-registration-via-forced-inclusion">Sequencer Registration via Forced Inclusion</a></h1>
-<p>Forced inclusion is a strategic mechanism in rollups designed to circumvent
-sequencers that censor user transactions. It allows users to directly submit
-transaction batches to the <a href="./da-layer.html">Data Availability Layer</a> instead of
-going through a sequencer.</p>
-<p>The Sovereign SDK supports this feature under specific conditions and
-guidelines. Crucially, only "Register Sequencer" transactions are accepted for
-forced inclusion; all other types will be ignored. For more details, see the
-<a href="#rules">Rules</a> section.</p>
-<h2 id="usage"><a class="header" href="#usage">Usage</a></h2>
-<p>The Sovereign SDK limits the number of batches from unregistered sequencers
-processed per rollup slot. This measure limits the use of this mechanism as a
-denial-of-service (DOS) attack vector.</p>
-<h3 id="process-for-forced-registration"><a class="header" href="#process-for-forced-registration">Process for Forced Registration</a></h3>
-<ol>
-<li>Create a batch containing a valid "Register Sequencer" transaction.</li>
-<li>Submit the batch to the Data Availability layer.</li>
-<li>Rollup nodes collect and execute the transaction.</li>
-<li>If the transaction complies with all rules, the user is registered as a
-sequencer and can submit regular transaction batches.</li>
-</ol>
-<h2 id="rules"><a class="header" href="#rules">Rules</a></h2>
-<p>To ensure forced inclusion requests are processed correctly, the following rules
-apply:</p>
-<ul>
-<li><strong>Transaction Limit</strong>: Only the first transaction in each batch is taken into
-account. Any additional transactions will be discarded.</li>
-<li><strong>Transaction Type</strong>: The transaction must be a "Register Sequencer"
-transaction.</li>
-<li><strong>Transaction Construction</strong>: The transaction must be properly formatted and
-comply with standard transaction rules.</li>
-<li><strong>Financial Requirements</strong>: Users must have enough funds to cover:
-<ul>
-<li>Pre-execution checks (including signature validation, deserialization and
-transaction type checks).</li>
-<li>Transaction execution costs.</li>
-<li>A bond required for sequencer registration.</li>
-</ul>
-</li>
-</ul>
+                        <h1 id="understanding-performance"><a class="header" href="#understanding-performance">Understanding Performance</a></h1>
+<h3 id="state-access"><a class="header" href="#state-access">State Access</a></h3>
+<p>The vast majority of the cost of executing a Sovereign SDK transaction comes from state accesses. When calling <code>item.set(&amp;value)</code>, the SDK serializes your value and stores the bytes in cache. When time you access a value using <code>item.get()</code>, the SDK deserializes a fresh copy of your value from the bytes held in cache, falling back to disk if necessary.</p>
+<p>Each time you access a value that's not in cache, the SDK has to generate a merkle proof of the value, which it will consume when it's time to generate a zero-knowledge proof. Similarly, each time you write a new value, the SDK has to generate a merkle update proof. This makes reading/writing to a <code>hot</code> value at least an order of magnitude cheaper than writing to a <code>cold</code> one (where <code>hot</code> means that the value has already been accessed in the current block.) So, if you have state items that are frequently accessed together, it's a good idea to bundle them into a single <code>StateValue</code> or store them under the same key in a <code>StateMap</code>.</p>
+<p>As a rule of thumb, for each 10% locality, you should be willing to add an extra 200 bytes to your <code>StateValue</code>. In other words, if two values are accessed together 30% of the time, you should put them together unless either of the state items is bigger than 600 bytes. (Exception: If two items are always accessed together, you should always group them together - no questions asked).</p>
+<h3 id="cryptography"><a class="header" href="#cryptography">Cryptography</a></h3>
+<p>The other common source of performance woes is heavy-duty cryptography. If you need to do any cryptographic operations, check whether the <code>Spec</code> trait provides a method in its <code>Spec::CryptoSpec</code> that already does what you want. If it does, use that - the SDK will ensure you get an implementation which is optimized for the SDK's peculiar requirements. If you need access to more exotic cryptography, you can use pretty much any existing Rust library - but be aware that the performance penalty might be severe when it comes time to prove your module's execution, which could limit your total throughput. If you do need advanced cryptography, you may need to pick an implementation that's suited to a particular <code>ZKVM</code> (like <code>SP1</code> or <code>Risc0</code>) and only use that vm with your module.</p>
+<h3 id="building-for-scale"><a class="header" href="#building-for-scale">Building for Scale</a></h3>
+<p>By keeping these performance principles in mind, bundling hot state and using optimized cryptography, you can design your modules to be highly efficient, ensuring your rollup can scale to meet user demand.</p>
+<p>While building custom logic is powerful, you don't always have to start from scratch. The Sovereign SDK comes with a rich set of "Prebuilt Modules" for common tasks like token management, bridging, and sequencer orchestration. The next section provides an overview of these modules, which you can leverage to accelerate your development.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="sdk-contributors/abstractions.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="3-5-advanced.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="sdk-contributors/gas.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="3-7-prebuilt-modules.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -236,11 +206,11 @@ transaction type checks).</li>
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="sdk-contributors/abstractions.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="3-5-advanced.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="sdk-contributors/gas.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="3-7-prebuilt-modules.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
