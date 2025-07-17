@@ -1,4 +1,4 @@
-# Integrating Your Module
+# Adding Your Module to Your Runtime
 
 Once you've built and tested your module, the final step is to integrate it into your rollup runtime. This section will walk you through the process of adding your module to a new rollup project based on our rollup starter template.
 

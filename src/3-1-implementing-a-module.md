@@ -2,7 +2,9 @@
 
 A module is the basic unit of functionality in the Sovereign SDK. It's a self-contained piece of onchain logic that manages its own state and defines how users can interact with it.
 
-The best way to learn how modules work is to build one. In this section, we'll create a simple but complete `ValueSetter` module from scratch. This module will allow a designated admin address to set a `u32` value in the rollup's state. After the walkthrough, we'll dive deeper into each of the concepts introduced.
+The best way to learn how modules work is to build one. In this section, we'll create a simple but complete `ValueSetter` module from scratch. This module will allow a designated admin address to set a `u32` value in the rollup's state. After the walkthrough, we'll dive deeper into each of the concepts introduced. 
+
+Think of this tutorial as your guide to the fundamental components of a module. Once you understand the concepts, we recommend starting your own module by copying the [`ExampleModule`](fix-link) provided in the starter repository. It has all the necessary dependencies and file structure pre-configured for you.
 
 ## A Step-by-Step Walkthrough: The `ValueSetter` Module
 
@@ -39,12 +41,13 @@ Next, we define the associated types required by the `Module` trait: its configu
 
 ```rust
 // Continuing in the same file...
-use anyhow::Result;
-use sov_modules_api::{CallResponse, Context, Error, Genesis, TxState};
-use serde:::{Serialized, Deserialize}
+use sov_modules_api::{Context, macros::UniversalWallet};
+use serde::{Serialize, Deserialize};
+use borsh::{BorshSerialize, BorshDeserialize};
 
 // The configuration for our module at genesis. This will be deserialized from `genesis.json`.
-#[derive(Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct ValueSetterConfig<S: Spec> {
     pub initial_value: u32,
     pub admin: S::Address,
@@ -59,16 +62,19 @@ pub struct ValueSetterConfig<S: Spec> {
     Serialize,
     Deserialize,
     schemars::JsonSchema,
-    sov_modules_macros::UniversalWallet,
+    UniversalWallet,
+    Clone,
     Debug,
     PartialEq,
 )]
+#[serde(rename_all = "snake_case")]
 pub enum CallMessage {
     SetValue(u32),
 }
 
 // The event our module will emit after a successful action.
 #[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize, Debug, PartialEq)]
+#[serde(rename_all = "snake_case")]
 pub enum Event {
     ValueChanged(u32),
 }
@@ -79,6 +85,9 @@ pub enum Event {
 With our types defined, we can now implement the `Module` trait itself.
 
 ```rust
+use anyhow::Result;
+use sov_modules_api::{GenesisState, TxState, EventEmitter, Error};
+
 // Now, we implement the `Module` trait.
 impl<S: Spec> Module for ValueSetter<S> {
     type Spec = S;
@@ -87,16 +96,23 @@ impl<S: Spec> Module for ValueSetter<S> {
     type Event = Event;
 
     // `genesis` is called once when the rollup is deployed to initialize the state.
-    fn genesis(&mut self, config: &Self::Config, state: &mut impl GenesisState<S>) -> Result<(), Error> {
-        self.value.set(&config.initial_value, state)?;
-        self.admin.set(&config.admin, state)?;
+    fn genesis(&mut self, _header: &<S::Da as sov_modules_api::DaSpec>::BlockHeader, config: &Self::Config, state: &mut impl GenesisState<S>) -> Result<(), Error> {
+        self.value.set(&config.initial_value, state)
+            .map_err(Into::<anyhow::Error>::into)?;
+        self.admin.set(&config.admin, state)
+            .map_err(Into::<anyhow::Error>::into)?;
         Ok(())
     }
 
     // `call` is called when a user submits a transaction to the module.
-    fn call(&mut self, msg: Self::CallMessage, context: &Context<S>, state: &mut impl TxState<S>) -> Result<CallResponse, Error> {
+    fn call(&mut self, msg: Self::CallMessage, context: &Context<S>, state: &mut impl TxState<S>) -> Result<(), Error> {
         match msg {
-            CallMessage::SetValue(new_value) => self.set_value(new_value, context, state),
+            CallMessage::SetValue(new_value) => {
+                self.set_value(new_value, context, state)
+                    .map_err(Into::<anyhow::Error>::into)?;
+
+                Ok(())
+            }
         }
     }
 }
@@ -104,20 +120,20 @@ impl<S: Spec> Module for ValueSetter<S> {
 
 ### 4. Writing the Business Logic
 
-The final piece is to write the private `set_value` method containing our business logic.
-
 ```rust
+The final piece is to write the private set_value method containing our business logic.
+
 impl<S: Spec> ValueSetter<S> {
-    fn set_value(&mut self, new_value: u32, context: &Context<S>, state: &mut impl TxState<S>) -> Result<CallResponse, Error> {
-        let admin = self.admin.get_or_err(state)?;
+    fn set_value(&mut self, new_value: u32, context: &Context<S>, state: &mut impl TxState<S>) -> Result<()> {
+        let admin = self.admin.get_or_err(state)??;
 
         if &admin != context.sender() {
             return Err(anyhow::anyhow!("Only the admin can set the value.").into());
         }
 
         self.value.set(&new_value, state)?;
-        state.emit_event("ValueChanged", Event::ValueChanged(new_value));
-        Ok(CallResponse::default())
+        self.emit_event(state, Event::ValueChanged(new_value));
+        Ok(())
     }
 }
 ```
@@ -160,7 +176,7 @@ The SDK provides several state types, each for a different use case:
 - **`StateMap<K, V>`**: Stores a key-value mapping.
 - **`StateVec<T>`**: Stores an ordered list of items, accessible by index.
 
-The generic types used above can be any deterministic Rust data structure, anything from `u32` to `BTreeMap`.
+The generic types can be any deterministic Rust data structure, anything from a simple `u32` to a complex `BTreeMap`.
 
 **Accessory State**: For each state type, there is a corresponding `AccessoryState*` variant (e.g., `AccessoryStateMap`). Accessory state is special: it can be read and written via the API, but it is **write-only** during a transaction. This makes it much cheaper to use for data that doesn't affect onchain logic, like indexing purchase histories for an off-chain frontend.
 
@@ -189,6 +205,7 @@ trait Module {
     /// efficiency is not a primary concern.
     fn genesis(
         &mut self,
+        genesis_rollup_header: &<<Self::Spec as Spec>::Da as DaSpec>::BlockHeader,
         config: &Self::Config,
         state: &mut impl GenesisState<Self::Spec>,
     ) -> Result<(), Error>;
@@ -210,9 +227,9 @@ The `genesis` function is called once when the rollup is deployed. It uses the m
 #### `call`
 The `call` function provides the transaction processing logic. It accepts a structured `CallMessage` from a user and a `Context` containing metadata like the sender's address. If your `call` function returns an error, the SDK automatically reverts all state changes and discards any events, ensuring that transactions are atomic.
 
-You can define the `CallMessage` to be any type you wish, but an enum is usually best. Be sure to derive `borsh` and `serde` serialization, as well as `schemars::JsonSchema` and `sov_modules_macros::UniversalWallet`. This ensures your `CallMessage` is portable across different languages and frontends.
+You can define the `CallMessage` to be any type you wish, but an enum is usually best. Be sure to derive `borsh` and `serde` serialization, as well as `schemars::JsonSchema` and `UniversalWallet`. This ensures your `CallMessage` is portable across different languages and frontends.
 
-**A Note on Gas and Security**: Just like Ethereum smart contracts, modules accept inputs that are pre-validated by the chain. Your call method does not need to worry about authenticating the transaction sender. The SDK also automatically meters gas for state accesses. You only need to manually charge gas (using state.charge_gas(...)) if your module performs heavy computation outside of state reads/writes.
+**A Note on Gas and Security**: Just like Ethereum smart contracts, modules accept inputs that are pre-validated by the chain. Your call method does not need to worry about authenticating the transaction sender. The SDK also automatically meters gas for state accesses. You only need to manually charge gas (using [`Module::charge_gas(...)`](fix-link)) if your module performs heavy computation outside of state reads/writes.
 
 ### Events
 
@@ -226,6 +243,8 @@ Events are the primary way your module communicates with the outside world. They
 ### Error Handling
 
 Modules use `anyhow::Result` for error handling, providing rich context that helps both developers and users understand what went wrong.
+
+When your call method returns an Err, the SDK automatically reverts all state changes made during the transaction. This ensures that your module's logic is atomic.
 
 ```rust
 use anyhow::{Context, Result};
@@ -242,7 +261,7 @@ fn transfer(&self, from: &S::Address, amount: u64, state: &mut impl TxState<S>) 
     Ok(())
 }
 ```
-Errors automatically revert all state changes. For more details on error handling patterns, see the [Advanced Topics](3-5-advanced.md#error-handling) section.
+For more details on error handling patterns, see the [Advanced Topics](3-5-advanced.md#error-handling) section.
 
 ### Next Step: Ensuring Correctness
 

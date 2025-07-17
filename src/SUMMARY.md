@@ -6,7 +6,7 @@
 - [Writing Your Application](3-0-intro.md)
   - [Implementing a Module](3-1-implementing-a-module.md)
   - [Testing Your Module](3-2-testing-your-module.md)
-  - [Integrating Your Module](3-3-integrating-your-module.md)
+  - [Adding Your Module to Your Runtime](3-3-adding-your-module.md)
   - [Wallets and Accounts](3-4-signing-and-submitting-txs.md)
   - [Advanced Topics](3-5-advanced.md)
   - [Performance](3-6-performance.md)
