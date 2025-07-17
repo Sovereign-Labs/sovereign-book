@@ -12,7 +12,7 @@ And most importantly, after months of extensive load-testing, it's production-re
 
 ## Why Build a Dedicated Rollup For Your Application?
 
-For decades, developers have been forced to build applications on shared, general-purpose blockchains. This model forces apps with vastly different needs to compete for the same limited blockspace. Building your application as a dedicated rollup gives you three strategic advantages:
+For almost a decade, developers have been forced to build applications on shared, general-purpose blockchains. This model forces apps with vastly different needs to compete for the same limited blockspace. Building your application as a dedicated rollup gives you three strategic advantages:
 
 1.  **Dedicated Throughput:** Your users will never have to compete with a viral NFT drop. A rollup gives your application its own dedicated lane, ensuring a consistently fast and affordable user experience.
 2.  **Capturing More Value:** On shared blockchains, user fees primarily benefit the chain operators (i.e. L1 validators or general-purpose L2 sequencer). With a rollup, your application and its users can capture the vast majority of that value, creating a sustainable economic engine for your project.
@@ -20,7 +20,7 @@ For decades, developers have been forced to build applications on shared, genera
 
 ## Why Choose the Sovereign SDK?
 
-The Sovereign SDK is designed around four key principles to provide an unmatched developer experience:
+The Sovereign SDK is designed around four key principles to provide an unmatched developer and user experience:
 
 -   **Total Customization:** While rollups promise flexibility, existing frameworks are overly restrictive. Sovereign SDK delivers on that promise with its modular Rust runtime, empowering you to customize as much or as little as needed. Easily add custom fee logic, integrate tailored authenticators, prioritize specific transaction types, or even swap out the authenticated state store—all without wrestling with legacy code.
 -   **Best-in-Class Performance:** With 2-5ms soft confirmations and throughput exceeding 10,000 TPS, the Sovereign SDK is orders of magnitude faster than competing frameworks like Orbit, the OP Stack, or the Cosmos SDK.

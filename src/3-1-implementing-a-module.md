@@ -1,388 +1,251 @@
 # Implementing a Module
 
-A module is the basic unit of functionality in the Sovereign SDK. It is a
-collection of values stored in state, and an optional `call` function which
-allows users to interact with that state onchain. Modules also provide custom
-API support and built-in indexing.
+A module is the basic unit of functionality in the Sovereign SDK. It's a self-contained piece of onchain logic that manages its own state and defines how users can interact with it.
 
-In this section, we'll describe how to implement a module and take full
-advantage of the Sovereign SDKs built-in functionalities.
+The best way to learn how modules work is to build one. In this section, we'll create a simple but complete `ValueSetter` module from scratch. This module will allow a designated admin address to set a `u32` value in the rollup's state. After the walkthrough, we'll dive deeper into each of the concepts introduced.
 
-## The Module Struct
+## A Step-by-Step Walkthrough: The `ValueSetter` Module
 
-A typical module definition looks like this.
+### 1. Defining the Module Struct
+
+First, we define the module's structure and the state it will manage. This struct tells the SDK what data to store onchain.
 
 ```rust
-#[derive(Clone, ModuleInfo, ModuleRestApi)]
-pub struct Example<S: Spec> {
-    /// The ID of the module.
+use sov_modules_api::{Module, ModuleId, ModuleInfo, StateValue, Spec};
+
+// This is the struct that will represent our module.
+// It must derive `ModuleInfo` to be a valid module.
+#[derive(ModuleInfo)]
+pub struct ValueSetter<S: Spec> {
+    /// The `#[id]` attribute is required and uniquely identifies the module instance.
     #[id]
-    pub(crate) id: ModuleId,
+    pub id: ModuleId,
 
-    /// A reference to the Bank module, so that we can transfer tokens.
-    #[module]
-    pub(crate) bank: sov_bank::Bank<S>,
-
-	/// A mapping from addresses to users
+    /// The `#[state]` attribute marks a field as a state variable.
+    /// `StateValue` stores a single, typed value.
     #[state]
-    pub(crate) users: StateMap<S::Address, User<S>>,
+    pub value: StateValue<u32>,
+
+    /// We'll also store the address of the admin who is allowed to change the value.
+    /// S:Address is the address type of our rollup. More on `Spec` later.
+    #[state]
+    pub admin: StateValue<S::Address>,
 }
 ```
 
-There are a few things to notice in this snippet.
+### 2. Defining Types for the `Module` Trait
 
-### Derived Traits
+Next, we define the associated types required by the `Module` trait: its configuration, its callable methods, and its events.
 
-First, we derive the `ModuleInfo` and `ModuleRestApi` traits.
+```rust
+// Continuing in the same file...
+use anyhow::Result;
+use sov_modules_api::{CallResponse, Context, Error, Genesis, TxState};
+use serde:::{Serialized, Deserialize}
+
+// The configuration for our module at genesis. This will be deserialized from `genesis.json`.
+#[derive(Serialize, Deserialize)]
+pub struct ValueSetterConfig<S: Spec> {
+    pub initial_value: u32,
+    pub admin: S::Address,
+}
+
+// The actions a user can take. Our module only supports one action: setting the value.
+// This `CallMessage` enum defines the module's public API.
+// Deriving these traits ensures it's portable and compatible with wallets and block explorers.
+#[derive(
+    BorshDeserialize,
+    BorshSerialize,
+    Serialize,
+    Deserialize,
+    schemars::JsonSchema,
+    sov_modules_macros::UniversalWallet,
+    Debug,
+    PartialEq,
+)]
+pub enum CallMessage {
+    SetValue(u32),
+}
+
+// The event our module will emit after a successful action.
+#[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize, Debug, PartialEq)]
+pub enum Event {
+    ValueChanged(u32),
+}
+```
+
+### 3. Implementing the `Module` Trait Logic
+
+With our types defined, we can now implement the `Module` trait itself.
+
+```rust
+// Now, we implement the `Module` trait.
+impl<S: Spec> Module for ValueSetter<S> {
+    type Spec = S;
+    type Config = ValueSetterConfig<S>;
+    type CallMessage = CallMessage;
+    type Event = Event;
+
+    // `genesis` is called once when the rollup is deployed to initialize the state.
+    fn genesis(&mut self, config: &Self::Config, state: &mut impl GenesisState<S>) -> Result<(), Error> {
+        self.value.set(&config.initial_value, state)?;
+        self.admin.set(&config.admin, state)?;
+        Ok(())
+    }
+
+    // `call` is called when a user submits a transaction to the module.
+    fn call(&mut self, msg: Self::CallMessage, context: &Context<S>, state: &mut impl TxState<S>) -> Result<CallResponse, Error> {
+        match msg {
+            CallMessage::SetValue(new_value) => self.set_value(new_value, context, state),
+        }
+    }
+}
+```
+
+### 4. Writing the Business Logic
+
+The final piece is to write the private `set_value` method containing our business logic.
+
+```rust
+impl<S: Spec> ValueSetter<S> {
+    fn set_value(&mut self, new_value: u32, context: &Context<S>, state: &mut impl TxState<S>) -> Result<CallResponse, Error> {
+        let admin = self.admin.get_or_err(state)?;
+
+        if &admin != context.sender() {
+            return Err(anyhow::anyhow!("Only the admin can set the value.").into());
+        }
+
+        self.value.set(&new_value, state)?;
+        state.emit_event("ValueChanged", Event::ValueChanged(new_value));
+        Ok(CallResponse::default())
+    }
+}
+```
+
+With that, you've implemented a complete module! Now, let's break down the concepts we used in more detail.
+
+---
+
+## Anatomy of a Module: A Deeper Look
+
+### Derived Traits: `ModuleInfo` and `ModuleRestApi`
 
 You should always derive `ModuleInfo` on your module, since it does important
 work like laying out your state values in the database. If you forget to derive
 this trait, the SDK will throw a helpful error.
 
-The `ModuleRestApi` trait is optional but very useful. It tries to generate
-RESTful API endpoints for all of the `#[state]` items in your module. Each
-item's endpoint will have the name
-`{hostname}/modules/{module-name}/{field-name}/`, with all items automatically
-converted to `kebab-casing`. For example, you could query an item from the
-`known_sequencers` state value shown in the snippet above at the path
-`/modules/sequencer-registry/known-sequencers/{address}`.
+The `ModuleRestApi` trait is optional but highly recommended. It automatically generates RESTful API endpoints for the `#[state]` items in your module. Each item's endpoint will have the name `{hostname}/modules/{module-name}/{field-name}/`, with all items automatically converted to `kebab-casing`. For example, for the `value` field in our `ValueSetter` walkthrough, the SDK would generate an endpoint at the path `/modules/value-setter/value`.
 
-Note that `ModuleRestApi` can't always generate endpoints for you. If it can't
-figure out how to generate an endpoint for a particular state value, it will
-simply skip it by default. (Don't worry, you can always add endpoints manually
-if you need to! We'll cover this in the next section.). If you want to override
-the default behavior and throw a compiler error if endpoint generation fails,
-you can add the `#[rest_api(include)]` attribute on your state value like this:
-
-```rust
-#[derive(Clone, ModuleInfo, ModuleRestApi)]
-pub struct Example<S: Spec> {
-    // Redundant code elided here...
-	#[rest_api(include)]
-    #[state]
-    pub(crate) users: StateMap<S::Address, User<S>>,
-}
-```
-
-See the
-[documentation](fix-link/crates/module-system/sov-modules-api/src/reexport_macros.rs#L387)
-on `ModuleRestApi` for more details.
+Note that `ModuleRestApi` can't always generate endpoints for you. If it can't figure out how to generate an endpoint for a particular state value, it will simply skip it by default. If you want to override this behavior and throw a compiler error if endpoint generation fails, you can add the `#[rest_api(include)]` attribute.
 
 ### The `Spec` Generic
 
-Next, notice that the module is parameterized by `Spec` type. This paramter
-gives you access to a bunch of handy types and cryptographic traits that are
-used on the rollup. These includes the `Address` type used on the rollup, as
-well as information about the underlying DA layer, like its `Da::Address` type,
-`BlockHeader` type, and more. By being generic over the `Spec`, you ensure that
-you can easily change things like the `Address` format used by your module later
-on.
+Modules are generic over a `Spec` type, which provides access to core rollup types. By being generic over the `Spec`, you ensure that you can easily change things like the `Address` format used by your module later on without rewriting your logic.
 
-See the
-[`Spec` trait docs](fix-link/crates/module-system/sov-modules-api/src/module/spec.rs#L28-L29)
-for more details.
+Key types provided by `Spec` include:
+- `S::Address`: The address format used on the rollup.
+- `S::Da::Address`: The address format of the underlying Data Availability layer.
+- `S::Da::BlockHeader`: The block header type of the DA layer.
 
 ### `#[state]`, `#[module]`, and `#[id]` fields
 
-Modules may have as many `#[state]` and `#[module]` fields as they wish, but
-they must have exactly one `#[id]`. The `ModuleInfo` macro will automatically
-generate a unique identifier for the module and store it in the `id` field.
+-   **`#[id]`**: Every module must have exactly one `#[id]` field. The `ModuleInfo` macro uses this to store the module's unique, auto-generated identifier.
+-   **`#[module]`**:  This attribute declares a dependency on another module. For example, if our `ValueSetter` needed to pay a fee, we could add `#[module] pub bank: sov_bank::Bank<S>`, allowing us to call `self.bank.transfer(...)` in our logic.
+-   **`#[state]`**: This attribute marks a field as a state variable that will be stored in the database.
 
-`#[module]` fields are very straightforward. Adding a dependency on another
-module will allow your module to access any of it's public fields and/or public
-methods. The only downside is that any users of your module will also have to
-include the dependency in their rollup.
+### State Types In-Depth
 
-`#[state]` fields are the most interesting. They define the layout of the state
-that your module will store. There are three primary kinds of `#[state]`:
-`StateValue`s which store a single item, and `StateMap`s which store a mapping
-from keys to values, and `StateVec`s which store a series of elements, keyed by
-index.
+The SDK provides several state types, each for a different use case:
+- **`StateValue<T>`**: Stores a single item of type T. We used this for `value` and `admin` variables. 
+- **`StateMap<K, V>`**: Stores a key-value mapping.
+- **`StateVec<T>`**: Stores an ordered list of items, accessible by index.
 
-Each kind of state item accepts an optional `Codec` parameter, which determines
-how the state value is encoded and decoded for storage. By default, we use
-`Borsh` for everything, but the SDK also provides a `BcsCodec` which is
-compatible with the widely used `serde` library. If you want to store a type
-from a 3rd-party library in you module, you might need to specify the BcsCodec
-like this:
+The generic types used above can be any deterministic Rust data structure, anything from `u32` to `BTreeMap`.
 
-```rust
-use some_third_party_crate::SomeType;
-#[derive(Clone, ModuleInfo, ModuleRestApi)]
-pub struct MyModule<S: Spec> {
-    // Redundant code elided here...
-    #[state]
-    pub(crate) my_map: StateValue<SomeType, BcsCodec>,
-}
-```
+**Accessory State**: For each state type, there is a corresponding `AccessoryState*` variant (e.g., `AccessoryStateMap`). Accessory state is special: it can be read and written via the API, but it is **write-only** during a transaction. This makes it much cheaper to use for data that doesn't affect onchain logic, like indexing purchase histories for an off-chain frontend.
 
-Note that this is only necessary if the compiler warns you that the type doesn't
-support `BorshSerialize` or `BorshDeserialize`. If the compiler is happy, you
-don't need to override the default.
+**Codecs**: By default, all state is serialized using Borsh. If you need to store a type from a third-party library that only supports serde, you can specify a different codec: StateValue<ThirdPartyType, BcsCodec>.
 
-The last important thing to note about state is that for each kind of item
-(`Value/Map/Vec`), we provide a corresponding `AccessoryState{Item}` type.
-Accessory state looks exactly like regular state, but it's _write only_ during
-transaction execution. Items stored in accessory state can be queried via the
-API, but they don't have to be replicated by everybody running your rollup since
-transactions can't read their contents. This makes accessory state much more
-efficient than normal state for indexing and other off-chain tasks.
+### The `Module` Trait and its Methods
 
-```rust
-use some_third_party_crate::SomeType;
-#[derive(Clone, ModuleInfo, ModuleRestApi)]
-pub struct MyModule<S: Spec> {
-    // Redundant code elided here...
-	/// Stores a record of the purchase history of users that can be queried from the API
-	/// but doesn't exist on-chain. This is much cheaper than maintaining the map on chain.
-    #[state]
-    pub(crate) token_buyers: AccessoryStateMap<S::Address, Vec<Price>>,
-}
-```
+The `Module` trait is the core of your application's onchain logic. The implementation you wrote in the walkthrough satisfies this trait's requirements.
 
-## Module Trait Implementation
-
-Once you've defined your module's state layout, you need a way for users to
-interact with it.
-
-That's where the `Module` trait comes in. This trait has two important methods,
-`genesis` and `call`. You can see a simplified version of the trait below:
+Let's look at a simplified version of the trait definition to understand its components:
 
 ```rust
 trait Module {
-    /// The configuration needed to initialize the module.
+    /// The configuration needed to initialize the module, deserialized from `genesis.json`.
     type Config;
 
-    /// A module defined argument to the call method. This is usually an enum,
-    /// with  one variant for each action a user might take.
+    /// A module-defined enum representing the actions a user can take.
     type CallMessage: Debug + BorshSerialize + BorshDeserialize + Clone;
 
-    /// A module defined event resulting from a call method. Events invisible to on-chain
-    /// logic, but they're very useful for indexing.
+    /// A module-defined enum representing the events emitted by successful calls.
     type Event: Debug + BorshSerialize + BorshDeserialize + 'static + core::marker::Send;
 
-    /// Genesis is called once when a rollup is deployed.
+    /// `genesis` is called once when the rollup is deployed to initialize state.
     ///
-    /// You should use this function to initialize all of your module's `StateValue`s and run any other
-    /// one-time setup. Since this function runs only once, it's perfectly acceptible to do expensive operations
-    /// here. Note that your function should still be deterministic, however.
+    /// The logic here must be deterministic, but since it only runs once,
+    /// efficiency is not a primary concern.
     fn genesis(
-        &self,
-        genesis_block_header: &<<Self::Spec as Spec>::Da as DaSpec>::BlockHeader,
+        &mut self,
         config: &Self::Config,
         state: &mut impl GenesisState<Self::Spec>,
-    ) -> Result<(), ModuleError>;
+    ) -> Result<(), Error>;
 
 
-    /// Call accepts a `CallMessage` and executes it, changing the state of the module and emitting events.
-    fn  call(&self,
+    /// `call` accepts a `CallMessage` and executes it, changing the module's state.
+    fn call(
+        &mut self,
         message: Self::CallMessage,
         context: &Context<Self::Spec>,
         state: &mut impl TxState<Self::Spec>,
-    ) -> Result<(), ModuleError>;
+    ) -> Result<CallResponse, Error>;
 }
 ```
 
-### Genesis
+#### `genesis`
+The `genesis` function is called once when the rollup is deployed. It uses the module's `Config` struct (defined as the associated `type Config`) to initialize the state. This `Config` is deserialized from the `genesis.json` file.
 
-As you might expect, the `genesis` function is called exactly once when the
-rollup is initialized. It lets the person deploying your module set any initial
-configuration and is responsible for making sure that any state values in your
-module are initialized (if necessary). Since `genesis` is only called once, you
-don't need to worry about efficiency. However, you do need to be careful not to
-do anything non-deterministic. That means no network requests, and no use of
-randomness!
+#### `call`
+The `call` function provides the transaction processing logic. It accepts a structured `CallMessage` from a user and a `Context` containing metadata like the sender's address. If your `call` function returns an error, the SDK automatically reverts all state changes and discards any events, ensuring that transactions are atomic.
 
-As you can see, the `genesis` function gets passed a user-defined `Config`
-value. As a module author, you can put anything you want here. Deployers of your
-rollup will need to instantiate the config at genesis, and you can use it to do
-initialization. If your module doesn't need configuring, you can just use the
-empty type `()`.
+You can define the `CallMessage` to be any type you wish, but an enum is usually best. Be sure to derive `borsh` and `serde` serialization, as well as `schemars::JsonSchema` and `sov_modules_macros::UniversalWallet`. This ensures your `CallMessage` is portable across different languages and frontends.
 
-`genesis` also accepts an argument which implements the `GenesisState` trait.
-This argument allows you to read and write to state values in your module and
-its dependencies. A typical genesis config definition and genesis function
-looklike this:
-
-```rust
-// Adapted from the `SequencerRegistry` module
-pub struct SequencerConfig<S: Spec> {
-    /// The rollup address of the sequencer.
-    pub seq_rollup_address: S::Address,
-    /// The Data Availability (DA) address of the sequencer.
-    pub seq_da_address: <S::Da as DaSpec>::Address,
-    /// Initial sequencer bond
-    pub seq_bond: u128,
-}
-
-pub(crate) fn genesis(
-    &self,
-    _genesis_rollup_header: &<<S as Spec>::Da as DaSpec>::BlockHeader,
-    config: &SequencerConfig,
-    state: &mut impl GenesisState<S>,
-) -> Result<()> {
-    self.register_staker(
-        &config.seq_da_address,
-        Amount::new(config.seq_bond),
-        config.seq_rollup_address.clone(),
-        state,
-    )?;
-}
-```
-
-### Call
-
-The `call` function provides the transaction processing logic for your module.
-It accepts a structured input (`CallMessage`) from a user and a `Context` which contains
-metadata, including the sender's address. In response to a `call`, your module can
-update its state and emit `Events`. 
-
-If your call function returns an error, the SDK automatically reverts all state changes and discards any events, ensuring that transactions are atomic.
-
-You can define the `CallMessage` accepted by your module to be any type you
-wish, but an enum is usually the best. Be sure to implement `borsh` and `serde`
-serialization for your type, as well as `schemars::JsonSchema` and
-`sov_modules_macros::UniversalWallet`. This will ensure that it's maximally
-portable across languages and frontends, making it easy for users to securely
-generate, review, sign, and send transactions to your module.
-
-Let's walk through a simple example of a module that allows an admin to set a `u32` value.
-
-```rust
-// The `CallMessage` enum defines the actions users can take.
-// Deriving these traits ensures it's portable across different clients and frontends.
-#[derive(Debug, BorshSerialize, BorshDeserialize, serde::Serialize, serde::Deserialize, schemars::JsonSchema, sov_modules_macros::UniversalWallet)]
-pub enum CallMessage {
-    SetValue(u32),
-}
-```
-
-Now, let's implement the call method. This example assumes your module struct has #[state] fields for admin: StateValue<S::Address> and value: StateValue<u32>, which would be initialized in genesis.
-
-```rust
-// In your `impl<S: Spec> Module for YourModule<S>` block
-
-fn call(
-    &self,
-    msg: Self::CallMessage,
-    context: &Context<Self::Spec>,
-    state: &mut impl TxState<S>,
-) -> Result<(), Error> {
-    // The `call` method typically matches on the message variant.
-    match msg {
-        CallMessage::SetValue(new_value) => {
-            // It's good practice to delegate logic to a private helper method.
-            self.set_value(new_value, context, state)
-        }
-    }
-}
-
-// In a private `impl<S: Spec> YourModule<S>` block
-
-/// Sets a new value, but only if the sender is the admin.
-fn set_value(
-    &self,
-    new_value: u32,
-    context: &Context<Self::Spec>,
-    state: &mut impl TxState<S>,
-) -> Result<(), Error> {
-    // 1. Authorize: Check if the sender is allowed to perform this action.
-    let admin = self.admin.get_or_err(state)?;
-    if &admin != context.sender() {
-        return Err(anyhow::anyhow!("Only the admin can set the value.").into());
-    }
-
-    // 2. Execute: Perform the state change.
-    self.value.set(&new_value, state)?;
-
-    // 3. Emit Event: Announce the successful state change to the outside world. (We'll cover events shortly.)
-    self.emit_event(
-        state,
-        Event::ValueChanged { // Assumes a variant in your `Event` enum
-            new_value,
-            sender: context.sender().clone(),
-        },
-    );
-
-    Ok(())
-}
-```
-
-Just like Ethereum `smart contracts` and Solana `programs`, modules accept
-inputs that are pre-validated by the chain. That means your module does _not_
-need to worry about authenticating the transaction. In most cases, you also
-don't need to worry about manually metering resource consumption. The SDK will
-automatically charge gas for any state accesses and deduct the cost from the
-sender's balance. However, if your module does any very heavy computation you
-may need to meter that explicitly using the `Module::charge_gas` function.
+**A Note on Gas and Security**: Just like Ethereum smart contracts, modules accept inputs that are pre-validated by the chain. Your call method does not need to worry about authenticating the transaction sender. The SDK also automatically meters gas for state accesses. You only need to manually charge gas (using state.charge_gas(...)) if your module performs heavy computation outside of state reads/writes.
 
 ### Events
 
-Events are the primary way your module communicates with the outside world. They're structured data that gets included in transaction receipts and can be:
-- Queried via REST API
-- Streamed in real-time via WebSocket subscriptions
-- Used by indexers to build databases
-- Monitored for alerts and analytics
+Events are the primary way your module communicates with the outside world. They are structured data included in transaction receipts and are essential for:
+-   Querying via REST API.
+-   Streaming in real-time via WebSockets.
+-   Building off-chain indexers and databases.
 
-Events are write-only during transaction execution (you can't read them back), making them efficient for recording detailed information without impacting state transition performance.
-
-**Important**: Unlike logs or metrics, events are only emitted when transactions succeed. If a transaction reverts, no events are emitted. This makes events perfect for indexing on-chain state in a scalable way - you can listen to the events WebSocket and reconstruct the entire state in external databases, knowing that every event represents a committed state change.
-
-Here's how to define and emit events:
-
-```rust
-#[derive(Debug, BorshSerialize, BorshDeserialize, serde::Serialize, serde::Deserialize)]
-pub enum Event {
-    TokenCreated {
-        token_id: TokenId,
-        creator: S::Address,
-        initial_supply: u64,
-    },
-    TokenTransferred {
-        from: S::Address,
-        to: S::Address,
-        amount: u64,
-    },
-}
-
-// In your call implementation:
-self.emit_event(
-    state,
-    Event::TokenTransferred {
-        from: sender.clone(),
-        to: recipient.clone(),
-        amount,
-    },
-);
-```
-
-Every significant state change should emit an event. Think of events as your module's public changelog - they're what external systems use to understand what happened in each transaction.
+**Important**: Events are only emitted when transactions succeed. If a transaction reverts, all its events are discarded. This makes events perfect for reliably indexing onchain state.
 
 ### Error Handling
 
-Modules use `anyhow::Result` for error handling, providing rich context that helps both developers and users understand what went wrong:
+Modules use `anyhow::Result` for error handling, providing rich context that helps both developers and users understand what went wrong.
 
 ```rust
 use anyhow::{Context, Result};
 
-fn transfer(&self, from: &S::Address, to: &S::Address, amount: u64, state: &mut impl TxState<S>) -> Result<()> {
-    let balance = self.balances
-        .get(from, state)
-        .context("Failed to read sender balance")?
+fn transfer(&self, from: &S::Address, amount: u64, state: &mut impl TxState<S>) -> Result<()> {
+    let balance = self.balances.get(from, state)?
+        .with_context(|| format!("Failed to read balance for sender {}", from))?
         .unwrap_or(0);
     
     if balance < amount {
         return Err(anyhow::anyhow!("Insufficient balance: {} < {}", balance, amount));
     }
-    
-    // ... rest of transfer logic
+    // ...
+    Ok(())
 }
 ```
-
-Errors automatically revert all state changes from the transaction. For more details on error handling patterns and when to panic vs return errors, see the [Advanced Topics](3-4-advanced.html#error-handling) section.
+Errors automatically revert all state changes. For more details on error handling patterns, see the [Advanced Topics](3-5-advanced.md#error-handling) section.
 
 ### Next Step: Ensuring Correctness
 
-You now have all the tools to define a module's state, initialize it at genesis, and handle user interactions through call methods. You've created the core business logic of your application.
+You now have a deep understanding of how to define, implement, and structure a module. With this foundation, you're ready to test your module.
 
-However, before you can integrate this module into a live rollup, you need to be confident that it works exactly as intended. In the next section, "Testing Your Module," we'll show you how to use the SDK's powerful testing framework to write comprehensive tests, covering both successful transaction paths and potential error cases.
+In the next section, **"Testing Your Module,"** we'll show you how to use the SDK's powerful testing framework to write comprehensive tests for your new module.
