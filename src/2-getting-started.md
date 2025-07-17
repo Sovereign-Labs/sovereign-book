@@ -40,7 +40,7 @@ cargo run --bin node
 
 ### Explore the REST API endpoints via Swagger UI
 
-The rollup includes several built-in modules: Bank (for token management), Paymaster, Hyperlane, and more. You can query any state item in these modules:
+The rollup starter includes several built-in modules: Bank (for token management), Paymaster, Hyperlane, and more. You can query any state item in these modules:
 
 ```bash
 open http://localhost:12346/swagger-ui/#/ 
@@ -73,7 +73,7 @@ npm install
 
 ```js
 // 1. Initialize rollup client
-const rollup = await createStandardRollup({ // defaults to http://localhost:12346, or pass url: "custom-endpoint"
+const rollup = await createStandardRollup({ // defaults to http://localhost:12346, or pass url: "<custom-endpoint>"
   context: {
     defaultTxDetails: {
       max_priority_fee_bips: 0,
@@ -181,6 +181,8 @@ This time, the curl command should return:
 {"data":{"value":10},"meta":{}}
 ```
 
-### Learn more
+## What's Next? 
 
-To learn more about building with Sovereign SDK, experiment with the [ExampleModule](/crates/example-module/src/lib.rs). For a deeper understanding of the abstractions, see the [Building a module](https://docs.sovereign.xyz/rollup-devs/build-a-module.html) section of the SDK book.
+You've now successfully launched a rollup, queried its state, and submitted a transaction. You've seen how the `bank` and `example_module` are just two components of a larger system.
+
+ To truly make this rollup your own, you'll want to build custom logic. In the next chapter, "Writing Your Application," we'll dive deep into the heart of the Sovereign SDK and teach you how to implement your very own module from scratch.
