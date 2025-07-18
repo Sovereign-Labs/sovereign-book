@@ -294,4 +294,4 @@ The `sov-test-utils` crate provides a comprehensive toolkit for testing every as
 
 With a thoroughly tested module, you can be confident in your logic's correctness and robustness. It's now time to bring your module to life by integrating it into a live rollup runtime.
 
-In the next section, "Integrating Your Module," we'll guide you through adding your module to the Runtime struct, configuring its genesis state, and making it a live component of your application.
+In the next section, **"Integrating Your Module,"** we'll guide you through adding your module to the Runtime struct, configuring its genesis state, and making it a live component of your application.

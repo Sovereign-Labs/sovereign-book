@@ -46,7 +46,7 @@ use sov_modules_api::macros::{serialize, UniversalWallet};
 
 // The configuration for our module at genesis. This will be deserialized from `genesis.json`.
 #[derive(Debug, Clone)]
-#[serialize(Serde)]
+#[serialize(Borsh, Serde)]
 #[serde(rename_all = "snake_case")]
 pub struct ValueSetterConfig<S: Spec> {
     pub initial_value: u32,

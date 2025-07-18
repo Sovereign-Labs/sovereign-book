@@ -49,4 +49,4 @@ This upcoming feature, inspired by the pioneering work of Hyperliquid, will allo
 
 ### Next Steps: Advanced Features
 
-You now have a complete picture of how to build a module and enable users to interact with it. From here, you can dive into the "Advanced Topics" to learn about hooks, custom APIs, and other powerful features that will allow you to build truly sophisticated onchain applications.
+You now have a complete picture of how to build a module and enable users to interact with it. From here, you can dive into the **"Advanced Topics"** to learn about hooks, custom APIs, and other powerful features that will allow you to build truly sophisticated onchain applications.

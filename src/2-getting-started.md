@@ -185,4 +185,4 @@ This time, the curl command should return:
 
 You've now successfully launched a rollup, queried its state, and submitted a transaction. You've seen how the `bank` and `example_module` are just two components of a larger system.
 
- To truly make this rollup your own, you'll want to build custom logic. In the next chapter, "Writing Your Application," we'll dive deep into the heart of the Sovereign SDK and teach you how to implement your very own module from scratch.
+ To truly make this rollup your own, you'll want to build custom logic. In the next chapter, **"Writing Your Application,"** we'll dive deep into the heart of the Sovereign SDK and teach you how to implement your very own module from scratch.

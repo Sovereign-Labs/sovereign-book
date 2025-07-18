@@ -44,4 +44,4 @@ This two-stage process gives you the best of both worlds: the instant, centraliz
 
 ## Ready to Build?
 
-Now that you understand the power and flexibility of the Sovereign SDK, you're ready to get your hands dirty. In the next chapter, "Getting Started," we'll walk you through cloning a starter repository and running your first rollup in minutes.
+Now that you understand the power and flexibility of the Sovereign SDK, you're ready to get your hands dirty. In the next chapter, **"Getting Started,"** we'll walk you through cloning a starter repository and running your first rollup in minutes.

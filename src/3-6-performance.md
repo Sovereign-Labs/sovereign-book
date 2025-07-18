@@ -16,4 +16,4 @@ The other common source of performance woes is heavy-duty cryptography. If you n
 
 By keeping these performance principles in mind, bundling hot state and using optimized cryptography, you can design your modules to be highly efficient, ensuring your rollup can scale to meet user demand.
 
-While building custom logic is powerful, you don't always have to start from scratch. The Sovereign SDK comes with a rich set of "Prebuilt Modules" for common tasks like token management, bridging, and sequencer orchestration. The next section provides an overview of these modules, which you can leverage to accelerate your development.
+While building custom logic is powerful, you don't always have to start from scratch. The Sovereign SDK comes with a rich set of **"Prebuilt Modules"** for common tasks like token management, bridging, and sequencer orchestration. The next section provides an overview of these modules, which you can leverage to accelerate your development.
