@@ -6,7 +6,10 @@ src = "src"
 title = "The Sovereign SDK Book"
 
 [output.html]
-# default-theme = "sovereign-dark"
-# preferred-dark-theme = "sovereign-dark"
 mathjax-support = true
 cname = "docs.sovereign.xyz"
+
+[output.html.playpen]
+copyable = true
+editable = false
+runnable = false
