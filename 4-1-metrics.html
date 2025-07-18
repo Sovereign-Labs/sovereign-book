@@ -181,9 +181,7 @@
 <p>The SDK includes a custom metrics system called <a href="fix-link"><code>sov-metrics</code></a> designed specifically for rollup monitoring. It uses the <a href="https://docs.influxdata.com/influxdb/cloud/reference/syntax/line-protocol/">Telegraf line protocol</a> format and integrates with Telegraf through socket listeners for efficient data collection. Metrics are automatically timestamped and sent to your configured Telegraf endpoint, which typically forwards them to InfluxDB for storage and Grafana for visualization. Metrics can only be tracked in <strong>native mode</strong> (not in zkVM).</p>
 <p><strong>Important</strong>: Metrics are emitted immediately when tracked and are NOT rolled back if a transaction reverts. This means failed transactions will still have their metrics recorded, which can be useful for debugging and monitoring error rates.</p>
 <h2 id="basic-example"><a class="header" href="#basic-example">Basic Example</a></h2>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>#[cfg(feature = "native")]
+<pre><code class="language-rust">#[cfg(feature = "native")]
 use sov_metrics::{track_metrics, start_timer, save_elapsed};
 
 impl&lt;S: Spec&gt; MyModule&lt;S&gt; {
@@ -218,13 +216,10 @@ impl&lt;S: Spec&gt; MyModule&lt;S&gt; {
         
         Ok(())
     }
-}
-<span class="boring">}</span></code></pre></pre>
+}</code></pre>
 <h2 id="tracking-custom-metrics"><a class="header" href="#tracking-custom-metrics">Tracking Custom Metrics</a></h2>
 <p>To track custom metrics, implement the <code>Metric</code> trait:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>// Implement your custom metric in a file of your own choosing...
+<pre><code class="language-rust">// Implement your custom metric in a file of your own choosing...
 #![cfg(feature = "native")]
 use sov_metrics::Metric;
 use sov_metrics::{track_metrics, start_timer, save_elapsed};
@@ -292,8 +287,7 @@ impl&lt;S: Spec&gt; Bank&lt;S&gt; {
         
         Ok(())
     }
-}
-<span class="boring">}</span></code></pre></pre>
+}</code></pre>
 <h2 id="best-practices"><a class="header" href="#best-practices">Best Practices</a></h2>
 <p>Note: While the SDK provides comprehensive metrics infrastructure, individual modules in the SDK don't currently use metrics directly. Most metrics are tracked at the system level (runner, sequencer, state transitions). The examples here show how you <em>could</em> add metrics to your custom modules.</p>
 <ol>

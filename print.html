@@ -213,7 +213,7 @@
 <p>Finally, specialized actors called <strong>provers</strong> (in zk-rollup mode) or <strong>attesters</strong> (in optimistic-rollup mode) generate cryptographic proofs  or attestations that the state was computed correctly. These are posted back to the DA layer, allowing light clients and bridges to securely verify the rollup's state without having to re-execute every transaction.</p>
 <p>This two-stage process gives you the best of both worlds: the instant, centralized execution needed for high-performance applications, combined with the censorship-resistance and trust-minimized verification of a traditional blockchain.</p>
 <h2 id="ready-to-build"><a class="header" href="#ready-to-build">Ready to Build?</a></h2>
-<p>Now that you understand the power and flexibility of the Sovereign SDK, you're ready to get your hands dirty. In the next chapter, "Getting Started," we'll walk you through cloning a starter repository and running your first rollup in minutes.</p>
+<p>Now that you understand the power and flexibility of the Sovereign SDK, you're ready to get your hands dirty. In the next chapter, <strong>"Getting Started,"</strong> we'll walk you through cloning a starter repository and running your first rollup in minutes.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="getting-started"><a class="header" href="#getting-started">Getting Started</a></h1>
 <h2 id="overview"><a class="header" href="#overview">Overview</a></h2>
 <p>This guide provides a starting point for building rollups with the Sovereign SDK.</p>
@@ -358,7 +358,7 @@ let setValueCall: RuntimeCall = {
 </code></pre>
 <h2 id="whats-next"><a class="header" href="#whats-next">What's Next?</a></h2>
 <p>You've now successfully launched a rollup, queried its state, and submitted a transaction. You've seen how the <code>bank</code> and <code>example_module</code> are just two components of a larger system.</p>
-<p>To truly make this rollup your own, you'll want to build custom logic. In the next chapter, "Writing Your Application," we'll dive deep into the heart of the Sovereign SDK and teach you how to implement your very own module from scratch.</p>
+<p>To truly make this rollup your own, you'll want to build custom logic. In the next chapter, <strong>"Writing Your Application,"</strong> we'll dive deep into the heart of the Sovereign SDK and teach you how to implement your very own module from scratch.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="writing-your-application"><a class="header" href="#writing-your-application">Writing Your Application</a></h1>
 <p>At its core, a rollup is a specialized blockchain that processes transactions from a data availability (DA) layer. The logic that determines how your rollup behaves is defined by two key components: the <strong>runtime</strong> and its <strong>modules</strong>.</p>
 <p>The runtime is the orchestrator of your rollup. It receives serialized transactions from the DA layer, deserializes them, and routes them to the appropriate modules for execution. Think of it as the central nervous system that connects all your application logic together. The runtime defines which modules your rollup supports, how they interact with each other, and how the rollup's state is initialized at genesis.</p>
@@ -384,9 +384,7 @@ let setValueCall: RuntimeCall = {
 <h2 id="a-step-by-step-walkthrough-the-valuesetter-module"><a class="header" href="#a-step-by-step-walkthrough-the-valuesetter-module">A Step-by-Step Walkthrough: The <code>ValueSetter</code> Module</a></h2>
 <h3 id="1-defining-the-module-struct"><a class="header" href="#1-defining-the-module-struct">1. Defining the Module Struct</a></h3>
 <p>First, we define the module's structure and the state it will manage. This struct tells the SDK what data to store onchain.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>use sov_modules_api::{Module, ModuleId, ModuleInfo, StateValue, Spec};
+<pre><code class="language-rust">use sov_modules_api::{Module, ModuleId, ModuleInfo, StateValue, Spec};
 
 // This is the struct that will represent our module.
 // It must derive `ModuleInfo` to be a valid module.
@@ -405,19 +403,16 @@ pub struct ValueSetter&lt;S: Spec&gt; {
     /// S:Address is the address type of our rollup. More on `Spec` later.
     #[state]
     pub admin: StateValue&lt;S::Address&gt;,
-}
-<span class="boring">}</span></code></pre></pre>
+}</code></pre>
 <h3 id="2-defining-types-for-the-module-trait"><a class="header" href="#2-defining-types-for-the-module-trait">2. Defining Types for the <code>Module</code> Trait</a></h3>
 <p>Next, we define the associated types required by the <code>Module</code> trait: its configuration, its callable methods, and its events.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>// Continuing in the same file...
+<pre><code class="language-rust">// Continuing in the same file...
 use schemars::JsonSchema;
 use sov_modules_api::macros::{serialize, UniversalWallet};
 
 // The configuration for our module at genesis. This will be deserialized from `genesis.json`.
 #[derive(Debug, Clone)]
-#[serialize(Serde)]
+#[serialize(Borsh, Serde)]
 #[serde(rename_all = "snake_case")]
 pub struct ValueSetterConfig&lt;S: Spec&gt; {
     pub initial_value: u32,
@@ -438,13 +433,10 @@ pub enum CallMessage {
 #[serde(rename_all = "snake_case")]
 pub enum Event {
     ValueChanged(u32),
-}
-<span class="boring">}</span></code></pre></pre>
+}</code></pre>
 <h3 id="3-implementing-the-module-trait-logic"><a class="header" href="#3-implementing-the-module-trait-logic">3. Implementing the <code>Module</code> Trait Logic</a></h3>
 <p>With our types defined, we can now implement the <code>Module</code> trait itself.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>use anyhow::Result;
+<pre><code class="language-rust">use anyhow::Result;
 use sov_modules_api::{Context, GenesisState, TxState, EventEmitter};
 
 // Now, we implement the `Module` trait.
@@ -471,14 +463,11 @@ impl&lt;S: Spec&gt; Module for ValueSetter&lt;S&gt; {
             }
         }
     }
-}
-<span class="boring">}</span></code></pre></pre>
+}</code></pre>
 <h3 id="4-writing-the-business-logic"><a class="header" href="#4-writing-the-business-logic">4. Writing the Business Logic</a></h3>
 <p>The final piece is to write the private <code>set_value</code> method containing our business logic.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span>
-<span class="boring">fn main() {
-</span>impl&lt;S: Spec&gt; ValueSetter&lt;S&gt; {
+<pre><code class="language-rust">
+impl&lt;S: Spec&gt; ValueSetter&lt;S&gt; {
     fn set_value(&amp;mut self, new_value: u32, context: &amp;Context&lt;S&gt;, state: &amp;mut impl TxState&lt;S&gt;) -&gt; Result&lt;()&gt; {
         let admin = self.admin.get_or_err(state)??;
 
@@ -490,8 +479,7 @@ impl&lt;S: Spec&gt; Module for ValueSetter&lt;S&gt; {
         self.emit_event(state, Event::ValueChanged(new_value));
         Ok(())
     }
-}
-<span class="boring">}</span></code></pre></pre>
+}</code></pre>
 <p>With that, you've implemented a complete module! Now, let's break down the concepts we used in more detail.</p>
 <hr />
 <h2 id="anatomy-of-a-module-a-deeper-look"><a class="header" href="#anatomy-of-a-module-a-deeper-look">Anatomy of a Module: A Deeper Look</a></h2>
@@ -528,9 +516,7 @@ this trait, the SDK will throw a helpful error.</p>
 <h3 id="the-module-trait-and-its-methods"><a class="header" href="#the-module-trait-and-its-methods">The <code>Module</code> Trait and its Methods</a></h3>
 <p>The <code>Module</code> trait is the core of your application's onchain logic. The implementation you wrote in the walkthrough satisfies this trait's requirements.</p>
 <p>Let's look at a simplified version of the trait definition to understand its components:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>trait Module {
+<pre><code class="language-rust">trait Module {
     /// The configuration needed to initialize the module, deserialized from `genesis.json`.
     type Config;
 
@@ -559,8 +545,7 @@ this trait, the SDK will throw a helpful error.</p>
         context: &amp;Context&lt;Self::Spec&gt;,
         state: &amp;mut impl TxState&lt;Self::Spec&gt;,
     ) -&gt; Result&lt;CallResponse, Error&gt;;
-}
-<span class="boring">}</span></code></pre></pre>
+}</code></pre>
 <h4 id="genesis"><a class="header" href="#genesis"><code>genesis</code></a></h4>
 <p>The <code>genesis</code> function is called once when the rollup is deployed. It uses the module's <code>Config</code> struct (defined as the associated <code>type Config</code>) to initialize the state. This <code>Config</code> is deserialized from the <code>genesis.json</code> file.</p>
 <h4 id="call"><a class="header" href="#call"><code>call</code></a></h4>
@@ -578,9 +563,7 @@ this trait, the SDK will throw a helpful error.</p>
 <h3 id="error-handling"><a class="header" href="#error-handling">Error Handling</a></h3>
 <p>Modules use <code>anyhow::Result</code> for error handling, providing rich context that helps both developers and users understand what went wrong.</p>
 <p>When your call method returns an Err, the SDK automatically reverts all state changes made during the transaction. This ensures that your module's logic is atomic.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>use anyhow::{Context, Result};
+<pre><code class="language-rust">use anyhow::{Context, Result};
 
 fn transfer(&amp;self, from: &amp;S::Address, amount: u64, state: &amp;mut impl TxState&lt;S&gt;) -&gt; Result&lt;()&gt; {
     let balance = self.balances.get(from, state)?
@@ -592,8 +575,7 @@ fn transfer(&amp;self, from: &amp;S::Address, amount: u64, state: &amp;mut impl 
     }
     // ...
     Ok(())
-}
-<span class="boring">}</span></code></pre></pre>
+}</code></pre>
 <p>For more details on error handling patterns, see the <a href="3-5-advanced.html#error-handling">Advanced Topics</a> section.</p>
 <h3 id="next-step-ensuring-correctness"><a class="header" href="#next-step-ensuring-correctness">Next Step: Ensuring Correctness</a></h3>
 <p>You now have a deep understanding of how to define, implement, and structure a module. With this foundation, you're ready to test your module.</p>
@@ -611,9 +593,7 @@ fn transfer(&amp;self, from: &amp;S::Address, amount: u64, state: &amp;mut impl 
 <h2 id="setting-up-your-test-environment"><a class="header" href="#setting-up-your-test-environment">Setting Up Your Test Environment</a></h2>
 <h3 id="1-create-your-test-runtime"><a class="header" href="#1-create-your-test-runtime">1. Create Your Test Runtime</a></h3>
 <p>The <code>generate_optimistic_runtime!</code> macro automatically includes all core modules (Bank, Accounts, SequencerRegistry, etc.), so you only need to add your custom modules:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>use sov_test_utils::runtime::optimistic::generate_optimistic_runtime;
+<pre><code class="language-rust">use sov_test_utils::runtime::optimistic::generate_optimistic_runtime;
 
 // Your module's crate
 use your_module::YourModule;
@@ -622,13 +602,10 @@ use your_module::YourModule;
 generate_optimistic_runtime!(
     TestRuntime &lt;=  // Your test runtime name
     your_module: YourModule&lt;S&gt; // Your custom module
-);
-<span class="boring">}</span></code></pre></pre>
+);</code></pre>
 <h3 id="2-define-your-genesis-configuration"><a class="header" href="#2-define-your-genesis-configuration">2. Define Your Genesis Configuration</a></h3>
 <p>Set up the initial state with test users:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>use sov_test_utils::{HighLevelOptimisticGenesisConfig, TestRunner, TestUser};
+<pre><code class="language-rust">use sov_test_utils::{HighLevelOptimisticGenesisConfig, TestRunner, TestUser};
 
 pub struct TestData&lt;S: Spec&gt; {
     pub admin: TestUser&lt;S&gt;,
@@ -650,13 +627,10 @@ pub fn setup() -&gt; (TestData&lt;TestSpec&gt;, TestRunner&lt;TestRuntime, TestS
     let runner = TestRunner::new_with_genesis(/* ... */);
     
     (test_data, runner)
-}
-<span class="boring">}</span></code></pre></pre>
+}</code></pre>
 <h2 id="writing-your-first-test"><a class="header" href="#writing-your-first-test">Writing Your First Test</a></h2>
 <p>Here's a complete example testing a simple module operation:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>#[cfg(test)]
+<pre><code class="language-rust">#[cfg(test)]
 mod tests {
     use super::*;
     use sov_test_utils::{TestRunner, TransactionTestCase};
@@ -685,8 +659,7 @@ mod tests {
             }),
         });
     }
-}
-<span class="boring">}</span></code></pre></pre>
+}</code></pre>
 <h2 id="running-your-tests"><a class="header" href="#running-your-tests">Running Your Tests</a></h2>
 <p>Execute your tests from your module's root directory using standard Rust commands:</p>
 <pre><code class="language-bash"># Navigate to your module directory 
@@ -704,9 +677,7 @@ cargo test -- --nocapture
 <h2 id="testing-patterns"><a class="header" href="#testing-patterns">Testing Patterns</a></h2>
 <h3 id="1-error-scenario-testing"><a class="header" href="#1-error-scenario-testing">1. Error Scenario Testing</a></h3>
 <p>Test that your module handles errors correctly:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>#[test]
+<pre><code class="language-rust">#[test]
 fn test_insufficient_balance() {
     let (test_data, mut runner) = setup();
     let sender = &amp;test_data.user1;
@@ -732,13 +703,10 @@ fn test_insufficient_balance() {
             }
         }),
     });
-}
-<span class="boring">}</span></code></pre></pre>
+}</code></pre>
 <h3 id="2-event-testing"><a class="header" href="#2-event-testing">2. Event Testing</a></h3>
 <p>Verify that your module emits the correct events. Note that the event enum name (e.g., <code>TestRuntimeEvent</code>) is automatically generated based on your runtime name.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>#[test]
+<pre><code class="language-rust">#[test]
 fn test_event_emission() {
     let (test_data, mut runner) = setup();
     let user = &amp;test_data.user1;
@@ -760,13 +728,10 @@ fn test_event_emission() {
             );
         }),
     });
-}
-<span class="boring">}</span></code></pre></pre>
+}</code></pre>
 <h3 id="3-time-based-testing"><a class="header" href="#3-time-based-testing">3. Time-Based Testing</a></h3>
 <p>Test operations that depend on blockchain progression by advancing slots:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>#[test]
+<pre><code class="language-rust">#[test]
 fn test_time_delayed_operation() {
     let (users, mut runner) = setup();
 
@@ -777,13 +742,10 @@ fn test_time_delayed_operation() {
 
     // 3. Now, the second part of the operation should succeed
     runner.execute_transaction(/* ... complete the operation ... */);
-}
-<span class="boring">}</span></code></pre></pre>
+}</code></pre>
 <h3 id="4-standalone-state-queries"><a class="header" href="#4-standalone-state-queries">4. Standalone State Queries</a></h3>
 <p>While you can query state within a transaction's assert block, you can also query the latest visible state at any point using <code>runner.query_visible_state</code>. This is useful for verifying the initial genesis state or checking state after non-transaction events like advancing slots. This can be useful if you especially have custom <a href="3-5-advanced.html#hooks"><code>hooks</code></a>:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>#[test]
+<pre><code class="language-rust">#[test]
 fn test_state_queries() {
     let (test_data, mut runner) = setup();
     let admin = &amp;test_data.admin;
@@ -815,13 +777,10 @@ fn test_state_queries() {
             .unwrap();
         assert_eq!(item_count, 1);
     });
-}
-<span class="boring">}</span></code></pre></pre>
+}</code></pre>
 <h3 id="5-custom-module-genesis-configuration"><a class="header" href="#5-custom-module-genesis-configuration">5. Custom Module Genesis Configuration</a></h3>
 <p>If your module requires initialization parameters in genesis (like an admin address or initial values), you'll need to provide a custom configuration:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>use sov_test_utils::{GenesisConfig};
+<pre><code class="language-rust">use sov_test_utils::{GenesisConfig};
 
 fn setup_with_config() -&gt; (TestUser&lt;TestSpec&gt;, TestRunner&lt;TestRuntime, TestSpec&gt;) {
     let genesis_config = HighLevelOptimisticGenesisConfig::generate()
@@ -850,8 +809,7 @@ fn setup_with_config() -&gt; (TestUser&lt;TestSpec&gt;, TestRunner&lt;TestRuntim
     );
     
     (admin, runner)
-}
-<span class="boring">}</span></code></pre></pre>
+}</code></pre>
 <h2 id="additional-resources"><a class="header" href="#additional-resources">Additional Resources</a></h2>
 <p>For more advanced testing scenarios, the <a href="fix-link-https://docs.rs/sov-test-utils"><code>sov-test-utils</code> crate</a> is your primary resource. It contains all the testing components covered in this guide and much more.</p>
 <p>We highly recommend exploring the documentation for the <strong><a href="fix-link-https://docs.rs/sov-test-utils/latest/sov_test_utils/runtime/struct.TestRunner.html"><code>TestRunner</code></a></strong> struct, which provides methods for more complex scenarios, including:</p>
@@ -864,7 +822,7 @@ fn setup_with_config() -&gt; (TestUser&lt;TestSpec&gt;, TestRunner&lt;TestRuntim
 <p>The <code>sov-test-utils</code> crate provides a comprehensive toolkit for testing every aspect of your module's behavior.</p>
 <h3 id="ready-for-primetime"><a class="header" href="#ready-for-primetime">Ready for Primetime</a></h3>
 <p>With a thoroughly tested module, you can be confident in your logic's correctness and robustness. It's now time to bring your module to life by integrating it into a live rollup runtime.</p>
-<p>In the next section, "Integrating Your Module," we'll guide you through adding your module to the Runtime struct, configuring its genesis state, and making it a live component of your application.</p>
+<p>In the next section, <strong>"Integrating Your Module,"</strong> we'll guide you through adding your module to the Runtime struct, configuring its genesis state, and making it a live component of your application.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="adding-your-module-to-your-runtime"><a class="header" href="#adding-your-module-to-your-runtime">Adding Your Module to Your Runtime</a></h1>
 <p>Once you've built and tested your module, the final step is to integrate it into your rollup runtime. This section will walk you through the process of adding your module to a new rollup project based on our rollup starter template.</p>
 <h2 id="step-1-add-your-module-as-a-dependency"><a class="header" href="#step-1-add-your-module-as-a-dependency">Step 1: Add Your Module as a Dependency</a></h2>
@@ -895,9 +853,7 @@ native = [
 <h2 id="step-2-add-your-module-to-the-runtime-struct"><a class="header" href="#step-2-add-your-module-to-the-runtime-struct">Step 2: Add Your Module to the Runtime Struct</a></h2>
 <p>The central piece of your rollup's logic is the <a href="fix-link"><code>Runtime</code> struct</a>, usually found in <code>crates/stf/src/runtime.rs</code>. This struct lists all the modules that compose your rollup. To integrate your module, simply add it as a new field to this struct.</p>
 <p>The Runtime struct uses several derive macros (<code>#[derive(Genesis, DispatchCall, ...)]</code>) that automatically generate the boilerplate code for state initialization, transaction dispatching, and message encoding.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>use your_module::YourModule;
+<pre><code class="language-rust">use your_module::YourModule;
 
 #[derive(Genesis, Hooks, DispatchCall, Event, MessageCodec, RuntimeRestApi)]
 pub struct Runtime&lt;S: Spec&gt; {
@@ -911,8 +867,7 @@ pub struct Runtime&lt;S: Spec&gt; {
     
     /// Your custom module
     pub your_module: YourModule&lt;S&gt;,
-}
-<span class="boring">}</span></code></pre></pre>
+}</code></pre>
 <h2 id="step-3-configure-genesis-state"><a class="header" href="#step-3-configure-genesis-state">Step 3: Configure Genesis State</a></h2>
 <p>When your rollup is first launched, it populates its initial state from a <code>genesis.json</code> file. You need to tell the rollup how to initialize your module by adding a corresponding entry to this file.</p>
 <h3 id="understanding-genesisjson"><a class="header" href="#understanding-genesisjson">Understanding <code>genesis.json</code></a></h3>
@@ -934,15 +889,12 @@ pub struct Runtime&lt;S: Spec&gt; {
 <p><strong>2. Your Module Requires Initial Configuration:</strong></p>
 <p>If your module needs initial parameters (like an admin address or an initial value), you must provide them in the JSON object. The JSON fields must exactly match the fields of your module's <code>Config</code> struct.</p>
 <p>For example, if your module has this <code>Config</code> struct:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>// In modules/my-awesome-module/src/lib.rs
+<pre><code class="language-rust">// In modules/my-awesome-module/src/lib.rs
 #[derive(serde::Deserialize, serde::Serialize)]
 pub struct MyAwesomeModuleConfig {
     pub admin_address: S::Address,
     pub initial_counter: u64,
-}
-<span class="boring">}</span></code></pre></pre>
+}</code></pre>
 <p>Your <code>genesis.json</code> entry would look like this:</p>
 <pre><code class="language-json">// In your-rollup/genesis.json
 {
@@ -995,7 +947,7 @@ cargo run --bin node
 <h3 id="your-module-is-live"><a class="header" href="#your-module-is-live">Your Module is Live!</a></h3>
 <p>Congratulations! Your module is now a fully integrated part of a running rollup. You have successfully navigated the complete development lifecycle, from implementation and testing to deployment on your local machine.</p>
 <p>You've built the core logic, but now the crucial question is: how do users actually interact with it? How do they create accounts, manage keys, and sign transactions to call your new module's methods?</p>
-<p>The next section, "Wallets and Accounts," will bridge this gap. We'll explore how to leverage the SDK's Ethereum-compatible account system and use client-side tooling to sign and submit transactions to your rollup, bringing your application to life for end-users.</p>
+<p>The next section, <strong>"Wallets and Accounts,"</strong> will bridge this gap. We'll explore how to leverage the SDK's Ethereum-compatible account system and use client-side tooling to sign and submit transactions to your rollup, bringing your application to life for end-users.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="wallets-and-accounts"><a class="header" href="#wallets-and-accounts">Wallets and Accounts</a></h1>
 <p>Now that you've built, tested, and integrated your module, the final step is enabling users to interact with it. This section covers how accounts, wallets, and transaction signing work in the Sovereign SDK.</p>
 <p>The core design principle is <strong>Ethereum wallet compatibility</strong>. Sovereign SDK rollups use standard Ethereum addresses and signatures (Secp256k1), which unlocks the vast Ethereum wallet tooling. However, there are important nuances to understand.</p>
@@ -1025,7 +977,7 @@ await rollup.call(myCallMessage, { signer });
 <p><img src="/assets/message-signing.png" alt="A message signing request from Hyperliquid" /></p>
 <p>This upcoming feature, inspired by the pioneering work of Hyperliquid, will allow developers to support all Ethereum wallets.</p>
 <h3 id="next-steps-advanced-features"><a class="header" href="#next-steps-advanced-features">Next Steps: Advanced Features</a></h3>
-<p>You now have a complete picture of how to build a module and enable users to interact with it. From here, you can dive into the "Advanced Topics" to learn about hooks, custom APIs, and other powerful features that will allow you to build truly sophisticated onchain applications.</p>
+<p>You now have a complete picture of how to build a module and enable users to interact with it. From here, you can dive into the <strong>"Advanced Topics"</strong> to learn about hooks, custom APIs, and other powerful features that will allow you to build truly sophisticated onchain applications.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="advanced-topics"><a class="header" href="#advanced-topics">Advanced Topics</a></h1>
 <p>This section covers advanced module development features that go beyond basic functionality. While the core module implementation handles state management and transaction processing, you may need these additional capabilities for production use cases.</p>
 <p>All features in this section are optional. Start with the basic module implementation and add these capabilities as your requirements grow.</p>
@@ -1068,9 +1020,7 @@ more details.</p>
 <p>Transaction errors automatically revert all state changes.</p>
 <h3 id="writing-error-messages"><a class="header" href="#writing-error-messages">Writing Error Messages</a></h3>
 <p>Your error messages serve both end users and developers. Use <code>anyhow</code> with context to provide meaningful errors:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>use anyhow::{Context, Result};
+<pre><code class="language-rust">use anyhow::{Context, Result};
 
 fn transfer(&amp;self, from: &amp;S::Address, to: &amp;S::Address, token_id: &amp;TokenId, amount: u64, state: &amp;mut impl TxState&lt;S&gt;) -&gt; Result&lt;()&gt; {
     let balance = self.balances
@@ -1092,22 +1042,18 @@ fn transfer(&amp;self, from: &amp;S::Address, to: &amp;S::Address, token_id: &am
     
     // ... rest of transfer logic
     Ok(())
-}
-<span class="boring">}</span></code></pre></pre>
+}</code></pre>
 <p>Transaction reverts are normal and expected - log them at <code>debug!</code> level if needed for debugging, not as warnings or errors.</p>
 <h2 id="native-only-code"><a class="header" href="#native-only-code">Native-Only Code</a></h2>
 <p>Some functionality should only run natively on the full nodes (and sequencer), not in the zkVM during proof generation. This is a critical concept for separating verifiable on-chain logic from off-chain operational tooling.</p>
 <p>Any code that is not part of the core state transition must be gated with <code>#[cfg(feature = "native")]</code>:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>#[cfg(feature = "native")]
+<pre><code class="language-rust">#[cfg(feature = "native")]
 impl&lt;S: Spec&gt; MyModule&lt;S&gt; {
     // This code only compiles natively, not in zkVM
     pub fn debug_state(&amp;self, state: &amp;impl StateAccessor&lt;S&gt;) {
         // ...
     }
-}
-<span class="boring">}</span></code></pre></pre>
+}</code></pre>
 <p>This ensures that your zk-proofs remain small and your onchain logic remains deterministic. Common use cases for native-only code include:</p>
 <ul>
 <li>Custom REST APIs and RPC methods</li>
@@ -1121,9 +1067,7 @@ impl&lt;S: Spec&gt; MyModule&lt;S&gt; {
 <p>This functionality is implemented via the <code>get_transaction_delay_ms</code> method on your <code>Runtime</code> struct. Because this is a sequencer-level scheduling feature and not part of the core state transition logic, it must be gated behind the <code>native</code> feature flag.</p>
 <p>The method receives a decoded <code>CallMessage</code> and returns the number of milliseconds the sequencer should wait before processing it. A return value of <code>0</code> means the transaction should be processed immediately.</p>
 <h3 id="example-prioritizing-cancels-in-a-clob"><a class="header" href="#example-prioritizing-cancels-in-a-clob">Example: Prioritizing Cancels in a CLOB</a></h3>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>// In your-rollup/stf/src/runtime.rs
+<pre><code class="language-rust">// In your-rollup/stf/src/runtime.rs
 
 // In the `impl&lt;S&gt; sov_modules_stf_blueprint::Runtime&lt;S&gt; for Runtime&lt;S&gt;` block:
 
@@ -1145,18 +1089,15 @@ fn get_transaction_delay_ms(&amp;self, call: &amp;Self::Decodable) -&gt; u64 {
         // All other transactions in other modules are also processed immediately.
         _ =&gt; 0,
     }
-}
-<span class="boring">}</span></code></pre></pre>
+}</code></pre>
 <p>This feature gives you precise control over your sequencer's processing queue, enabling sophisticated MEV mitigation strategies without altering your core onchain business logic.</p>
 <h2 id="adding-custom-rest-apis"><a class="header" href="#adding-custom-rest-apis">Adding Custom REST APIs</a></h2>
 <p>You can easily add custom APIs to your module by implementing the
 <code>HasCustomRestApi</code> trait. This trait has two methods - one which actually
 implements the routes, and an optional one which provides an <code>OpenApi</code> spec. You
 can see a good example in the <code>Bank</code> module:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span>#![cfg(feature = "native")]
-<span class="boring">fn main() {
-</span>impl&lt;S: Spec&gt; HasCustomRestApi for Bank&lt;S&gt; {
+<pre><code class="language-rust">#![cfg(feature = "native")]
+impl&lt;S: Spec&gt; HasCustomRestApi for Bank&lt;S&gt; {
     type Spec = S;
 
     fn custom_rest_api(&amp;self, state: ApiState&lt;S&gt;) -&gt; axum::Router&lt;()&gt; {
@@ -1189,8 +1130,7 @@ async fn route_balance(
         .ok_or_else(|| errors::not_found_404("Balance", user_address))?;
 
     Ok(Coins { amount, token_id }.into())
-}
-<span class="boring">}</span></code></pre></pre>
+}</code></pre>
 <p>REST API methods get access to an <code>ApiStateAccessor</code>. This special struct gives
 you access to both normal and <code>Accessory</code> state values. You can freely read and
 write to state during your API calls, which makes it easy to reuse code from the
@@ -1213,10 +1153,8 @@ isn't a concern.</p>
 the <code>#[rpc_gen(client, server)]</code> macro, and then write methods which accept an
 <code>ApiStateAcessor</code> as their final argument and return an <code>RpcResult</code>. You can see
 some examples in the <a href="fix-link"><code>Evm</code> module</a>.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span>#![cfg(feature = "native")]
-<span class="boring">fn main() {
-</span>#[rpc_gen(client, server)]
+<pre><code class="language-rust">#![cfg(feature = "native")]
+#[rpc_gen(client, server)]
 impl&lt;S: Spec&gt; Evm&lt;S&gt; {
     /// Handler for `net_version`
     #[rpc_method(name = "eth_getStorageAt")]
@@ -1233,11 +1171,10 @@ impl&lt;S: Spec&gt; Evm&lt;S&gt; {
             .unwrap_or_default();
         Ok(storage_slot)
     }
-}
-<span class="boring">}</span></code></pre></pre>
+}</code></pre>
 <h3 id="mastering-your-module"><a class="header" href="#mastering-your-module">Mastering Your Module</a></h3>
 <p>By leveraging Hooks, robust error handling, and custom APIs, you can build sophisticated, production-grade modules that are both powerful and easy to operate.</p>
-<p>With a deep understanding of module implementation, you may next want to optimize your rollup's performance. The next section on "Understanding Performance" will dive into state access patterns and cryptographic considerations that can significantly impact your application's throughput.</p>
+<p>With a deep understanding of module implementation, you may next want to optimize your rollup's performance. The next section on <strong>"Understanding Performance"</strong> will dive into state access patterns and cryptographic considerations that can significantly impact your application's throughput.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="understanding-performance"><a class="header" href="#understanding-performance">Understanding Performance</a></h1>
 <h3 id="state-access"><a class="header" href="#state-access">State Access</a></h3>
 <p>The vast majority of the cost of executing a Sovereign SDK transaction comes from state accesses. When calling <code>item.set(&amp;value)</code>, the SDK serializes your value and stores the bytes in cache. When time you access a value using <code>item.get()</code>, the SDK deserializes a fresh copy of your value from the bytes held in cache, falling back to disk if necessary.</p>
@@ -1247,7 +1184,7 @@ impl&lt;S: Spec&gt; Evm&lt;S&gt; {
 <p>The other common source of performance woes is heavy-duty cryptography. If you need to do any cryptographic operations, check whether the <code>Spec</code> trait provides a method in its <code>Spec::CryptoSpec</code> that already does what you want. If it does, use that - the SDK will ensure you get an implementation which is optimized for the SDK's peculiar requirements. If you need access to more exotic cryptography, you can use pretty much any existing Rust library - but be aware that the performance penalty might be severe when it comes time to prove your module's execution, which could limit your total throughput. If you do need advanced cryptography, you may need to pick an implementation that's suited to a particular <code>ZKVM</code> (like <code>SP1</code> or <code>Risc0</code>) and only use that vm with your module.</p>
 <h3 id="building-for-scale"><a class="header" href="#building-for-scale">Building for Scale</a></h3>
 <p>By keeping these performance principles in mind, bundling hot state and using optimized cryptography, you can design your modules to be highly efficient, ensuring your rollup can scale to meet user demand.</p>
-<p>While building custom logic is powerful, you don't always have to start from scratch. The Sovereign SDK comes with a rich set of "Prebuilt Modules" for common tasks like token management, bridging, and sequencer orchestration. The next section provides an overview of these modules, which you can leverage to accelerate your development.</p>
+<p>While building custom logic is powerful, you don't always have to start from scratch. The Sovereign SDK comes with a rich set of <strong>"Prebuilt Modules"</strong> for common tasks like token management, bridging, and sequencer orchestration. The next section provides an overview of these modules, which you can leverage to accelerate your development.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="prebuilt-modules"><a class="header" href="#prebuilt-modules">Prebuilt Modules</a></h1>
 <p>Here's a comprehensive list of all existing modules:</p>
 <h3 id="user-facing"><a class="header" href="#user-facing">User Facing</a></h3>
@@ -1320,7 +1257,7 @@ demonstrating proper module structure with
 state-changing methods and queries</p>
 <h3 id="standing-on-the-shoulders-of-giants"><a class="header" href="#standing-on-the-shoulders-of-giants">Standing on the Shoulders of Giants</a></h3>
 <p>Leveraging these prebuilt modules can save you significant development time and effort, allowing you to focus on your application's unique business logic. You've now completed the "Writing Your Application" chapter and have a comprehensive understanding of how to build, test, and deploy powerful rollups.</p>
-<p>The next major part of our book, "Instrumenting Your Rollup," will shift focus from development to operations, teaching you how to monitor your running rollup using metrics and structured logging.</p>
+<p>The next major part of our book, <strong>"Instrumenting Your Rollup,"</strong> will shift focus from development to operations, teaching you how to monitor your running rollup using metrics and structured logging.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="instrumenting-your-rollup"><a class="header" href="#instrumenting-your-rollup">Instrumenting Your Rollup</a></h1>
 <p>Proper instrumentation is essential for monitoring, debugging, and optimizing your rollup in production. The Sovereign SDK provides comprehensive observability tools that help you understand your rollup's behavior and performance.</p>
 <p>This section covers:</p>
@@ -1335,9 +1272,7 @@ state-changing methods and queries</p>
 <p>The SDK includes a custom metrics system called <a href="fix-link"><code>sov-metrics</code></a> designed specifically for rollup monitoring. It uses the <a href="https://docs.influxdata.com/influxdb/cloud/reference/syntax/line-protocol/">Telegraf line protocol</a> format and integrates with Telegraf through socket listeners for efficient data collection. Metrics are automatically timestamped and sent to your configured Telegraf endpoint, which typically forwards them to InfluxDB for storage and Grafana for visualization. Metrics can only be tracked in <strong>native mode</strong> (not in zkVM).</p>
 <p><strong>Important</strong>: Metrics are emitted immediately when tracked and are NOT rolled back if a transaction reverts. This means failed transactions will still have their metrics recorded, which can be useful for debugging and monitoring error rates.</p>
 <h2 id="basic-example"><a class="header" href="#basic-example">Basic Example</a></h2>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>#[cfg(feature = "native")]
+<pre><code class="language-rust">#[cfg(feature = "native")]
 use sov_metrics::{track_metrics, start_timer, save_elapsed};
 
 impl&lt;S: Spec&gt; MyModule&lt;S&gt; {
@@ -1372,13 +1307,10 @@ impl&lt;S: Spec&gt; MyModule&lt;S&gt; {
         
         Ok(())
     }
-}
-<span class="boring">}</span></code></pre></pre>
+}</code></pre>
 <h2 id="tracking-custom-metrics"><a class="header" href="#tracking-custom-metrics">Tracking Custom Metrics</a></h2>
 <p>To track custom metrics, implement the <code>Metric</code> trait:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>// Implement your custom metric in a file of your own choosing...
+<pre><code class="language-rust">// Implement your custom metric in a file of your own choosing...
 #![cfg(feature = "native")]
 use sov_metrics::Metric;
 use sov_metrics::{track_metrics, start_timer, save_elapsed};
@@ -1446,8 +1378,7 @@ impl&lt;S: Spec&gt; Bank&lt;S&gt; {
         
         Ok(())
     }
-}
-<span class="boring">}</span></code></pre></pre>
+}</code></pre>
 <h2 id="best-practices"><a class="header" href="#best-practices">Best Practices</a></h2>
 <p>Note: While the SDK provides comprehensive metrics infrastructure, individual modules in the SDK don't currently use metrics directly. Most metrics are tracked at the system level (runner, sequencer, state transitions). The examples here show how you <em>could</em> add metrics to your custom modules.</p>
 <ol>
@@ -1481,9 +1412,7 @@ metric types.</li>
 <p>The SDK uses the <a href="https://docs.rs/tracing/latest/tracing/"><code>tracing</code></a> crate for structured logging, providing rich context and efficient filtering.</p>
 <p><strong>Important</strong>: Logs are emitted immediately when generated and are NOT rolled back if a transaction reverts. This means failed transactions will still have their logs recorded, which is useful for debugging or monitoring why transactions failed.</p>
 <h2 id="basic-logging-patterns"><a class="header" href="#basic-logging-patterns">Basic Logging Patterns</a></h2>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>// Adapted from the `Bank` module
+<pre><code class="language-rust">// Adapted from the `Bank` module
 use tracing::trace;
 
 impl&lt;S: Spec&gt; MyModule&lt;S&gt; {
@@ -1513,14 +1442,11 @@ impl&lt;S: Spec&gt; MyModule&lt;S&gt; {
 
         Ok(())
     }
-}
-<span class="boring">}</span></code></pre></pre>
+}</code></pre>
 <h2 id="using-spans-for-context"><a class="header" href="#using-spans-for-context">Using Spans for Context</a></h2>
 <p>Spans are like invisible context that gets automatically attached to every log line within their scope. Instead of passing context like <code>batch_id</code> or <code>user_id</code> through every function call just so you can log it, you create a span at the top level and all logs within that span automatically include that context.</p>
 <p>Think of spans as a way to say "everything that happens from here until the span ends is part of this operation." This is especially useful when debugging - you can filter logs by span fields to see everything that happened during a specific batch process or user request.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>use tracing::instrument;
+<pre><code class="language-rust">use tracing::instrument;
 
 // Example 1: Using the #[instrument] macro (easiest way)
 #[instrument(skip(self, state, items))]  // skip large/non-Debug types
@@ -1560,8 +1486,7 @@ fn process_user_request(&amp;self, user_id: UserId, request: Request) -&gt; Resu
     
     info!("Request completed successfully");
     Ok(())
-}
-<span class="boring">}</span></code></pre></pre>
+}</code></pre>
 <h2 id="log-levels"><a class="header" href="#log-levels">Log Levels</a></h2>
 <ul>
 <li><code>error!</code> - Unrecoverable errors that affect module operation</li>
@@ -1574,14 +1499,11 @@ fn process_user_request(&amp;self, user_id: UserId, request: Request) -&gt; Resu
 <ol>
 <li>
 <p><strong>Structure your logs</strong>:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>// Good - structured, filterable
+<pre><code class="language-rust">// Good - structured, filterable
 debug!(user = %address, action = "deposit", amount = %value, "Processing deposit");
 
 // Avoid - unstructured string interpolation
-debug!("Processing deposit for {} of amount {}", address, value);
-<span class="boring">}</span></code></pre></pre>
+debug!("Processing deposit for {} of amount {}", address, value);</code></pre>
 </li>
 <li>
 <p><strong>Include relevant context</strong>:</p>
@@ -1596,9 +1518,7 @@ debug!("Processing deposit for {} of amount {}", address, value);
 <li>
 <p><strong>Don't log transaction reverts as errors or warnings</strong>:
 Transaction reverts are expected behavior. Log them at <code>debug!</code> level if needed for debugging:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>if balance &lt; amount {
+<pre><code class="language-rust">if balance &lt; amount {
     debug!(
         user = %sender,
         requested = %amount,
@@ -1606,26 +1526,20 @@ Transaction reverts are expected behavior. Log them at <code>debug!</code> level
         "Transfer failed due to insufficient balance"
     );
     return Err(anyhow::anyhow!("Insufficient balance"));
-}
-<span class="boring">}</span></code></pre></pre>
+}</code></pre>
 </li>
 <li>
 <p><strong>Keep frequently triggered logs at debug or trace level</strong>:
 Any log that gets triggered by every call to your module should use <code>debug!</code> or <code>trace!</code> to avoid log spam:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>// Good - routine operations at trace level
+<pre><code class="language-rust">// Good - routine operations at trace level
 trace!(method = "transfer", from = %sender, "Processing transfer request");
 
 // Bad - routine operations at info level will spam logs
-info!("Transfer request received");  // Don't do this for every call
-<span class="boring">}</span></code></pre></pre>
+info!("Transfer request received");  // Don't do this for every call</code></pre>
 </li>
 <li>
 <p><strong>Use conditional logging for expensive operations</strong>:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>#[cfg(feature = "native")]
+<pre><code class="language-rust">#[cfg(feature = "native")]
 fn debug_state(&amp;self, state: &amp;impl StateAccessor&lt;S&gt;) {
     if tracing::enabled!(tracing::Level::TRACE) {
         let total_accounts = self.count_accounts(state);
@@ -1636,8 +1550,7 @@ fn debug_state(&amp;self, state: &amp;impl StateAccessor&lt;S&gt;) {
             "Module state snapshot"
         );
     }
-}
-<span class="boring">}</span></code></pre></pre>
+}</code></pre>
 </li>
 </ol>
 <p>Set log levels via environment variables:</p>
@@ -2288,9 +2201,7 @@ and provides methods for fetching data from the underlying blockchain; and
 executed matches the provided DA block header.</p>
 <h3 id="how-it-works-1"><a class="header" href="#how-it-works-1">How it Works</a></h3>
 <p>Essentially, the Sovereign SDK is just a generic function that does this:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>fn run_rollup&lt;Da: DaService, Zk: Zkvm, Stf: StateTransitionFunction&gt;(self, da: Da, zkvm: Zk, business_logic: Stf) {
+<pre><code class="language-rust">fn run_rollup&lt;Da: DaService, Zk: Zkvm, Stf: StateTransitionFunction&gt;(self, da: Da, zkvm: Zk, business_logic: Stf) {
 	loop {
 		// Run some `native` code to get the data for execution
 		let (block_data, block_header) = da.get_next_block();
@@ -2310,8 +2221,7 @@ executed matches the provided DA block header.</p>
 		// Publish the proof onto the DA layer
 		da.publish(proof);
 	}
-}
-<span class="boring">}</span></code></pre></pre>
+}</code></pre>
 <p>As you can see, most of the heavy lifting is done by the DA layer, the <code>Zkvm</code>
 and the rollup's business logic. The full node implementation is basically just
 glue holding these components together.</p>
@@ -2393,9 +2303,7 @@ does the heavy lifting of implementing a secure STF so that you can focus on the
 core logic of your application.</p>
 <h3 id="the-runtime"><a class="header" href="#the-runtime">The Runtime</a></h3>
 <p>At the heart of any sov-modules rollup is the <code>Runtime</code>:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>// An example runtime similar to the one used in our "standard" demo rollup
+<pre><code class="language-rust">// An example runtime similar to the one used in our "standard" demo rollup
 pub struct Runtime&lt;S: Spec&gt; {
     /// The Bank module implements fungible tokens, which are needed to charge `gas`
     pub bank: sov_bank::Bank&lt;S&gt;,
@@ -2411,8 +2319,7 @@ pub struct Runtime&lt;S: Spec&gt; {
     #[cfg_attr(feature = "native", cli_skip)]
     /// The EVM module lets the rollup run Ethereum smart contracts. It's totally optional.
     pub evm: sov_evm::Evm&lt;S, Da&gt;,
-}
-<span class="boring">}</span></code></pre></pre>
+}</code></pre>
 <p>At the highest level, a runtime is "just" a collection of all the modules which
 are included in your rollup. Its job is to take <code>Transaction</code>s and dispatch them
 to the appropriate module for execution.</p>
@@ -2437,9 +2344,7 @@ and <code>ModuleInfo</code>.</p>
 <code>StateTransitionFunction</code>. It describes how to initialize the module at the
 rollup's genesis, and how the module processes <code>CallMessage</code>s received from
 users (i.e. how it processes transactions)</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>pub trait Module {
+<pre><code class="language-rust">pub trait Module {
 	// -- Some associated type definitions are omitted here --
 	/// Module defined argument to the call method.
     type CallMessage: Debug;
@@ -2457,8 +2362,7 @@ users (i.e. how it processes transactions)</p>
         _context: &amp;Context&lt;Self::Spec&gt;,
         _state: &amp;mut impl TxState&lt;S&gt;,
     ) -&gt; Result&lt;CallResponse, ModuleError&gt;;
-}
-<span class="boring">}</span></code></pre></pre>
+}</code></pre>
 <p>You'll notice that the <code>call</code> function takes three arguments: an associated
 <code>CallMessage</code> type, a <code>Context</code>, and a <code>WorkingSet</code>.</p>
 <ul>
@@ -2489,9 +2393,7 @@ automatic witness generation/checking. It also provides utilities for charging
 </ul>
 <p>The <code>Accounts</code> module provides a good example of a standard <code>Module</code> trait
 implementation.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>pub enum CallMessage&lt;S: Spec&gt; {
+<pre><code class="language-rust">pub enum CallMessage&lt;S: Spec&gt; {
     /// Updates a public key for the corresponding Account.
     /// The sender must be in possession of the new key.
     UpdatePublicKey(
@@ -2523,15 +2425,12 @@ impl&lt;S: Spec&gt; sov_modules_api::Module for Accounts&lt;S&gt; {
             }
         }
     }
-}
-<span class="boring">}</span></code></pre></pre>
+}</code></pre>
 <h4 id="the-moduleinfo-trait"><a class="header" href="#the-moduleinfo-trait">The <code>ModuleInfo</code> trait</a></h4>
 <p>The <code>ModuleInfo</code> trait describes how the module interacts with the broader
 module <em>system</em>. Each module has a unique ID and stores its state under a unique
 <code>prefix</code> of the global key-value store provided by <code>sov-modules</code></p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>pub trait ModuleInfo {
+<pre><code class="language-rust">pub trait ModuleInfo {
     /// Returns id of the module.
     fn id(&amp;self) -&gt; &amp;ModuleId;
 
@@ -2540,14 +2439,11 @@ module <em>system</em>. Each module has a unique ID and stores its state under a
 
     /// Returns addresses of all the other modules this module is dependent on
     fn dependencies(&amp;self) -&gt; Vec&lt;&amp;ModuleId&gt;;
-}
-<span class="boring">}</span></code></pre></pre>
+}</code></pre>
 <p>Unlike the <code>Module</code> trait, its incredibly rare for developers to implement
 <code>ModuleInfo</code> by hand. Instead, it's strongly recommended to derive the
 <code>ModuleInfo</code> using our handy macro. A typical usage looks like this:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>#[derive(ModuleInfo, Clone)]
+<pre><code class="language-rust">#[derive(ModuleInfo, Clone)]
 pub struct Bank&lt;S: sov_modules_api::Spec&gt; {
     /// The id of the sov-bank module.
     #[id]
@@ -2560,8 +2456,7 @@ pub struct Bank&lt;S: sov_modules_api::Spec&gt; {
     /// A mapping of [`TokenId`]s to tokens in the sov-bank.
     #[state]
     pub(crate) tokens: sov_modules_api::StateMap&lt;TokenId, Token&lt;S&gt;&gt;,
-}
-<span class="boring">}</span></code></pre></pre>
+}</code></pre>
 <p>This code automatically generates a unique ID for the bank module and stores it
 in the field of the module called <code>id</code>. It also initializes the <code>StateMap</code>
 "<code>tokens</code>" so that any keys stored in the map will be prefixed the with module's
@@ -2595,9 +2490,7 @@ that is currently under development.</p>
 in the merkle tree. For <code>StateMap</code>s, the serialization of the key is appended to
 that path. And for <code>StateVec</code>s, the index of the value is appended to the path.</p>
 <p>For example, consider the following module:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>// Suppose we're in the file my_crate/lib.rs
+<pre><code class="language-rust">// Suppose we're in the file my_crate/lib.rs
 #[derive(ModuleInfo, Clone)]
 pub struct Example&lt;S: sov_modules_api::Spec&gt; {
     #[id]
@@ -2608,8 +2501,7 @@ pub struct Example&lt;S: sov_modules_api::Spec&gt; {
     pub(crate) some_vec: sov_modules_api::StateVec&lt;u64&gt;,
     #[state]
     pub(crate) some_map: sov_modules_api::StateMap&lt;String, String&gt;,
-}
-<span class="boring">}</span></code></pre></pre>
+}</code></pre>
 <p>The value of <code>some_value</code> would be stored at the path
 <code>hash(b"my_crate/Example/some_value")</code>. The value of the key "hello" in
 <code>some_map</code> would be stored at <code>hash(b"my_crate/Example/some_map/⍰hello")</code> (where

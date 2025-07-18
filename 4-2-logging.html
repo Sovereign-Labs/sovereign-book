@@ -181,9 +181,7 @@
 <p>The SDK uses the <a href="https://docs.rs/tracing/latest/tracing/"><code>tracing</code></a> crate for structured logging, providing rich context and efficient filtering.</p>
 <p><strong>Important</strong>: Logs are emitted immediately when generated and are NOT rolled back if a transaction reverts. This means failed transactions will still have their logs recorded, which is useful for debugging or monitoring why transactions failed.</p>
 <h2 id="basic-logging-patterns"><a class="header" href="#basic-logging-patterns">Basic Logging Patterns</a></h2>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>// Adapted from the `Bank` module
+<pre><code class="language-rust">// Adapted from the `Bank` module
 use tracing::trace;
 
 impl&lt;S: Spec&gt; MyModule&lt;S&gt; {
@@ -213,14 +211,11 @@ impl&lt;S: Spec&gt; MyModule&lt;S&gt; {
 
         Ok(())
     }
-}
-<span class="boring">}</span></code></pre></pre>
+}</code></pre>
 <h2 id="using-spans-for-context"><a class="header" href="#using-spans-for-context">Using Spans for Context</a></h2>
 <p>Spans are like invisible context that gets automatically attached to every log line within their scope. Instead of passing context like <code>batch_id</code> or <code>user_id</code> through every function call just so you can log it, you create a span at the top level and all logs within that span automatically include that context.</p>
 <p>Think of spans as a way to say "everything that happens from here until the span ends is part of this operation." This is especially useful when debugging - you can filter logs by span fields to see everything that happened during a specific batch process or user request.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>use tracing::instrument;
+<pre><code class="language-rust">use tracing::instrument;
 
 // Example 1: Using the #[instrument] macro (easiest way)
 #[instrument(skip(self, state, items))]  // skip large/non-Debug types
@@ -260,8 +255,7 @@ fn process_user_request(&amp;self, user_id: UserId, request: Request) -&gt; Resu
     
     info!("Request completed successfully");
     Ok(())
-}
-<span class="boring">}</span></code></pre></pre>
+}</code></pre>
 <h2 id="log-levels"><a class="header" href="#log-levels">Log Levels</a></h2>
 <ul>
 <li><code>error!</code> - Unrecoverable errors that affect module operation</li>
@@ -274,14 +268,11 @@ fn process_user_request(&amp;self, user_id: UserId, request: Request) -&gt; Resu
 <ol>
 <li>
 <p><strong>Structure your logs</strong>:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>// Good - structured, filterable
+<pre><code class="language-rust">// Good - structured, filterable
 debug!(user = %address, action = "deposit", amount = %value, "Processing deposit");
 
 // Avoid - unstructured string interpolation
-debug!("Processing deposit for {} of amount {}", address, value);
-<span class="boring">}</span></code></pre></pre>
+debug!("Processing deposit for {} of amount {}", address, value);</code></pre>
 </li>
 <li>
 <p><strong>Include relevant context</strong>:</p>
@@ -296,9 +287,7 @@ debug!("Processing deposit for {} of amount {}", address, value);
 <li>
 <p><strong>Don't log transaction reverts as errors or warnings</strong>:
 Transaction reverts are expected behavior. Log them at <code>debug!</code> level if needed for debugging:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>if balance &lt; amount {
+<pre><code class="language-rust">if balance &lt; amount {
     debug!(
         user = %sender,
         requested = %amount,
@@ -306,26 +295,20 @@ Transaction reverts are expected behavior. Log them at <code>debug!</code> level
         "Transfer failed due to insufficient balance"
     );
     return Err(anyhow::anyhow!("Insufficient balance"));
-}
-<span class="boring">}</span></code></pre></pre>
+}</code></pre>
 </li>
 <li>
 <p><strong>Keep frequently triggered logs at debug or trace level</strong>:
 Any log that gets triggered by every call to your module should use <code>debug!</code> or <code>trace!</code> to avoid log spam:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>// Good - routine operations at trace level
+<pre><code class="language-rust">// Good - routine operations at trace level
 trace!(method = "transfer", from = %sender, "Processing transfer request");
 
 // Bad - routine operations at info level will spam logs
-info!("Transfer request received");  // Don't do this for every call
-<span class="boring">}</span></code></pre></pre>
+info!("Transfer request received");  // Don't do this for every call</code></pre>
 </li>
 <li>
 <p><strong>Use conditional logging for expensive operations</strong>:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>#[cfg(feature = "native")]
+<pre><code class="language-rust">#[cfg(feature = "native")]
 fn debug_state(&amp;self, state: &amp;impl StateAccessor&lt;S&gt;) {
     if tracing::enabled!(tracing::Level::TRACE) {
         let total_accounts = self.count_accounts(state);
@@ -336,8 +319,7 @@ fn debug_state(&amp;self, state: &amp;impl StateAccessor&lt;S&gt;) {
             "Module state snapshot"
         );
     }
-}
-<span class="boring">}</span></code></pre></pre>
+}</code></pre>
 </li>
 </ol>
 <p>Set log levels via environment variables:</p>

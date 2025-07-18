@@ -254,9 +254,7 @@ and provides methods for fetching data from the underlying blockchain; and
 executed matches the provided DA block header.</p>
 <h3 id="how-it-works"><a class="header" href="#how-it-works">How it Works</a></h3>
 <p>Essentially, the Sovereign SDK is just a generic function that does this:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>fn run_rollup&lt;Da: DaService, Zk: Zkvm, Stf: StateTransitionFunction&gt;(self, da: Da, zkvm: Zk, business_logic: Stf) {
+<pre><code class="language-rust">fn run_rollup&lt;Da: DaService, Zk: Zkvm, Stf: StateTransitionFunction&gt;(self, da: Da, zkvm: Zk, business_logic: Stf) {
 	loop {
 		// Run some `native` code to get the data for execution
 		let (block_data, block_header) = da.get_next_block();
@@ -276,8 +274,7 @@ executed matches the provided DA block header.</p>
 		// Publish the proof onto the DA layer
 		da.publish(proof);
 	}
-}
-<span class="boring">}</span></code></pre></pre>
+}</code></pre>
 <p>As you can see, most of the heavy lifting is done by the DA layer, the <code>Zkvm</code>
 and the rollup's business logic. The full node implementation is basically just
 glue holding these components together.</p>
@@ -359,9 +356,7 @@ does the heavy lifting of implementing a secure STF so that you can focus on the
 core logic of your application.</p>
 <h3 id="the-runtime"><a class="header" href="#the-runtime">The Runtime</a></h3>
 <p>At the heart of any sov-modules rollup is the <code>Runtime</code>:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>// An example runtime similar to the one used in our "standard" demo rollup
+<pre><code class="language-rust">// An example runtime similar to the one used in our "standard" demo rollup
 pub struct Runtime&lt;S: Spec&gt; {
     /// The Bank module implements fungible tokens, which are needed to charge `gas`
     pub bank: sov_bank::Bank&lt;S&gt;,
@@ -377,8 +372,7 @@ pub struct Runtime&lt;S: Spec&gt; {
     #[cfg_attr(feature = "native", cli_skip)]
     /// The EVM module lets the rollup run Ethereum smart contracts. It's totally optional.
     pub evm: sov_evm::Evm&lt;S, Da&gt;,
-}
-<span class="boring">}</span></code></pre></pre>
+}</code></pre>
 <p>At the highest level, a runtime is "just" a collection of all the modules which
 are included in your rollup. Its job is to take <code>Transaction</code>s and dispatch them
 to the appropriate module for execution.</p>
@@ -403,9 +397,7 @@ and <code>ModuleInfo</code>.</p>
 <code>StateTransitionFunction</code>. It describes how to initialize the module at the
 rollup's genesis, and how the module processes <code>CallMessage</code>s received from
 users (i.e. how it processes transactions)</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>pub trait Module {
+<pre><code class="language-rust">pub trait Module {
 	// -- Some associated type definitions are omitted here --
 	/// Module defined argument to the call method.
     type CallMessage: Debug;
@@ -423,8 +415,7 @@ users (i.e. how it processes transactions)</p>
         _context: &amp;Context&lt;Self::Spec&gt;,
         _state: &amp;mut impl TxState&lt;S&gt;,
     ) -&gt; Result&lt;CallResponse, ModuleError&gt;;
-}
-<span class="boring">}</span></code></pre></pre>
+}</code></pre>
 <p>You'll notice that the <code>call</code> function takes three arguments: an associated
 <code>CallMessage</code> type, a <code>Context</code>, and a <code>WorkingSet</code>.</p>
 <ul>
@@ -455,9 +446,7 @@ automatic witness generation/checking. It also provides utilities for charging
 </ul>
 <p>The <code>Accounts</code> module provides a good example of a standard <code>Module</code> trait
 implementation.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>pub enum CallMessage&lt;S: Spec&gt; {
+<pre><code class="language-rust">pub enum CallMessage&lt;S: Spec&gt; {
     /// Updates a public key for the corresponding Account.
     /// The sender must be in possession of the new key.
     UpdatePublicKey(
@@ -489,15 +478,12 @@ impl&lt;S: Spec&gt; sov_modules_api::Module for Accounts&lt;S&gt; {
             }
         }
     }
-}
-<span class="boring">}</span></code></pre></pre>
+}</code></pre>
 <h4 id="the-moduleinfo-trait"><a class="header" href="#the-moduleinfo-trait">The <code>ModuleInfo</code> trait</a></h4>
 <p>The <code>ModuleInfo</code> trait describes how the module interacts with the broader
 module <em>system</em>. Each module has a unique ID and stores its state under a unique
 <code>prefix</code> of the global key-value store provided by <code>sov-modules</code></p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>pub trait ModuleInfo {
+<pre><code class="language-rust">pub trait ModuleInfo {
     /// Returns id of the module.
     fn id(&amp;self) -&gt; &amp;ModuleId;
 
@@ -506,14 +492,11 @@ module <em>system</em>. Each module has a unique ID and stores its state under a
 
     /// Returns addresses of all the other modules this module is dependent on
     fn dependencies(&amp;self) -&gt; Vec&lt;&amp;ModuleId&gt;;
-}
-<span class="boring">}</span></code></pre></pre>
+}</code></pre>
 <p>Unlike the <code>Module</code> trait, its incredibly rare for developers to implement
 <code>ModuleInfo</code> by hand. Instead, it's strongly recommended to derive the
 <code>ModuleInfo</code> using our handy macro. A typical usage looks like this:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>#[derive(ModuleInfo, Clone)]
+<pre><code class="language-rust">#[derive(ModuleInfo, Clone)]
 pub struct Bank&lt;S: sov_modules_api::Spec&gt; {
     /// The id of the sov-bank module.
     #[id]
@@ -526,8 +509,7 @@ pub struct Bank&lt;S: sov_modules_api::Spec&gt; {
     /// A mapping of [`TokenId`]s to tokens in the sov-bank.
     #[state]
     pub(crate) tokens: sov_modules_api::StateMap&lt;TokenId, Token&lt;S&gt;&gt;,
-}
-<span class="boring">}</span></code></pre></pre>
+}</code></pre>
 <p>This code automatically generates a unique ID for the bank module and stores it
 in the field of the module called <code>id</code>. It also initializes the <code>StateMap</code>
 "<code>tokens</code>" so that any keys stored in the map will be prefixed the with module's
@@ -561,9 +543,7 @@ that is currently under development.</p>
 in the merkle tree. For <code>StateMap</code>s, the serialization of the key is appended to
 that path. And for <code>StateVec</code>s, the index of the value is appended to the path.</p>
 <p>For example, consider the following module:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>// Suppose we're in the file my_crate/lib.rs
+<pre><code class="language-rust">// Suppose we're in the file my_crate/lib.rs
 #[derive(ModuleInfo, Clone)]
 pub struct Example&lt;S: sov_modules_api::Spec&gt; {
     #[id]
@@ -574,8 +554,7 @@ pub struct Example&lt;S: sov_modules_api::Spec&gt; {
     pub(crate) some_vec: sov_modules_api::StateVec&lt;u64&gt;,
     #[state]
     pub(crate) some_map: sov_modules_api::StateMap&lt;String, String&gt;,
-}
-<span class="boring">}</span></code></pre></pre>
+}</code></pre>
 <p>The value of <code>some_value</code> would be stored at the path
 <code>hash(b"my_crate/Example/some_value")</code>. The value of the key "hello" in
 <code>some_map</code> would be stored at <code>hash(b"my_crate/Example/some_map/⍰hello")</code> (where

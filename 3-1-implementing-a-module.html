@@ -184,9 +184,7 @@
 <h2 id="a-step-by-step-walkthrough-the-valuesetter-module"><a class="header" href="#a-step-by-step-walkthrough-the-valuesetter-module">A Step-by-Step Walkthrough: The <code>ValueSetter</code> Module</a></h2>
 <h3 id="1-defining-the-module-struct"><a class="header" href="#1-defining-the-module-struct">1. Defining the Module Struct</a></h3>
 <p>First, we define the module's structure and the state it will manage. This struct tells the SDK what data to store onchain.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>use sov_modules_api::{Module, ModuleId, ModuleInfo, StateValue, Spec};
+<pre><code class="language-rust">use sov_modules_api::{Module, ModuleId, ModuleInfo, StateValue, Spec};
 
 // This is the struct that will represent our module.
 // It must derive `ModuleInfo` to be a valid module.
@@ -205,19 +203,16 @@ pub struct ValueSetter&lt;S: Spec&gt; {
     /// S:Address is the address type of our rollup. More on `Spec` later.
     #[state]
     pub admin: StateValue&lt;S::Address&gt;,
-}
-<span class="boring">}</span></code></pre></pre>
+}</code></pre>
 <h3 id="2-defining-types-for-the-module-trait"><a class="header" href="#2-defining-types-for-the-module-trait">2. Defining Types for the <code>Module</code> Trait</a></h3>
 <p>Next, we define the associated types required by the <code>Module</code> trait: its configuration, its callable methods, and its events.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>// Continuing in the same file...
+<pre><code class="language-rust">// Continuing in the same file...
 use schemars::JsonSchema;
 use sov_modules_api::macros::{serialize, UniversalWallet};
 
 // The configuration for our module at genesis. This will be deserialized from `genesis.json`.
 #[derive(Debug, Clone)]
-#[serialize(Serde)]
+#[serialize(Borsh, Serde)]
 #[serde(rename_all = "snake_case")]
 pub struct ValueSetterConfig&lt;S: Spec&gt; {
     pub initial_value: u32,
@@ -238,13 +233,10 @@ pub enum CallMessage {
 #[serde(rename_all = "snake_case")]
 pub enum Event {
     ValueChanged(u32),
-}
-<span class="boring">}</span></code></pre></pre>
+}</code></pre>
 <h3 id="3-implementing-the-module-trait-logic"><a class="header" href="#3-implementing-the-module-trait-logic">3. Implementing the <code>Module</code> Trait Logic</a></h3>
 <p>With our types defined, we can now implement the <code>Module</code> trait itself.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>use anyhow::Result;
+<pre><code class="language-rust">use anyhow::Result;
 use sov_modules_api::{Context, GenesisState, TxState, EventEmitter};
 
 // Now, we implement the `Module` trait.
@@ -271,14 +263,11 @@ impl&lt;S: Spec&gt; Module for ValueSetter&lt;S&gt; {
             }
         }
     }
-}
-<span class="boring">}</span></code></pre></pre>
+}</code></pre>
 <h3 id="4-writing-the-business-logic"><a class="header" href="#4-writing-the-business-logic">4. Writing the Business Logic</a></h3>
 <p>The final piece is to write the private <code>set_value</code> method containing our business logic.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span>
-<span class="boring">fn main() {
-</span>impl&lt;S: Spec&gt; ValueSetter&lt;S&gt; {
+<pre><code class="language-rust">
+impl&lt;S: Spec&gt; ValueSetter&lt;S&gt; {
     fn set_value(&amp;mut self, new_value: u32, context: &amp;Context&lt;S&gt;, state: &amp;mut impl TxState&lt;S&gt;) -&gt; Result&lt;()&gt; {
         let admin = self.admin.get_or_err(state)??;
 
@@ -290,8 +279,7 @@ impl&lt;S: Spec&gt; Module for ValueSetter&lt;S&gt; {
         self.emit_event(state, Event::ValueChanged(new_value));
         Ok(())
     }
-}
-<span class="boring">}</span></code></pre></pre>
+}</code></pre>
 <p>With that, you've implemented a complete module! Now, let's break down the concepts we used in more detail.</p>
 <hr />
 <h2 id="anatomy-of-a-module-a-deeper-look"><a class="header" href="#anatomy-of-a-module-a-deeper-look">Anatomy of a Module: A Deeper Look</a></h2>
@@ -328,9 +316,7 @@ this trait, the SDK will throw a helpful error.</p>
 <h3 id="the-module-trait-and-its-methods"><a class="header" href="#the-module-trait-and-its-methods">The <code>Module</code> Trait and its Methods</a></h3>
 <p>The <code>Module</code> trait is the core of your application's onchain logic. The implementation you wrote in the walkthrough satisfies this trait's requirements.</p>
 <p>Let's look at a simplified version of the trait definition to understand its components:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>trait Module {
+<pre><code class="language-rust">trait Module {
     /// The configuration needed to initialize the module, deserialized from `genesis.json`.
     type Config;
 
@@ -359,8 +345,7 @@ this trait, the SDK will throw a helpful error.</p>
         context: &amp;Context&lt;Self::Spec&gt;,
         state: &amp;mut impl TxState&lt;Self::Spec&gt;,
     ) -&gt; Result&lt;CallResponse, Error&gt;;
-}
-<span class="boring">}</span></code></pre></pre>
+}</code></pre>
 <h4 id="genesis"><a class="header" href="#genesis"><code>genesis</code></a></h4>
 <p>The <code>genesis</code> function is called once when the rollup is deployed. It uses the module's <code>Config</code> struct (defined as the associated <code>type Config</code>) to initialize the state. This <code>Config</code> is deserialized from the <code>genesis.json</code> file.</p>
 <h4 id="call"><a class="header" href="#call"><code>call</code></a></h4>
@@ -378,9 +363,7 @@ this trait, the SDK will throw a helpful error.</p>
 <h3 id="error-handling"><a class="header" href="#error-handling">Error Handling</a></h3>
 <p>Modules use <code>anyhow::Result</code> for error handling, providing rich context that helps both developers and users understand what went wrong.</p>
 <p>When your call method returns an Err, the SDK automatically reverts all state changes made during the transaction. This ensures that your module's logic is atomic.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>use anyhow::{Context, Result};
+<pre><code class="language-rust">use anyhow::{Context, Result};
 
 fn transfer(&amp;self, from: &amp;S::Address, amount: u64, state: &amp;mut impl TxState&lt;S&gt;) -&gt; Result&lt;()&gt; {
     let balance = self.balances.get(from, state)?
@@ -392,8 +375,7 @@ fn transfer(&amp;self, from: &amp;S::Address, amount: u64, state: &amp;mut impl 
     }
     // ...
     Ok(())
-}
-<span class="boring">}</span></code></pre></pre>
+}</code></pre>
 <p>For more details on error handling patterns, see the <a href="3-5-advanced.html#error-handling">Advanced Topics</a> section.</p>
 <h3 id="next-step-ensuring-correctness"><a class="header" href="#next-step-ensuring-correctness">Next Step: Ensuring Correctness</a></h3>
 <p>You now have a deep understanding of how to define, implement, and structure a module. With this foundation, you're ready to test your module.</p>

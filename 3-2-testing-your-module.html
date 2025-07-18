@@ -190,9 +190,7 @@
 <h2 id="setting-up-your-test-environment"><a class="header" href="#setting-up-your-test-environment">Setting Up Your Test Environment</a></h2>
 <h3 id="1-create-your-test-runtime"><a class="header" href="#1-create-your-test-runtime">1. Create Your Test Runtime</a></h3>
 <p>The <code>generate_optimistic_runtime!</code> macro automatically includes all core modules (Bank, Accounts, SequencerRegistry, etc.), so you only need to add your custom modules:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>use sov_test_utils::runtime::optimistic::generate_optimistic_runtime;
+<pre><code class="language-rust">use sov_test_utils::runtime::optimistic::generate_optimistic_runtime;
 
 // Your module's crate
 use your_module::YourModule;
@@ -201,13 +199,10 @@ use your_module::YourModule;
 generate_optimistic_runtime!(
     TestRuntime &lt;=  // Your test runtime name
     your_module: YourModule&lt;S&gt; // Your custom module
-);
-<span class="boring">}</span></code></pre></pre>
+);</code></pre>
 <h3 id="2-define-your-genesis-configuration"><a class="header" href="#2-define-your-genesis-configuration">2. Define Your Genesis Configuration</a></h3>
 <p>Set up the initial state with test users:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>use sov_test_utils::{HighLevelOptimisticGenesisConfig, TestRunner, TestUser};
+<pre><code class="language-rust">use sov_test_utils::{HighLevelOptimisticGenesisConfig, TestRunner, TestUser};
 
 pub struct TestData&lt;S: Spec&gt; {
     pub admin: TestUser&lt;S&gt;,
@@ -229,13 +224,10 @@ pub fn setup() -&gt; (TestData&lt;TestSpec&gt;, TestRunner&lt;TestRuntime, TestS
     let runner = TestRunner::new_with_genesis(/* ... */);
     
     (test_data, runner)
-}
-<span class="boring">}</span></code></pre></pre>
+}</code></pre>
 <h2 id="writing-your-first-test"><a class="header" href="#writing-your-first-test">Writing Your First Test</a></h2>
 <p>Here's a complete example testing a simple module operation:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>#[cfg(test)]
+<pre><code class="language-rust">#[cfg(test)]
 mod tests {
     use super::*;
     use sov_test_utils::{TestRunner, TransactionTestCase};
@@ -264,8 +256,7 @@ mod tests {
             }),
         });
     }
-}
-<span class="boring">}</span></code></pre></pre>
+}</code></pre>
 <h2 id="running-your-tests"><a class="header" href="#running-your-tests">Running Your Tests</a></h2>
 <p>Execute your tests from your module's root directory using standard Rust commands:</p>
 <pre><code class="language-bash"># Navigate to your module directory 
@@ -283,9 +274,7 @@ cargo test -- --nocapture
 <h2 id="testing-patterns"><a class="header" href="#testing-patterns">Testing Patterns</a></h2>
 <h3 id="1-error-scenario-testing"><a class="header" href="#1-error-scenario-testing">1. Error Scenario Testing</a></h3>
 <p>Test that your module handles errors correctly:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>#[test]
+<pre><code class="language-rust">#[test]
 fn test_insufficient_balance() {
     let (test_data, mut runner) = setup();
     let sender = &amp;test_data.user1;
@@ -311,13 +300,10 @@ fn test_insufficient_balance() {
             }
         }),
     });
-}
-<span class="boring">}</span></code></pre></pre>
+}</code></pre>
 <h3 id="2-event-testing"><a class="header" href="#2-event-testing">2. Event Testing</a></h3>
 <p>Verify that your module emits the correct events. Note that the event enum name (e.g., <code>TestRuntimeEvent</code>) is automatically generated based on your runtime name.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>#[test]
+<pre><code class="language-rust">#[test]
 fn test_event_emission() {
     let (test_data, mut runner) = setup();
     let user = &amp;test_data.user1;
@@ -339,13 +325,10 @@ fn test_event_emission() {
             );
         }),
     });
-}
-<span class="boring">}</span></code></pre></pre>
+}</code></pre>
 <h3 id="3-time-based-testing"><a class="header" href="#3-time-based-testing">3. Time-Based Testing</a></h3>
 <p>Test operations that depend on blockchain progression by advancing slots:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>#[test]
+<pre><code class="language-rust">#[test]
 fn test_time_delayed_operation() {
     let (users, mut runner) = setup();
 
@@ -356,13 +339,10 @@ fn test_time_delayed_operation() {
 
     // 3. Now, the second part of the operation should succeed
     runner.execute_transaction(/* ... complete the operation ... */);
-}
-<span class="boring">}</span></code></pre></pre>
+}</code></pre>
 <h3 id="4-standalone-state-queries"><a class="header" href="#4-standalone-state-queries">4. Standalone State Queries</a></h3>
 <p>While you can query state within a transaction's assert block, you can also query the latest visible state at any point using <code>runner.query_visible_state</code>. This is useful for verifying the initial genesis state or checking state after non-transaction events like advancing slots. This can be useful if you especially have custom <a href="3-5-advanced.html#hooks"><code>hooks</code></a>:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>#[test]
+<pre><code class="language-rust">#[test]
 fn test_state_queries() {
     let (test_data, mut runner) = setup();
     let admin = &amp;test_data.admin;
@@ -394,13 +374,10 @@ fn test_state_queries() {
             .unwrap();
         assert_eq!(item_count, 1);
     });
-}
-<span class="boring">}</span></code></pre></pre>
+}</code></pre>
 <h3 id="5-custom-module-genesis-configuration"><a class="header" href="#5-custom-module-genesis-configuration">5. Custom Module Genesis Configuration</a></h3>
 <p>If your module requires initialization parameters in genesis (like an admin address or initial values), you'll need to provide a custom configuration:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>use sov_test_utils::{GenesisConfig};
+<pre><code class="language-rust">use sov_test_utils::{GenesisConfig};
 
 fn setup_with_config() -&gt; (TestUser&lt;TestSpec&gt;, TestRunner&lt;TestRuntime, TestSpec&gt;) {
     let genesis_config = HighLevelOptimisticGenesisConfig::generate()
@@ -429,8 +406,7 @@ fn setup_with_config() -&gt; (TestUser&lt;TestSpec&gt;, TestRunner&lt;TestRuntim
     );
     
     (admin, runner)
-}
-<span class="boring">}</span></code></pre></pre>
+}</code></pre>
 <h2 id="additional-resources"><a class="header" href="#additional-resources">Additional Resources</a></h2>
 <p>For more advanced testing scenarios, the <a href="fix-link-https://docs.rs/sov-test-utils"><code>sov-test-utils</code> crate</a> is your primary resource. It contains all the testing components covered in this guide and much more.</p>
 <p>We highly recommend exploring the documentation for the <strong><a href="fix-link-https://docs.rs/sov-test-utils/latest/sov_test_utils/runtime/struct.TestRunner.html"><code>TestRunner</code></a></strong> struct, which provides methods for more complex scenarios, including:</p>
@@ -443,7 +419,7 @@ fn setup_with_config() -&gt; (TestUser&lt;TestSpec&gt;, TestRunner&lt;TestRuntim
 <p>The <code>sov-test-utils</code> crate provides a comprehensive toolkit for testing every aspect of your module's behavior.</p>
 <h3 id="ready-for-primetime"><a class="header" href="#ready-for-primetime">Ready for Primetime</a></h3>
 <p>With a thoroughly tested module, you can be confident in your logic's correctness and robustness. It's now time to bring your module to life by integrating it into a live rollup runtime.</p>
-<p>In the next section, "Integrating Your Module," we'll guide you through adding your module to the Runtime struct, configuring its genesis state, and making it a live component of your application.</p>
+<p>In the next section, <strong>"Integrating Your Module,"</strong> we'll guide you through adding your module to the Runtime struct, configuring its genesis state, and making it a live component of your application.</p>
 
                     </main>
 

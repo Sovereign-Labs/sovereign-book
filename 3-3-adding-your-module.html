@@ -207,9 +207,7 @@ native = [
 <h2 id="step-2-add-your-module-to-the-runtime-struct"><a class="header" href="#step-2-add-your-module-to-the-runtime-struct">Step 2: Add Your Module to the Runtime Struct</a></h2>
 <p>The central piece of your rollup's logic is the <a href="fix-link"><code>Runtime</code> struct</a>, usually found in <code>crates/stf/src/runtime.rs</code>. This struct lists all the modules that compose your rollup. To integrate your module, simply add it as a new field to this struct.</p>
 <p>The Runtime struct uses several derive macros (<code>#[derive(Genesis, DispatchCall, ...)]</code>) that automatically generate the boilerplate code for state initialization, transaction dispatching, and message encoding.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>use your_module::YourModule;
+<pre><code class="language-rust">use your_module::YourModule;
 
 #[derive(Genesis, Hooks, DispatchCall, Event, MessageCodec, RuntimeRestApi)]
 pub struct Runtime&lt;S: Spec&gt; {
@@ -223,8 +221,7 @@ pub struct Runtime&lt;S: Spec&gt; {
     
     /// Your custom module
     pub your_module: YourModule&lt;S&gt;,
-}
-<span class="boring">}</span></code></pre></pre>
+}</code></pre>
 <h2 id="step-3-configure-genesis-state"><a class="header" href="#step-3-configure-genesis-state">Step 3: Configure Genesis State</a></h2>
 <p>When your rollup is first launched, it populates its initial state from a <code>genesis.json</code> file. You need to tell the rollup how to initialize your module by adding a corresponding entry to this file.</p>
 <h3 id="understanding-genesisjson"><a class="header" href="#understanding-genesisjson">Understanding <code>genesis.json</code></a></h3>
@@ -246,15 +243,12 @@ pub struct Runtime&lt;S: Spec&gt; {
 <p><strong>2. Your Module Requires Initial Configuration:</strong></p>
 <p>If your module needs initial parameters (like an admin address or an initial value), you must provide them in the JSON object. The JSON fields must exactly match the fields of your module's <code>Config</code> struct.</p>
 <p>For example, if your module has this <code>Config</code> struct:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>// In modules/my-awesome-module/src/lib.rs
+<pre><code class="language-rust">// In modules/my-awesome-module/src/lib.rs
 #[derive(serde::Deserialize, serde::Serialize)]
 pub struct MyAwesomeModuleConfig {
     pub admin_address: S::Address,
     pub initial_counter: u64,
-}
-<span class="boring">}</span></code></pre></pre>
+}</code></pre>
 <p>Your <code>genesis.json</code> entry would look like this:</p>
 <pre><code class="language-json">// In your-rollup/genesis.json
 {
@@ -307,7 +301,7 @@ cargo run --bin node
 <h3 id="your-module-is-live"><a class="header" href="#your-module-is-live">Your Module is Live!</a></h3>
 <p>Congratulations! Your module is now a fully integrated part of a running rollup. You have successfully navigated the complete development lifecycle, from implementation and testing to deployment on your local machine.</p>
 <p>You've built the core logic, but now the crucial question is: how do users actually interact with it? How do they create accounts, manage keys, and sign transactions to call your new module's methods?</p>
-<p>The next section, "Wallets and Accounts," will bridge this gap. We'll explore how to leverage the SDK's Ethereum-compatible account system and use client-side tooling to sign and submit transactions to your rollup, bringing your application to life for end-users.</p>
+<p>The next section, <strong>"Wallets and Accounts,"</strong> will bridge this gap. We'll explore how to leverage the SDK's Ethereum-compatible account system and use client-side tooling to sign and submit transactions to your rollup, bringing your application to life for end-users.</p>
 
                     </main>
 
