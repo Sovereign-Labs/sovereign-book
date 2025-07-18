@@ -246,9 +246,9 @@ fn transfer(&amp;self, from: &amp;S::Address, to: &amp;S::Address, token_id: &am
 }
 <span class="boring">}</span></code></pre></pre>
 <p>Transaction reverts are normal and expected - log them at <code>debug!</code> level if needed for debugging, not as warnings or errors.</p>
-<h2 id="native-only-code-and-custom-apis"><a class="header" href="#native-only-code-and-custom-apis">Native-Only Code and Custom APIs</a></h2>
-<p>Some functionality should only run natively on the full nodes, not in the zkVM during proof generation. This is a critical concept for separating verifiable on-chain logic from off-chain operational tooling.</p>
-<p>Any code that shouldn't be part of the state transition verification must be gated with <code>#[cfg(feature = "native")]</code>:</p>
+<h2 id="native-only-code"><a class="header" href="#native-only-code">Native-Only Code</a></h2>
+<p>Some functionality should only run natively on the full nodes (and sequencer), not in the zkVM during proof generation. This is a critical concept for separating verifiable on-chain logic from off-chain operational tooling.</p>
+<p>Any code that is not part of the core state transition must be gated with <code>#[cfg(feature = "native")]</code>:</p>
 <pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>#[cfg(feature = "native")]
@@ -259,14 +259,47 @@ impl&lt;S: Spec&gt; MyModule&lt;S&gt; {
     }
 }
 <span class="boring">}</span></code></pre></pre>
-<p>This ensures that your zk-proofs remain small and your on-chain logic remains deterministic. Common use cases for native-only code include:</p>
+<p>This ensures that your zk-proofs remain small and your onchain logic remains deterministic. Common use cases for native-only code include:</p>
 <ul>
 <li>Custom REST APIs and RPC methods</li>
 <li>Metrics and logging integration</li>
 <li>Debugging tools</li>
 <li>Integrations with external services</li>
 </ul>
-<h3 id="adding-custom-rest-apis"><a class="header" href="#adding-custom-rest-apis">Adding Custom REST APIs</a></h3>
+<h2 id="transaction-prioritization-and-mev-mitigation"><a class="header" href="#transaction-prioritization-and-mev-mitigation">Transaction Prioritization and MEV Mitigation</a></h2>
+<p>For latency-sensitive financial applications, managing transaction order and mitigating Maximum Extractable Value (MEV) is critical. The Sovereign SDK provides a powerful, sequencer-level tool to combat toxic orderflow by allowing developers to introduce fine-grained processing delays for specific transaction types.</p>
+<p>This is a powerful technique for applications like on-chain Central Limit Orderbooks (CLOBs). By introducing a small, artificial delay on aggressive "take" orders, a rollup can implicitly prioritize "cancel" orders. This gives market makers a crucial window to pull stale quotes before they can be exploited by low-latency arbitrageurs, leading to fairer and more liquid markets.</p>
+<p>This functionality is implemented via the <code>get_transaction_delay_ms</code> method on your <code>Runtime</code> struct. Because this is a sequencer-level scheduling feature and not part of the core state transition logic, it must be gated behind the <code>native</code> feature flag.</p>
+<p>The method receives a decoded <code>CallMessage</code> and returns the number of milliseconds the sequencer should wait before processing it. A return value of <code>0</code> means the transaction should be processed immediately.</p>
+<h3 id="example-prioritizing-cancels-in-a-clob"><a class="header" href="#example-prioritizing-cancels-in-a-clob">Example: Prioritizing Cancels in a CLOB</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// In your-rollup/stf/src/runtime.rs
+
+// In the `impl&lt;S&gt; sov_modules_stf_blueprint::Runtime&lt;S&gt; for Runtime&lt;S&gt;` block:
+
+#[cfg(feature = "native")]
+fn get_transaction_delay_ms(&amp;self, call: &amp;Self::Decodable) -&gt; u64 {
+    // `Self::Decodable` is the auto-generated `RuntimeCall` enum for your runtime.
+    // It has one variant for each module in your `Runtime` struct.
+    match call {
+        // Introduce a small 10ms delay on all "take" orders to give
+        // market makers time to cancel stale orders.
+        // (Here, `Clob` is the variant corresponding to the `clob` field in your `Runtime` struct,
+        // and `PlaceTakeOrder` is the variant of the `clob` module's `CallMessage` enum.)
+        Self::Decodable::Clob(clob::CallMessage::PlaceTakeOrder { .. }) =&gt; 50,
+
+        // All other CLOB operations, like placing or cancelling "make" orders,
+        // are processed immediately with zero delay.
+        Self::Decodable::Clob(..) =&gt; 0,
+        
+        // All other transactions in other modules are also processed immediately.
+        _ =&gt; 0,
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<p>This feature gives you precise control over your sequencer's processing queue, enabling sophisticated MEV mitigation strategies without altering your core onchain business logic.</p>
+<h2 id="adding-custom-rest-apis"><a class="header" href="#adding-custom-rest-apis">Adding Custom REST APIs</a></h2>
 <p>You can easily add custom APIs to your module by implementing the
 <code>HasCustomRestApi</code> trait. This trait has two methods - one which actually
 implements the routes, and an optional one which provides an <code>OpenApi</code> spec. You
@@ -322,7 +355,7 @@ under your module's router. So, in the following example, the
 get combined with the auto-generated one automatically.</p>
 <p>Note that for for custom REST APIs, you'll need to manually write an <code>OpenApi</code>
 specification if you want client support.</p>
-<h3 id="legacy-rpc-support"><a class="header" href="#legacy-rpc-support">Legacy RPC Support</a></h3>
+<h2 id="legacy-rpc-support"><a class="header" href="#legacy-rpc-support">Legacy RPC Support</a></h2>
 <p>In addition to custom RESTful APIs, the Sovereign SDK lets you create JSON-RPC
 methods. This is useful to provide API compatibility with existing chains like
 Ethereum and Solana, but we recommend using REST APIs whenever compatibility
