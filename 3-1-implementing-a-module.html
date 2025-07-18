@@ -212,13 +212,12 @@ pub struct ValueSetter&lt;S: Spec&gt; {
 <pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>// Continuing in the same file...
-use sov_modules_api::{Context, macros::UniversalWallet};
 use schemars::JsonSchema;
-use serde::{Serialize, Deserialize};
-use borsh::{BorshSerialize, BorshDeserialize};
+use sov_modules_api::macros::{serialize, UniversalWallet};
 
 // The configuration for our module at genesis. This will be deserialized from `genesis.json`.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone)]
+#[serialize(Serde)]
 #[serde(rename_all = "snake_case")]
 pub struct ValueSetterConfig&lt;S: Spec&gt; {
     pub initial_value: u32,
@@ -248,7 +247,7 @@ pub enum Event {
 <pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>use anyhow::Result;
-use sov_modules_api::{GenesisState, TxState, EventEmitter, Error};
+use sov_modules_api::{Context, GenesisState, TxState, EventEmitter};
 
 // Now, we implement the `Module` trait.
 impl&lt;S: Spec&gt; Module for ValueSetter&lt;S&gt; {
@@ -258,20 +257,17 @@ impl&lt;S: Spec&gt; Module for ValueSetter&lt;S&gt; {
     type Event = Event;
 
     // `genesis` is called once when the rollup is deployed to initialize the state.
-    fn genesis(&amp;mut self, _header: &amp;&lt;S::Da as sov_modules_api::DaSpec&gt;::BlockHeader, config: &amp;Self::Config, state: &amp;mut impl GenesisState&lt;S&gt;) -&gt; Result&lt;(), Error&gt; {
-        self.value.set(&amp;config.initial_value, state)
-            .map_err(Into::&lt;anyhow::Error&gt;::into)?;
-        self.admin.set(&amp;config.admin, state)
-            .map_err(Into::&lt;anyhow::Error&gt;::into)?;
+    fn genesis(&amp;mut self, _header: &amp;&lt;S::Da as sov_modules_api::DaSpec&gt;::BlockHeader, config: &amp;Self::Config, state: &amp;mut impl GenesisState&lt;S&gt;) -&gt; Result&lt;()&gt; {
+        self.value.set(&amp;config.initial_value, state)?;
+        self.admin.set(&amp;config.admin, state)?;
         Ok(())
     }
 
     // `call` is called when a user submits a transaction to the module.
-    fn call(&amp;mut self, msg: Self::CallMessage, context: &amp;Context&lt;S&gt;, state: &amp;mut impl TxState&lt;S&gt;) -&gt; Result&lt;(), Error&gt; {
+    fn call(&amp;mut self, msg: Self::CallMessage, context: &amp;Context&lt;S&gt;, state: &amp;mut impl TxState&lt;S&gt;) -&gt; Result&lt;()&gt; {
         match msg {
             CallMessage::SetValue(new_value) =&gt; {
-                self.set_value(new_value, context, state)
-                    .map_err(Into::&lt;anyhow::Error&gt;::into)?;
+                self.set_value(new_value, context, state)?;
 
                 Ok(())
             }
@@ -288,7 +284,7 @@ impl&lt;S: Spec&gt; Module for ValueSetter&lt;S&gt; {
     fn set_value(&amp;mut self, new_value: u32, context: &amp;Context&lt;S&gt;, state: &amp;mut impl TxState&lt;S&gt;) -&gt; Result&lt;()&gt; {
         let admin = self.admin.get_or_err(state)??;
 
-        if &amp;admin != context.sender() {
+        if admin != *context.sender() {
             return Err(anyhow::anyhow!("Only the admin can set the value.").into());
         }
 
