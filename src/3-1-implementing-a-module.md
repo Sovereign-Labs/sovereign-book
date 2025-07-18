@@ -41,13 +41,12 @@ Next, we define the associated types required by the `Module` trait: its configu
 
 ```rust
 // Continuing in the same file...
-use sov_modules_api::{Context, macros::UniversalWallet};
 use schemars::JsonSchema;
-use serde::{Serialize, Deserialize};
-use borsh::{BorshSerialize, BorshDeserialize};
+use sov_modules_api::macros::{serialize, UniversalWallet};
 
 // The configuration for our module at genesis. This will be deserialized from `genesis.json`.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone)]
+#[serialize(Serde)]
 #[serde(rename_all = "snake_case")]
 pub struct ValueSetterConfig<S: Spec> {
     pub initial_value: u32,
@@ -79,7 +78,7 @@ With our types defined, we can now implement the `Module` trait itself.
 
 ```rust
 use anyhow::Result;
-use sov_modules_api::{GenesisState, TxState, EventEmitter, Error};
+use sov_modules_api::{Context, GenesisState, TxState, EventEmitter};
 
 // Now, we implement the `Module` trait.
 impl<S: Spec> Module for ValueSetter<S> {
@@ -89,20 +88,17 @@ impl<S: Spec> Module for ValueSetter<S> {
     type Event = Event;
 
     // `genesis` is called once when the rollup is deployed to initialize the state.
-    fn genesis(&mut self, _header: &<S::Da as sov_modules_api::DaSpec>::BlockHeader, config: &Self::Config, state: &mut impl GenesisState<S>) -> Result<(), Error> {
-        self.value.set(&config.initial_value, state)
-            .map_err(Into::<anyhow::Error>::into)?;
-        self.admin.set(&config.admin, state)
-            .map_err(Into::<anyhow::Error>::into)?;
+    fn genesis(&mut self, _header: &<S::Da as sov_modules_api::DaSpec>::BlockHeader, config: &Self::Config, state: &mut impl GenesisState<S>) -> Result<()> {
+        self.value.set(&config.initial_value, state)?;
+        self.admin.set(&config.admin, state)?;
         Ok(())
     }
 
     // `call` is called when a user submits a transaction to the module.
-    fn call(&mut self, msg: Self::CallMessage, context: &Context<S>, state: &mut impl TxState<S>) -> Result<(), Error> {
+    fn call(&mut self, msg: Self::CallMessage, context: &Context<S>, state: &mut impl TxState<S>) -> Result<()> {
         match msg {
             CallMessage::SetValue(new_value) => {
-                self.set_value(new_value, context, state)
-                    .map_err(Into::<anyhow::Error>::into)?;
+                self.set_value(new_value, context, state)?;
 
                 Ok(())
             }
@@ -121,7 +117,7 @@ impl<S: Spec> ValueSetter<S> {
     fn set_value(&mut self, new_value: u32, context: &Context<S>, state: &mut impl TxState<S>) -> Result<()> {
         let admin = self.admin.get_or_err(state)??;
 
-        if &admin != context.sender() {
+        if admin != *context.sender() {
             return Err(anyhow::anyhow!("Only the admin can set the value.").into());
         }
 
