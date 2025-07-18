@@ -80,11 +80,11 @@ fn transfer(&self, from: &S::Address, to: &S::Address, token_id: &TokenId, amoun
 
 Transaction reverts are normal and expected - log them at `debug!` level if needed for debugging, not as warnings or errors.
 
-## Native-Only Code and Custom APIs
+## Native-Only Code
 
-Some functionality should only run natively on the full nodes, not in the zkVM during proof generation. This is a critical concept for separating verifiable on-chain logic from off-chain operational tooling.
+Some functionality should only run natively on the full nodes (and sequencer), not in the zkVM during proof generation. This is a critical concept for separating verifiable on-chain logic from off-chain operational tooling.
 
-Any code that shouldn't be part of the state transition verification must be gated with `#[cfg(feature = "native")]`:
+Any code that is not part of the core state transition must be gated with `#[cfg(feature = "native")]`:
 
 ```rust
 #[cfg(feature = "native")]
@@ -95,14 +95,54 @@ impl<S: Spec> MyModule<S> {
     }
 }
 ```
-This ensures that your zk-proofs remain small and your on-chain logic remains deterministic. Common use cases for native-only code include:
+This ensures that your zk-proofs remain small and your onchain logic remains deterministic. Common use cases for native-only code include:
 
 - Custom REST APIs and RPC methods
 - Metrics and logging integration
 - Debugging tools
 - Integrations with external services
 
-### Adding Custom REST APIs
+## Transaction Prioritization and MEV Mitigation
+
+For latency-sensitive financial applications, managing transaction order and mitigating Maximum Extractable Value (MEV) is critical. The Sovereign SDK provides a powerful, sequencer-level tool to combat toxic orderflow by allowing developers to introduce fine-grained processing delays for specific transaction types.
+
+This is a powerful technique for applications like on-chain Central Limit Orderbooks (CLOBs). By introducing a small, artificial delay on aggressive "take" orders, a rollup can implicitly prioritize "cancel" orders. This gives market makers a crucial window to pull stale quotes before they can be exploited by low-latency arbitrageurs, leading to fairer and more liquid markets.
+
+This functionality is implemented via the `get_transaction_delay_ms` method on your `Runtime` struct. Because this is a sequencer-level scheduling feature and not part of the core state transition logic, it must be gated behind the `native` feature flag.
+
+The method receives a decoded `CallMessage` and returns the number of milliseconds the sequencer should wait before processing it. A return value of `0` means the transaction should be processed immediately.
+
+### Example: Prioritizing Cancels in a CLOB
+
+```rust
+// In your-rollup/stf/src/runtime.rs
+
+// In the `impl<S> sov_modules_stf_blueprint::Runtime<S> for Runtime<S>` block:
+
+#[cfg(feature = "native")]
+fn get_transaction_delay_ms(&self, call: &Self::Decodable) -> u64 {
+    // `Self::Decodable` is the auto-generated `RuntimeCall` enum for your runtime.
+    // It has one variant for each module in your `Runtime` struct.
+    match call {
+        // Introduce a small 10ms delay on all "take" orders to give
+        // market makers time to cancel stale orders.
+        // (Here, `Clob` is the variant corresponding to the `clob` field in your `Runtime` struct,
+        // and `PlaceTakeOrder` is the variant of the `clob` module's `CallMessage` enum.)
+        Self::Decodable::Clob(clob::CallMessage::PlaceTakeOrder { .. }) => 50,
+
+        // All other CLOB operations, like placing or cancelling "make" orders,
+        // are processed immediately with zero delay.
+        Self::Decodable::Clob(..) => 0,
+        
+        // All other transactions in other modules are also processed immediately.
+        _ => 0,
+    }
+}
+```
+
+This feature gives you precise control over your sequencer's processing queue, enabling sophisticated MEV mitigation strategies without altering your core onchain business logic.
+
+## Adding Custom REST APIs
 
 You can easily add custom APIs to your module by implementing the
 `HasCustomRestApi` trait. This trait has two methods - one which actually
@@ -163,7 +203,7 @@ get combined with the auto-generated one automatically.
 Note that for for custom REST APIs, you'll need to manually write an `OpenApi`
 specification if you want client support.
 
-### Legacy RPC Support
+## Legacy RPC Support
 
 In addition to custom RESTful APIs, the Sovereign SDK lets you create JSON-RPC
 methods. This is useful to provide API compatibility with existing chains like

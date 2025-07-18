@@ -42,6 +42,7 @@ Next, we define the associated types required by the `Module` trait: its configu
 ```rust
 // Continuing in the same file...
 use sov_modules_api::{Context, macros::UniversalWallet};
+use schemars::JsonSchema;
 use serde::{Serialize, Deserialize};
 use borsh::{BorshSerialize, BorshDeserialize};
 
@@ -56,24 +57,16 @@ pub struct ValueSetterConfig<S: Spec> {
 // The actions a user can take. Our module only supports one action: setting the value.
 // This `CallMessage` enum defines the module's public API.
 // Deriving these traits ensures it's portable and compatible with wallets and block explorers.
-#[derive(
-    BorshDeserialize,
-    BorshSerialize,
-    Serialize,
-    Deserialize,
-    schemars::JsonSchema,
-    UniversalWallet,
-    Clone,
-    Debug,
-    PartialEq,
-)]
+#[derive(Clone, Debug, PartialEq, JsonSchema, UniversalWallet)]
+#[serialize(Borsh, Serde)]
 #[serde(rename_all = "snake_case")]
 pub enum CallMessage {
     SetValue(u32),
 }
 
 // The event our module will emit after a successful action.
-#[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize, Debug, PartialEq)]
+#[derive(Debug, PartialEq)]
+#[serialize(Borsh, Serde)]
 #[serde(rename_all = "snake_case")]
 pub enum Event {
     ValueChanged(u32),
@@ -120,8 +113,9 @@ impl<S: Spec> Module for ValueSetter<S> {
 
 ### 4. Writing the Business Logic
 
+The final piece is to write the private `set_value` method containing our business logic.
+
 ```rust
-The final piece is to write the private set_value method containing our business logic.
 
 impl<S: Spec> ValueSetter<S> {
     fn set_value(&mut self, new_value: u32, context: &Context<S>, state: &mut impl TxState<S>) -> Result<()> {
