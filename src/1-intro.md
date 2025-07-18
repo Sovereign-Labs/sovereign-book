@@ -6,7 +6,7 @@ We built this SDK to give developers, from solo builders to large teams, the pow
 
 With transaction confirmations under 2-5 milliseconds, the Sovereign SDK is fast enough to bring complex financial systems, like Central-Limit Orderbooks (CLOBs), fully on-chain.
 
-And most importantly, after months of extensive load-testing, it's production-ready. Let's build the next Hyperliquid.
+Let's build the next Hyperliquid.
 
 <img src="https://github.com/Sovereign-Labs/sovereign-sdk/blob/nightly/assets/banner.jpg?raw=true" style="border-radius: 10px">
 
