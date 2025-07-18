@@ -165,4 +165,4 @@ Congratulations! Your module is now a fully integrated part of a running rollup.
 
 You've built the core logic, but now the crucial question is: how do users actually interact with it? How do they create accounts, manage keys, and sign transactions to call your new module's methods?
 
-The next section, "Wallets and Accounts," will bridge this gap. We'll explore how to leverage the SDK's Ethereum-compatible account system and use client-side tooling to sign and submit transactions to your rollup, bringing your application to life for end-users.
+The next section, **"Wallets and Accounts,"** will bridge this gap. We'll explore how to leverage the SDK's Ethereum-compatible account system and use client-side tooling to sign and submit transactions to your rollup, bringing your application to life for end-users.

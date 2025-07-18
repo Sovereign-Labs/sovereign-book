@@ -241,4 +241,4 @@ impl<S: Spec> Evm<S> {
 
 By leveraging Hooks, robust error handling, and custom APIs, you can build sophisticated, production-grade modules that are both powerful and easy to operate.
 
-With a deep understanding of module implementation, you may next want to optimize your rollup's performance. The next section on "Understanding Performance" will dive into state access patterns and cryptographic considerations that can significantly impact your application's throughput.
+With a deep understanding of module implementation, you may next want to optimize your rollup's performance. The next section on **"Understanding Performance"** will dive into state access patterns and cryptographic considerations that can significantly impact your application's throughput.
