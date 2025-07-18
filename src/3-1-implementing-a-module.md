@@ -54,8 +54,6 @@ pub struct ValueSetterConfig<S: Spec> {
 }
 
 // The actions a user can take. Our module only supports one action: setting the value.
-// This `CallMessage` enum defines the module's public API.
-// Deriving these traits ensures it's portable and compatible with wallets and block explorers.
 #[derive(Clone, Debug, PartialEq, JsonSchema, UniversalWallet)]
 #[serialize(Borsh, Serde)]
 #[serde(rename_all = "snake_case")]
