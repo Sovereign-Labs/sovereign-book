@@ -1,297 +1,185 @@
 # Testing Your Module
 
-Testing is crucial for building reliable modules. The SDK provides a comprehensive testing framework that makes it easy to write thorough tests for your modules.
+Having implemented your module, the next critical step is to test it thoroughly. The Sovereign SDK provides a comprehensive testing framework that allows you to simulate a rollup environment and assert that your module's logic is correct.
 
-## Test Infrastructure Overview
+In this section, we'll walk you through writing tests for the `ValueSetter` module we just built.
 
-There are several key components for testing:
+## Anatomy of a Module Test
 
-- **TestRunner**: A stateful test harness that manages your runtime environment  
-- **TestUser**: Test accounts with preconfigured balances
-- **TransactionTestCase**: A structured way to define test scenarios with assertions
-- **Runtime Generation Macros**: Automatically include all core modules
+Before we write code, let's understand the key components we'll be using:
 
-## Setting Up Your Test Environment
+-   **Test Runtime:** A temporary, isolated rollup runtime that includes your module and any dependencies. We'll use the `generate_optimistic_runtime!` macro to create one.
+-   **`TestRunner`:** The main test harness. It manages the runtime's state and allows us to execute transactions.
+-   **`setup` function:** A helper function that configures the initial ("genesis") state of our test runtime, such as setting up the `ValueSetter`'s admin address.
+-   **`TransactionTestCase`:** A struct that bundles a transaction with an assertion block, creating a clean and readable test case.
 
-### 1. Create Your Test Runtime
+## Step 1: Setting Up the Test Environment
 
-The `generate_optimistic_runtime!` macro automatically includes all core modules (Bank, Accounts, SequencerRegistry, etc.), so you only need to add your custom modules:
+Now, let's create our test runtime and `setup` function.
 
 ```rust
-use sov_test_utils::runtime::optimistic::generate_optimistic_runtime;
+use sov_modules_api::Spec;
+use sov_test_utils::runtime::genesis::optimistic::HighLevelOptimisticGenesisConfig;
+use sov_test_utils::runtime::TestRunner;
+use sov_test_utils::{generate_optimistic_runtime, TestUser};
 
-// Your module's crate
-use your_module::YourModule;
+use value_setter::{ValueSetter, ValueSetterConfig};
 
-// Generate a runtime with core modules + your custom module
+type S = sov_test_utils::TestSpec;
+
+// 1. Create the Test Runtime
+// This runtime includes our ValueSetter module and the core modules it depends on.
 generate_optimistic_runtime!(
-    TestRuntime <=  // Your test runtime name
-    your_module: YourModule<S> // Your custom module
+    TestRuntime <=
+    value_setter: ValueSetter<S>
 );
-```
 
-### 2. Define Your Genesis Configuration
-
-Set up the initial state with test users:
-
-```rust
-use sov_test_utils::{HighLevelOptimisticGenesisConfig, TestRunner, TestUser};
-
+// 2. Define TestData
+// A helper struct to hold convenient handles to our test users.
 pub struct TestData<S: Spec> {
     pub admin: TestUser<S>,
-    pub user1: TestUser<S>,
-    pub user2: TestUser<S>,
+    pub regular_user: TestUser<S>,
 }
 
-pub fn setup() -> (TestData<TestSpec>, TestRunner<TestRuntime, TestSpec>) {
+// 3. Create the setup function
+pub fn setup() -> (TestData<S>, TestRunner<TestRuntime<S>, S>) {
+    // Create two users, the first of which will be our admin.
     let genesis_config = HighLevelOptimisticGenesisConfig::generate()
-        .add_accounts_with_default_balance(3);
+        .add_accounts_with_default_balance(2);
     
     let mut users = genesis_config.additional_accounts().to_vec();
+    let regular_user = users.pop().unwrap();
+    let admin = users.pop().unwrap();
+
     let test_data = TestData {
-        user2: users.pop().unwrap(),
-        user1: users.pop().unwrap(),
-        admin: users.pop().unwrap(),
+        admin: admin.clone(),
+        regular_user,
     };
+
+    // Configure the genesis state for our ValueSetter module.
+    let value_setter_config = ValueSetterConfig {
+        initial_value: 0,
+        admin: admin.address(),
+    };
+
+    // Build the final genesis config.
+    let genesis = GenesisConfig::from_minimal_config(
+        genesis_config.into(),
+        value_setter_config,
+    );
     
-    let runner = TestRunner::new_with_genesis(/* ... */);
+    // Initialize the TestRunner
+    let runner = TestRunner::new_with_genesis(
+        genesis.into_genesis_params(),
+        TestRuntime::default(),
+    );
     
     (test_data, runner)
 }
 ```
+This `setup` function now correctly initializes our `ValueSetter` module, making the `admin` address known at the start of every test.
 
-## Writing Your First Test
+## Step 2: Writing a "Happy Path" Test
 
-Here's a complete example testing a simple module operation:
+Now, let's write our first test to ensure the admin can successfully set the value.
 
 ```rust
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use sov_test_utils::{TestRunner, TransactionTestCase};
-    
-    #[test]
-    fn test_module_operation() {
-        // Setup runner and get test user 
-        let (test_data, mut runner) = setup();
-        let user = &test_data.user1;
-        
-        // Execute a transaction
-        runner.execute_transaction(TransactionTestCase {
-            input: user.create_plain_message::<TestRuntime, YourModule>(
-                CallMessage::SetValue { value: 42 }
-            ),
-            assert: Box::new(|result, state| {
-                // Verify the transaction succeeded
-                assert!(result.tx_receipt.is_successful());
-                
-                // Query and verify state
-                let current_value = YourModule::default()
-                    .get_value(state)
-                    .unwrap_infallible()  // State access can't fail in tests
-                    .unwrap();            // Handle the Option
-                assert_eq!(current_value, 42);
-            }),
-        });
-    }
+use sov_test_utils::{AsUser, TransactionTestCase};
+use value_setter::{CallMessage, Event};
+
+#[test]
+fn test_admin_can_set_value() {
+    // 1. Setup
+    let (test_data, mut runner) = setup();
+    let admin = &test_data.admin;
+
+    let new_value = 42;
+
+    // 2. Execute the transaction
+    runner.execute_transaction(TransactionTestCase {
+        // The transaction input
+        input: admin.create_plain_message::<TestRuntime<S>, ValueSetter<S>>(
+            CallMessage::SetValue(new_value),
+        ),
+        // The assertions to run after execution
+        assert: Box::new(move |result, state| {
+            // 3. Assert the outcome
+            assert!(result.tx_receipt.is_successful());
+
+            // Assert that the correct event was emitted.
+            // The event enum name (`TestRuntimeEvent`) is auto-generated by our `generate_optimistic_runtime!` macro.
+            assert_eq!(result.events.len(), 1);
+            let event = &result.events[0];
+            assert_eq!(
+                event,
+                // The runtime wraps our module's event in a variant named after the module field.
+                &TestRuntimeEvent::ValueSetter(Event::ValueChanged(new_value))
+            );
+
+            // Assert that the state was updated correctly by querying the module.
+            let value_setter = ValueSetter::<S>::default();
+            let current_value = value_setter.value.get(state).unwrap();
+            assert_eq!(current_value, Some(new_value));
+        }),
+    });
 }
 ```
 
-## Running Your Tests
+## Step 3: Testing a Failure Case
+
+It's equally important to test that our module fails when it should. Let's add a test to ensure a regular user *cannot* set the value.
+
+```rust
+#[test]
+fn test_regular_user_cannot_set_value() {
+    // 1. Setup
+    let (test_data, mut runner) = setup();
+    let regular_user = &test_data.regular_user;
+
+    // 2. Execute the transaction from the non-admin user
+    runner.execute_transaction(TransactionTestCase {
+        input: regular_user.create_plain_message::<TestRuntime<S>, ValueSetter<S>>(
+            CallMessage::SetValue(99),
+        ),
+        assert: Box::new(move |result, state| {
+            // 3. Assert that the transaction was reverted
+            assert!(result.tx_receipt.is_reverted());
+            
+            // Optional: Check for the specific error message
+            // if let sov_modules_api::TxEffect::Reverted(err) = result.tx_receipt {
+            //     assert!(err.reason.to_string().contains("Only the admin can set the value."));
+            // }
+
+            // Assert that the state was NOT changed.
+            let value_setter = ValueSetter::<S>::default();
+            let current_value = value_setter.value.get(state).unwrap();
+            assert_eq!(current_value, Some(0)); // It should remain the initial value
+        }),
+    });
+}
+```
+
+## Step 4: Running Your Tests
 
 Execute your tests from your module's root directory using standard Rust commands:
 
 ```bash
-# Navigate to your module directory 
-cd your-module/
-
-# Run all tests in your module
 cargo test
-
-# Run specific test
-cargo test test_module_operation
-
-# Run with output for debugging
-cargo test -- --nocapture
-```
-
-## Testing Patterns
-
-### 1. Error Scenario Testing
-
-Test that your module handles errors correctly:
-
-```rust
-#[test]
-fn test_insufficient_balance() {
-    let (test_data, mut runner) = setup();
-    let sender = &test_data.user1;
-    let receiver = &test_data.user2;
-    
-    runner.execute_transaction(TransactionTestCase {
-        input: sender.create_plain_message::<TestRuntime, Bank>(
-            CallMessage::Transfer {
-                to: receiver.address(),
-                coins: Coins { 
-                    amount: 999_999_999_999, // More than the sender has 
-                    token_id: config_gas_token_id() 
-                },
-            }
-        ),
-        assert: Box::new(|result, _state| {
-            // Verify the transaction reverted
-            assert!(result.tx_receipt.is_reverted());
-            
-            // Check the specific error message
-            if let TxEffect::Reverted(contents) = &result.tx_receipt.tx_effect {
-                assert!(contents.reason.to_string().contains("Insufficient balance"));
-            }
-        }),
-    });
-}
-```
-
-### 2. Event Testing
-
-Verify that your module emits the correct events. Note that the event enum name (e.g., `TestRuntimeEvent`) is automatically generated based on your runtime name.
-
-```rust
-#[test]
-fn test_event_emission() {
-    let (test_data, mut runner) = setup();
-    let user = &test_data.user1;
-    
-    runner.execute_transaction(TransactionTestCase {
-        input: user.create_plain_message::<TestRuntime, YourModule>(
-            CallMessage::CreateItem { name: "Test".into() }
-        ),
-        assert: Box::new(move |result, _state| {
-            assert!(result.tx_receipt.is_successful());
-            assert_eq!(result.events.len(), 1);
-            
-            assert_eq!(
-                result.events[0],
-                TestRuntimeEvent::YourModule(your_module::Event::ItemCreated {
-                    creator: user.address(),
-                    name: "Test".into()
-                })
-            );
-        }),
-    });
-}
-```
-
-### 3. Time-Based Testing
-
-Test operations that depend on blockchain progression by advancing slots:
-
-```rust
-#[test]
-fn test_time_delayed_operation() {
-    let (users, mut runner) = setup();
-
-    // 1. Initiate a time-locked operation (e.g., a vesting schedule)
-
-    // 2. Advance blockchain time
-    runner.advance_slots(100); // Advance 100 slots
-
-    // 3. Now, the second part of the operation should succeed
-    runner.execute_transaction(/* ... complete the operation ... */);
-}
-```
-
-### 4. Standalone State Queries
-
-While you can query state within a transaction's assert block, you can also query the latest visible state at any point using `runner.query_visible_state`. This is useful for verifying the initial genesis state or checking state after non-transaction events like advancing slots. This can be useful if you especially have custom [`hooks`](3-5-advanced.md#hooks):
-
-```rust
-#[test]
-fn test_state_queries() {
-    let (test_data, mut runner) = setup();
-    let admin = &test_data.admin;
-
-    // Query the initial genesis state before any transactions
-    runner.query_visible_state(|state| {
-        // Query a value from your module
-        let item_count = YourModule::<S>::default()
-            .get_item_count(state)
-            .unwrap_infallible()
-            .unwrap();
-        assert_eq!(item_count, 0);
-
-    });
-
-    // 2. Execute a transaction that changes state
-    runner.execute_transaction(TransactionTestCase {
-        input: admin.create_plain_message::<TestRuntime, YourModule>(
-            CallMessage::CreateItem { name: "Test".into() }
-        ),
-        assert: |result, _| assert!(result.tx_receipt.is_successful()),
-    });
-
-    // Query again to see the new state
-    runner.query_visible_state(|state| {
-        let item_count = YourModule::<S>::default()
-            .get_item_count(state)
-            .unwrap_infallible()
-            .unwrap();
-        assert_eq!(item_count, 1);
-    });
-}
-```
-
-### 5. Custom Module Genesis Configuration
-
-If your module requires initialization parameters in genesis (like an admin address or initial values), you'll need to provide a custom configuration:
-
-```rust
-use sov_test_utils::{GenesisConfig};
-
-fn setup_with_config() -> (TestUser<TestSpec>, TestRunner<TestRuntime, TestSpec>) {
-    let genesis_config = HighLevelOptimisticGenesisConfig::generate()
-        .add_accounts_with_default_balance(1);
-    
-    // Get the admin user
-    let admin = genesis_config
-        .additional_accounts()
-        .first()
-        .unwrap()
-        .clone();
-    
-    // Create genesis with your module's configuration
-    let genesis = GenesisConfig::from_minimal_config(
-        genesis_config.into(),
-        YourModuleConfig {
-            admin: admin.address(),
-            initial_value: 1000,
-            // Other module-specific parameters
-        },
-    );
-    
-    let runner = TestRunner::new_with_genesis(
-        genesis.into_genesis_params(),
-        TestRuntime::default()
-    );
-    
-    (admin, runner)
-}
 ```
 
 ## Additional Resources
 
 For more advanced testing scenarios, the [`sov-test-utils` crate](fix-link-https://docs.rs/sov-test-utils) is your primary resource. It contains all the testing components covered in this guide and much more.
 
-We highly recommend exploring the documentation for the **[`TestRunner`](fix-link-https://docs.rs/sov-test-utils/latest/sov_test_utils/runtime/struct.TestRunner.html)** struct, which provides methods for more complex scenarios, including:
+Specifically the **[`TestRunner`](fix-link-https://docs.rs/sov-test-utils/latest/sov_test_utils/runtime/struct.TestRunner.html)** struct provides methods for testing more complex scenarios, including:
 
-*   Executing and asserting on batches of transactions.
-*   Querying historical state at specific block heights.
-*   Customizing gas and fee configurations.
-*   Running an integrated REST API server for off-chain testing.
-
-The `sov-test-utils` crate provides a comprehensive toolkit for testing every aspect of your module's behavior.
+*   Executing and asserting on batches of transactions. `runner.execute_batch(..)`
+*   Advancing time (which is particularly useful for testing logic in `hooks`. More on hooks later.) `runner.advance_slots(num)`
+*   Querying historical state at specific block heights. `runner.query_state_at_height(..)`
+*   Running an integrated REST API server for off-chain testing. `runner.query_api_unwrap_data(..)`
 
 ### Ready for Primetime
 
-With a thoroughly tested module, you can be confident in your logic's correctness and robustness. It's now time to bring your module to life by integrating it into a live rollup runtime.
+With a thoroughly tested module, you can be confident in your logic's correctness. It's now time to bring your module to life by integrating it into a live rollup runtime.
 
 In the next section, **"Integrating Your Module,"** we'll guide you through adding your module to the Runtime struct, configuring its genesis state, and making it a live component of your application.
