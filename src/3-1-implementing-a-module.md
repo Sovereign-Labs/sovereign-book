@@ -19,7 +19,7 @@ cd sov-rollup-starter/examples/value-setter/
 
 ## A Step-by-Step Walkthrough: The `ValueSetter` Module
 
-### 1. Defining the Module Struct
+### 1. Define the Module Struct
 
 First, we define the module's structure and the state it will manage. This struct tells the SDK what data to store onchain.
 
@@ -46,7 +46,7 @@ pub struct ValueSetter<S: Spec> {
 }
 ```
 
-### 2. Defining Types for the `Module` Trait
+### 2. Define Types for the `Module` Trait
 
 Next, we define the associated types required by the `Module` trait: its configuration, its callable methods, and its events.
 
@@ -81,7 +81,7 @@ pub enum Event {
 }
 ```
 
-### 3. Implementing the `Module` Trait Logic
+### 3. Implement the `Module` Trait Logic
 
 With our types defined, we can now implement the `Module` trait itself.
 
@@ -116,7 +116,7 @@ impl<S: Spec> Module for ValueSetter<S> {
 }
 ```
 
-### 4. Writing the Business Logic
+### 4. Write the Business Logic
 
 The final piece is to write the private `set_value` method containing our business logic.
 
@@ -245,10 +245,10 @@ Events are the primary way your module communicates with the outside world. They
 -   Streaming in real-time via WebSockets.
 -   Building off-chain indexers and databases.
 
-**Important**: Events are only emitted when transactions succeed. If a transaction reverts, all its events are discarded. This makes events perfect for reliably indexing onchain state.
-
 #### Emitting an Event
 To emit an event, you call the `self.emit_event(..)` method from within your module's logic. This method takes two arguments: a key (as a string) and a value (an instance of your module's `Event` enum).
+
+**Important**: Events are only emitted when transactions succeed. If a transaction reverts, all its events are discarded. This makes events perfect for reliably indexing onchain state.
 
 ### Error Handling
 
