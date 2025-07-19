@@ -181,14 +181,14 @@
                         <h1 id="the-sovereign-sdk-book"><a class="header" href="#the-sovereign-sdk-book">The Sovereign SDK Book</a></h1>
 <p>Welcome to the Sovereign SDK Book, your comprehensive guide to the industry's most flexible toolkit for building high-performance, real-time rollups.</p>
 <p>We built this SDK to give developers, from solo builders to large teams, the power to create onchain applications that were previously impossible.</p>
-<p>With transaction confirmations under 2-5 milliseconds, the Sovereign SDK is fast enough to bring complex financial systems, like Central-Limit Orderbooks (CLOBs), fully on-chain.</p>
+<p>With P99 of transaction executions under 10 milliseconds, the Sovereign SDK is fast enough to bring complex financial systems, like Central-Limit Orderbooks (CLOBs), fully on-chain.</p>
 <p>Let's build the next Hyperliquid.</p>
 <img src="https://github.com/Sovereign-Labs/sovereign-sdk/blob/nightly/assets/banner.jpg?raw=true" style="border-radius: 10px">
 <h2 id="why-build-a-dedicated-rollup-for-your-application"><a class="header" href="#why-build-a-dedicated-rollup-for-your-application">Why Build a Dedicated Rollup For Your Application?</a></h2>
 <p>For almost a decade, developers have been forced to build applications on shared, general-purpose blockchains. This model forces apps with vastly different needs to compete for the same limited blockspace. Building your application as a dedicated rollup gives you three strategic advantages:</p>
 <ol>
 <li><strong>Dedicated Throughput:</strong> Your users will never have to compete with a viral NFT drop. A rollup gives your application its own dedicated lane, ensuring a consistently fast and affordable user experience.</li>
-<li><strong>Capturing More Value:</strong> On shared blockchains, user fees primarily benefit the chain operators (i.e. L1 validators or general-purpose L2 sequencer). With a rollup, your application and its users can capture the vast majority of that value, creating a sustainable economic engine for your project.</li>
+<li><strong>Capturing More Value:</strong> On shared blockchains, user fees primarily benefit the chain operators (i.e. L1 validators or general-purpose L2 sequencers). With a rollup, your application and its users can capture the vast majority of that value, creating a sustainable economic engine for your project.</li>
 <li><strong>Full Control &amp; Flexibility:</strong> Go beyond the limitations of a shared virtual machine. A rollup gives you full control over the execution environment, allowing you to define your own rules for how transactions are processed. <strong>With a rollup, you're in the driver's seat.</strong></li>
 </ol>
 <h2 id="why-choose-the-sovereign-sdk"><a class="header" href="#why-choose-the-sovereign-sdk">Why Choose the Sovereign SDK?</a></h2>
@@ -388,7 +388,7 @@ let setValueCall: RuntimeCall = {
 
 // This is the struct that will represent our module.
 // It must derive `ModuleInfo` to be a valid module.
-#[derive(ModuleInfo)]
+#[derive(Clone, ModuleInfo)]
 pub struct ValueSetter&lt;S: Spec&gt; {
     /// The `#[id]` attribute is required and uniquely identifies the module instance.
     #[id]
@@ -411,7 +411,7 @@ use schemars::JsonSchema;
 use sov_modules_api::macros::{serialize, UniversalWallet};
 
 // The configuration for our module at genesis. This will be deserialized from `genesis.json`.
-#[derive(Debug, Clone)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 #[serialize(Borsh, Serde)]
 #[serde(rename_all = "snake_case")]
 pub struct ValueSetterConfig&lt;S: Spec&gt; {
@@ -420,7 +420,7 @@ pub struct ValueSetterConfig&lt;S: Spec&gt; {
 }
 
 // The actions a user can take. Our module only supports one action: setting the value.
-#[derive(Clone, Debug, PartialEq, JsonSchema, UniversalWallet)]
+#[derive(Clone, Debug, PartialEq, Eq, JsonSchema, UniversalWallet)]
 #[serialize(Borsh, Serde)]
 #[serde(rename_all = "snake_case")]
 pub enum CallMessage {
@@ -428,7 +428,7 @@ pub enum CallMessage {
 }
 
 // The event our module will emit after a successful action.
-#[derive(Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 #[serialize(Borsh, Serde)]
 #[serde(rename_all = "snake_case")]
 pub enum Event {
@@ -565,6 +565,7 @@ this trait, the SDK will throw a helpful error.</p>
 <p>When your call method returns an Err, the SDK automatically reverts all state changes made during the transaction. This ensures that your module's logic is atomic.</p>
 <pre><code class="language-rust">use anyhow::{Context, Result};
 
+// Simplified code snippet from Bank module
 fn transfer(&amp;self, from: &amp;S::Address, amount: u64, state: &amp;mut impl TxState&lt;S&gt;) -&gt; Result&lt;()&gt; {
     let balance = self.balances.get(from, state)?
         .with_context(|| format!("Failed to read balance for sender {}", from))?
