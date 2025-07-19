@@ -180,7 +180,15 @@
                         <h1 id="implementing-a-module"><a class="header" href="#implementing-a-module">Implementing a Module</a></h1>
 <p>A module is the basic unit of functionality in the Sovereign SDK. It's a self-contained piece of onchain logic that manages its own state and defines how users can interact with it.</p>
 <p>The best way to learn how modules work is to build one. In this section, we'll create a simple but complete <code>ValueSetter</code> module from scratch. This module will allow a designated admin address to set a <code>u32</code> value in the rollup's state. After the walkthrough, we'll dive deeper into each of the concepts introduced.</p>
-<p>Think of this tutorial as your guide to the fundamental components of a module. Once you understand the concepts, we recommend starting your own module by copying the <a href="fix-link"><code>ExampleModule</code></a> provided in the starter repository. It has all the necessary dependencies and file structure pre-configured for you.</p>
+<h4 id="want-to-code-along"><a class="header" href="#want-to-code-along">Want to Code Along?</a></h4>
+<p>For those who learn best by doing, we recommend using our starter template. It has all the boilerplate and dependencies pre-configured, so you can get straight to the code.
+Simply clone the <code>sov-rollup-starter</code> repository and navigate to the <code>value-setter</code> example module. All the code in this guide will be written within this directory.</p>
+<pre><code class="language-bash"># 1. Clone the starter repo
+git clone https://github.com/Sovereign-Labs/sov-rollup-starter.git
+
+# 2. Navigate to the example module
+cd sov-rollup-starter/examples/value-setter/
+</code></pre>
 <h2 id="a-step-by-step-walkthrough-the-valuesetter-module"><a class="header" href="#a-step-by-step-walkthrough-the-valuesetter-module">A Step-by-Step Walkthrough: The <code>ValueSetter</code> Module</a></h2>
 <h3 id="1-defining-the-module-struct"><a class="header" href="#1-defining-the-module-struct">1. Defining the Module Struct</a></h3>
 <p>First, we define the module's structure and the state it will manage. This struct tells the SDK what data to store onchain.</p>
@@ -228,7 +236,7 @@ pub enum CallMessage {
 }
 
 // The event our module will emit after a successful action.
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq, JsonSchema)]
 #[serialize(Borsh, Serde)]
 #[serde(rename_all = "snake_case")]
 pub enum Event {
@@ -237,7 +245,7 @@ pub enum Event {
 <h3 id="3-implementing-the-module-trait-logic"><a class="header" href="#3-implementing-the-module-trait-logic">3. Implementing the <code>Module</code> Trait Logic</a></h3>
 <p>With our types defined, we can now implement the <code>Module</code> trait itself.</p>
 <pre><code class="language-rust">use anyhow::Result;
-use sov_modules_api::{Context, GenesisState, TxState, EventEmitter};
+use sov_modules_api::{Context, GenesisState, TxState};
 
 // Now, we implement the `Module` trait.
 impl&lt;S: Spec&gt; Module for ValueSetter&lt;S&gt; {
@@ -266,7 +274,8 @@ impl&lt;S: Spec&gt; Module for ValueSetter&lt;S&gt; {
 }</code></pre>
 <h3 id="4-writing-the-business-logic"><a class="header" href="#4-writing-the-business-logic">4. Writing the Business Logic</a></h3>
 <p>The final piece is to write the private <code>set_value</code> method containing our business logic.</p>
-<pre><code class="language-rust">
+<pre><code class="language-rust">use sov_modules_api::EventEmitter;
+
 impl&lt;S: Spec&gt; ValueSetter&lt;S&gt; {
     fn set_value(&amp;mut self, new_value: u32, context: &amp;Context&lt;S&gt;, state: &amp;mut impl TxState&lt;S&gt;) -&gt; Result&lt;()&gt; {
         let admin = self.admin.get_or_err(state)??;
@@ -275,7 +284,10 @@ impl&lt;S: Spec&gt; ValueSetter&lt;S&gt; {
             return Err(anyhow::anyhow!("Only the admin can set the value.").into());
         }
 
+        // We update the `value` in our state.
         self.value.set(&amp;new_value, state)?;
+
+        // We emit an event to record this change off-chain.
         self.emit_event(state, Event::ValueChanged(new_value));
         Ok(())
     }
@@ -297,6 +309,9 @@ this trait, the SDK will throw a helpful error.</p>
 <li><code>S::Da::Address</code>: The address format of the underlying Data Availability layer.</li>
 <li><code>S::Da::BlockHeader</code>: The block header type of the DA layer.</li>
 </ul>
+<h4 id="a-quick-tip-on-schemas-and-generics"><a class="header" href="#a-quick-tip-on-schemas-and-generics">A Quick Tip on Schemas and Generics</a></h4>
+<p>If you parameterize your <code>CallMessage</code> or <code>Event</code> over <code>S</code> (for example, to include an address of type <code>S::Address</code>), you must add the <code>#[schemars(bound = "S: Spec")]</code> attribute on top your enum definition.
+This is a necessary hint for <code>schemars</code>, a library that generates a JSON schema for your module's API. It ensures that your generic types can be correctly represented for external tools.</p>
 <h3 id="state-module-and-id-fields"><a class="header" href="#state-module-and-id-fields"><code>#[state]</code>, <code>#[module]</code>, and <code>#[id]</code> fields</a></h3>
 <ul>
 <li><strong><code>#[id]</code></strong>: Every module must have exactly one <code>#[id]</code> field. The <code>ModuleInfo</code> macro uses this to store the module's unique, auto-generated identifier.</li>
@@ -312,7 +327,7 @@ this trait, the SDK will throw a helpful error.</p>
 </ul>
 <p>The generic types can be any deterministic Rust data structure, anything from a simple <code>u32</code> to a complex <code>BTreeMap</code>.</p>
 <p><strong>Accessory State</strong>: For each state type, there is a corresponding <code>AccessoryState*</code> variant (e.g., <code>AccessoryStateMap</code>). Accessory state is special: it can be read and written via the API, but it is <strong>write-only</strong> during a transaction. This makes it much cheaper to use for data that doesn't affect onchain logic, like indexing purchase histories for an off-chain frontend.</p>
-<p><strong>Codecs</strong>: By default, all state is serialized using Borsh. If you need to store a type from a third-party library that only supports serde, you can specify a different codec: StateValue&lt;ThirdPartyType, BcsCodec&gt;.</p>
+<p><strong>Codecs</strong>: By default, all state is serialized using Borsh. If you need to store a type from a third-party library that only supports serde, you can specify a different codec: <code>StateValue&lt;ThirdPartyType, BcsCodec&gt;</code>.</p>
 <h3 id="the-module-trait-and-its-methods"><a class="header" href="#the-module-trait-and-its-methods">The <code>Module</code> Trait and its Methods</a></h3>
 <p>The <code>Module</code> trait is the core of your application's onchain logic. The implementation you wrote in the walkthrough satisfies this trait's requirements.</p>
 <p>Let's look at a simplified version of the trait definition to understand its components:</p>
@@ -321,10 +336,10 @@ this trait, the SDK will throw a helpful error.</p>
     type Config;
 
     /// A module-defined enum representing the actions a user can take.
-    type CallMessage: Debug + BorshSerialize + BorshDeserialize + Clone;
+    type CallMessage: Debug + BorshSerialize + BorshDeserialize + JsonSchema + UniversalWallet + Clone;
 
     /// A module-defined enum representing the events emitted by successful calls.
-    type Event: Debug + BorshSerialize + BorshDeserialize + 'static + core::marker::Send;
+    type Event: Debug + BorshSerialize + BorshDeserialize + JsonSchema + 'static + core::marker::Send;
 
     /// `genesis` is called once when the rollup is deployed to initialize state.
     ///
@@ -350,8 +365,8 @@ this trait, the SDK will throw a helpful error.</p>
 <p>The <code>genesis</code> function is called once when the rollup is deployed. It uses the module's <code>Config</code> struct (defined as the associated <code>type Config</code>) to initialize the state. This <code>Config</code> is deserialized from the <code>genesis.json</code> file.</p>
 <h4 id="call"><a class="header" href="#call"><code>call</code></a></h4>
 <p>The <code>call</code> function provides the transaction processing logic. It accepts a structured <code>CallMessage</code> from a user and a <code>Context</code> containing metadata like the sender's address. If your <code>call</code> function returns an error, the SDK automatically reverts all state changes and discards any events, ensuring that transactions are atomic.</p>
-<p>You can define the <code>CallMessage</code> to be any type you wish, but an enum is usually best. Be sure to derive <code>borsh</code> and <code>serde</code> serialization, as well as <code>schemars::JsonSchema</code> and <code>UniversalWallet</code>. This ensures your <code>CallMessage</code> is portable across different languages and frontends.</p>
-<p><strong>A Note on Gas and Security</strong>: Just like Ethereum smart contracts, modules accept inputs that are pre-validated by the chain. Your call method does not need to worry about authenticating the transaction sender. The SDK also automatically meters gas for state accesses. You only need to manually charge gas (using <a href="fix-link"><code>Module::charge_gas(...)</code></a>) if your module performs heavy computation outside of state reads/writes.</p>
+<p>You can define the <code>CallMessage</code> to be any type you wish, but an enum is usually the best. Be sure to derive <code>borsh</code> and <code>serde</code> serialization (you can use our <code>#[serialize(Borsh, Serde])]</code> helper macro as in the example), as well as <code>schemars::JsonSchema</code> and <code>UniversalWallet</code>. This ensures your <code>CallMessage</code> is portable across different languages and frontends.</p>
+<p><strong>A Note on Gas and Security</strong>: Just like Ethereum smart contracts, modules accept inputs that are pre-validated by the chain. Your call method does not need to worry about authenticating the transaction sender. The SDK also automatically meters gas for state accesses. You only need to manually charge gas (using <code>self::charge_gas(...)</code> within your module logic) if your module performs heavy computation outside of state reads/writes.</p>
 <h3 id="events"><a class="header" href="#events">Events</a></h3>
 <p>Events are the primary way your module communicates with the outside world. They are structured data included in transaction receipts and are essential for:</p>
 <ul>
@@ -360,6 +375,8 @@ this trait, the SDK will throw a helpful error.</p>
 <li>Building off-chain indexers and databases.</li>
 </ul>
 <p><strong>Important</strong>: Events are only emitted when transactions succeed. If a transaction reverts, all its events are discarded. This makes events perfect for reliably indexing onchain state.</p>
+<h4 id="emitting-an-event"><a class="header" href="#emitting-an-event">Emitting an Event</a></h4>
+<p>To emit an event, you call the <code>self.emit_event(..)</code> method from within your module's logic. This method takes two arguments: a key (as a string) and a value (an instance of your module's <code>Event</code> enum).</p>
 <h3 id="error-handling"><a class="header" href="#error-handling">Error Handling</a></h3>
 <p>Modules use <code>anyhow::Result</code> for error handling, providing rich context that helps both developers and users understand what went wrong.</p>
 <p>When your call method returns an Err, the SDK automatically reverts all state changes made during the transaction. This ensures that your module's logic is atomic.</p>
