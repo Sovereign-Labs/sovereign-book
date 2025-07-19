@@ -190,7 +190,7 @@ git clone https://github.com/Sovereign-Labs/sov-rollup-starter.git
 cd sov-rollup-starter/examples/value-setter/
 </code></pre>
 <h2 id="a-step-by-step-walkthrough-the-valuesetter-module"><a class="header" href="#a-step-by-step-walkthrough-the-valuesetter-module">A Step-by-Step Walkthrough: The <code>ValueSetter</code> Module</a></h2>
-<h3 id="1-defining-the-module-struct"><a class="header" href="#1-defining-the-module-struct">1. Defining the Module Struct</a></h3>
+<h3 id="1-define-the-module-struct"><a class="header" href="#1-define-the-module-struct">1. Define the Module Struct</a></h3>
 <p>First, we define the module's structure and the state it will manage. This struct tells the SDK what data to store onchain.</p>
 <pre><code class="language-rust">use sov_modules_api::{Module, ModuleId, ModuleInfo, StateValue, Spec};
 
@@ -212,7 +212,7 @@ pub struct ValueSetter&lt;S: Spec&gt; {
     #[state]
     pub admin: StateValue&lt;S::Address&gt;,
 }</code></pre>
-<h3 id="2-defining-types-for-the-module-trait"><a class="header" href="#2-defining-types-for-the-module-trait">2. Defining Types for the <code>Module</code> Trait</a></h3>
+<h3 id="2-define-types-for-the-module-trait"><a class="header" href="#2-define-types-for-the-module-trait">2. Define Types for the <code>Module</code> Trait</a></h3>
 <p>Next, we define the associated types required by the <code>Module</code> trait: its configuration, its callable methods, and its events.</p>
 <pre><code class="language-rust">// Continuing in the same file...
 use schemars::JsonSchema;
@@ -242,7 +242,7 @@ pub enum CallMessage {
 pub enum Event {
     ValueChanged(u32),
 }</code></pre>
-<h3 id="3-implementing-the-module-trait-logic"><a class="header" href="#3-implementing-the-module-trait-logic">3. Implementing the <code>Module</code> Trait Logic</a></h3>
+<h3 id="3-implement-the-module-trait-logic"><a class="header" href="#3-implement-the-module-trait-logic">3. Implement the <code>Module</code> Trait Logic</a></h3>
 <p>With our types defined, we can now implement the <code>Module</code> trait itself.</p>
 <pre><code class="language-rust">use anyhow::Result;
 use sov_modules_api::{Context, GenesisState, TxState};
@@ -272,7 +272,7 @@ impl&lt;S: Spec&gt; Module for ValueSetter&lt;S&gt; {
         }
     }
 }</code></pre>
-<h3 id="4-writing-the-business-logic"><a class="header" href="#4-writing-the-business-logic">4. Writing the Business Logic</a></h3>
+<h3 id="4-write-the-business-logic"><a class="header" href="#4-write-the-business-logic">4. Write the Business Logic</a></h3>
 <p>The final piece is to write the private <code>set_value</code> method containing our business logic.</p>
 <pre><code class="language-rust">use sov_modules_api::EventEmitter;
 
@@ -374,9 +374,9 @@ This is a necessary hint for <code>schemars</code>, a library that generates a J
 <li>Streaming in real-time via WebSockets.</li>
 <li>Building off-chain indexers and databases.</li>
 </ul>
-<p><strong>Important</strong>: Events are only emitted when transactions succeed. If a transaction reverts, all its events are discarded. This makes events perfect for reliably indexing onchain state.</p>
 <h4 id="emitting-an-event"><a class="header" href="#emitting-an-event">Emitting an Event</a></h4>
 <p>To emit an event, you call the <code>self.emit_event(..)</code> method from within your module's logic. This method takes two arguments: a key (as a string) and a value (an instance of your module's <code>Event</code> enum).</p>
+<p><strong>Important</strong>: Events are only emitted when transactions succeed. If a transaction reverts, all its events are discarded. This makes events perfect for reliably indexing onchain state.</p>
 <h3 id="error-handling"><a class="header" href="#error-handling">Error Handling</a></h3>
 <p>Modules use <code>anyhow::Result</code> for error handling, providing rich context that helps both developers and users understand what went wrong.</p>
 <p>When your call method returns an Err, the SDK automatically reverts all state changes made during the transaction. This ensures that your module's logic is atomic.</p>
