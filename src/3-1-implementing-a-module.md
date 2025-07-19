@@ -17,7 +17,7 @@ use sov_modules_api::{Module, ModuleId, ModuleInfo, StateValue, Spec};
 
 // This is the struct that will represent our module.
 // It must derive `ModuleInfo` to be a valid module.
-#[derive(ModuleInfo)]
+#[derive(Clone, ModuleInfo)]
 pub struct ValueSetter<S: Spec> {
     /// The `#[id]` attribute is required and uniquely identifies the module instance.
     #[id]
@@ -45,7 +45,7 @@ use schemars::JsonSchema;
 use sov_modules_api::macros::{serialize, UniversalWallet};
 
 // The configuration for our module at genesis. This will be deserialized from `genesis.json`.
-#[derive(Debug, Clone)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 #[serialize(Borsh, Serde)]
 #[serde(rename_all = "snake_case")]
 pub struct ValueSetterConfig<S: Spec> {
@@ -54,7 +54,7 @@ pub struct ValueSetterConfig<S: Spec> {
 }
 
 // The actions a user can take. Our module only supports one action: setting the value.
-#[derive(Clone, Debug, PartialEq, JsonSchema, UniversalWallet)]
+#[derive(Clone, Debug, PartialEq, Eq, JsonSchema, UniversalWallet)]
 #[serialize(Borsh, Serde)]
 #[serde(rename_all = "snake_case")]
 pub enum CallMessage {
@@ -62,7 +62,7 @@ pub enum CallMessage {
 }
 
 // The event our module will emit after a successful action.
-#[derive(Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 #[serialize(Borsh, Serde)]
 #[serde(rename_all = "snake_case")]
 pub enum Event {
@@ -237,6 +237,7 @@ When your call method returns an Err, the SDK automatically reverts all state ch
 ```rust
 use anyhow::{Context, Result};
 
+// Simplified code snippet from Bank module
 fn transfer(&self, from: &S::Address, amount: u64, state: &mut impl TxState<S>) -> Result<()> {
     let balance = self.balances.get(from, state)?
         .with_context(|| format!("Failed to read balance for sender {}", from))?
