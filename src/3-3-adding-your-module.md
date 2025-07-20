@@ -89,16 +89,14 @@ Now, we provide the corresponding values in `genesis.json`. The key in the JSON 
 With everything configured, you can build and run your rollup:
 
 ```bash
-# From the root of sov-rollup-starter
-cargo run --bin node -- run
+# From crates/rollup
+cargo run --bin node
 ```
 
-Your rollup is now live with the `ValueSetter` module fully integrated! You can send it transactions, query its state via the REST API, and listen for its events.
+Congratulations! Your module `ValueSetter` is now live - integrated into a running rollup! You can send it transactions, query its state via the REST API, and listen for its events. 
 
-## Your Module is Live!
+You've successfully navigated the entire development lifecycle, from implementation and testing to local deployment.
+You have built the core on-chain logic, but a crucial question remains: how do users actually interact with it? How do they create accounts, manage keys, and sign transactions to call your module's methods?
 
-Congratulations! You have successfully navigated the complete development lifecycle, from implementation and testing to deployment on your local machine.
-
-You've built the core logic, but now the crucial question is: how do users actually interact with it? How do they create accounts, manage keys, and sign transactions to call your new module's methods?
 
 The next section, **"Wallets and Accounts,"** will bridge this gap. We'll explore how to leverage the SDK's Ethereum-compatible account system and use client-side tooling to sign and submit transactions to your rollup, bringing your application to life for end-users.
