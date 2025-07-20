@@ -1,6 +1,6 @@
 # Wallets and Accounts
 
-With your module running live on-chain, the focus shifts from building the backend to enabling user interaction. This section covers how accounts, wallets, and transaction signing work in the Sovereign SDK.
+With your module being live onchain, the focus shifts from building the backend to enabling user interaction. This section covers how accounts, wallets, and transaction signing work in the Sovereign SDK.
 
 The core design principle is **Ethereum wallet compatibility**. Sovereign SDK rollups use standard Ethereum addresses and signatures (Secp256k1), which unlocks the vast Ethereum wallet tooling. However, there are important nuances to understand.
 
@@ -31,7 +31,7 @@ await rollup.call(myCallMessage, { signer });
 
 **2. `PrivySigner` (For User-Facing Applications)**
 
-For most applications, asking users for a private key is not feasible or secure. This is where **Privy** comes in. Privy is a powerful wallet-as-a-service provider that allows users to create a non-custodial wallet using familiar Web2 logins like email or social accounts. They can also connect their existing wallets (like MetaMask or Phantom).
+For most applications, asking users for a private key is not feasible or secure. This is where **Privy** comes in. [Privy](https://www.privy.io/) is a powerful wallet-as-a-service provider that allows users to create a non-custodial wallet using familiar Web2 logins like email or social accounts. They can also connect their existing wallets (like MetaMask or Phantom).
 
 The `sov-rollup-starter` repository includes a [full example of integrating the `PrivySigner`](fix-link), making it the most realistic and user-friendly way to onboard users to your rollup today. It handles all the complexity of wallet creation and signing, allowing users to interact with your application seamlessly.
 

@@ -1,84 +1,109 @@
 # Advanced Topics
 
-This section covers advanced module development features that go beyond basic functionality. While the core module implementation handles state management and transaction processing, you may need these additional capabilities for production use cases.
+This section covers advanced module development features that go beyond basic functionality. 
 
-All features in this section are optional. Start with the basic module implementation and add these capabilities as your requirements grow.
+ Need to run logic on every block? Want to build custom APIs or integrate with off-chain services? Need configurable delays to reduce MEV for your application? You'll find the answers here.
 
-## Hooks
+Each of these features is optional, designed to be adopted as your application's needs evolve.
 
-In addition to `call`, modules may _optionally_ implement `Hooks`. Hooks can run at
-the begining and end of every rollup block and every transaction. `BlockHooks`
-are great for taking actions that need to happen before or after any
-transaction executes in a block - but be careful, no one pays for the
-computation done by `BlockHooks`, so doing any heavy computation can make your
-rollup vulnerable to DOS attacks.
+## Hooks: Responding to On-Chain Events
 
-`TxHooks` are useful for checking invariants, or to allow your module to monitor actions
-being taken by other modules. Unlike `BlockHooks`, `TxHooks` are paid for by the
-user who sent each transaction.
+While the `call` method allows your module to react to direct user transactions, sometimes 
+you need your module to execute logic in response to broader onchain events. This is where `Hooks` come in. 
+They allow your module to "hook into" the lifecycle of a block or transaction, enabling 
+powerful automation and cross-module interactions.
 
-The `FinalizeHook` is great for doing indexing. It can only modify
-`AccessoryState`, which makes it cheap to run but means that the results will
-only be visible via the API.
+### `BlockHooks`: Running Logic at Block Boundaries
 
-Using the hooks is somewhat unusual - most applications only need to modify
-their state in response to user actions - but it's a powerful tool in some
-cases. See the documentation on
-[`BlockHooks`](fix-link/crates/module-system/sov-modules-api/src/hooks.rs#L76)
-and
-[`TxHooks`](fix-link/crates/module-system/sov-modules-api/src/hooks.rs#L12)
-and
-[`FinalizeHook`](fix-link/crates/module-system/sov-modules-api/src/hooks.rs#L120)
-more details.
+`BlockHooks` are triggered at the beginning and end of every block. They are ideal for logic that 
+needs to run periodically, independent of any specific transaction. For example, you could use 
+a `BlockHook` to:
 
-## Error Handling
+- Distribute rewards once per block.
+- Update funding rate looking at the number of open positions at the end of every N blocks.
 
-### When to Panic vs Return Errors
+**A word of caution**: BlockHook computation is not paid for by any single user, so it's a "public good" of your rollup. 
+Be mindful of performance here; heavy computation in a BlockHook can make your rollup vulnerable to Denial-of-Service (DoS) attacks.
 
-**Panic when:**
-- You encounter a bug that indicates broken invariants
-- The error is unrecoverable and continuing would compromise state integrity
+### TxHooks: Monitoring All Transactions
 
-When you panic, the rollup will shut down. This is correct for bugs that could corrupt your state.
+TxHooks run before and after every single transaction processed by the rollup. This makes them perfect for:
 
-**Return errors when:**
-- User input is invalid
-- Business logic conditions aren't met (insufficient balance, unauthorized access, etc.)
-- Any expected failure condition
+- **Global Invariant Checks**: Ensuring a global property (like total supply of a token) is never violated by any module.
+- **Monitoring and Reactions**: Allowing a compliance module to monitor all transfers and flag suspicious activity.
 
-Transaction errors automatically revert all state changes.
+Unlike `BlockHooks`, the gas for `TxHooks` is paid by the user who submitted the transaction.
 
-### Writing Error Messages
+### `FinalizeHook`: Cheap Off-Chain Indexing
 
-Your error messages serve both end users and developers. Use `anyhow` with context to provide meaningful errors:
+The `FinalizeHook` runs at the very end of a block's execution and can only write to `AccessoryState`. This makes it 
+cheap to run and perfect for storing data that are only meant to be read by off-chain APIs, not used by on-chain logic.
+
+See more documentation on hooks here:
+- [`BlockHooks`](fix-link/crates/module-system/sov-modules-api/src/hooks.rs#L76)
+- [`TxHooks`](fix-link/crates/module-system/sov-modules-api/src/hooks.rs#L12)
+- [`FinalizeHook`](fix-link/crates/module-system/sov-modules-api/src/hooks.rs#L120)
+
+## Error Handling: User Errors vs. System Bugs
+
+In a blockchain, handling failure correctly is critical. Your module must distinguish between expected **user errors**
+(like an invalid transaction) and critical **system bugs** (which could corrupt state).
+
+The Sovereign SDK provides a clear pattern for this:
+
+### 1. User Errors: Returning `anyhow::Result`
+
+For all expected business logic failures, you should return the `Err` variant of `anyhow::Result`. The `call` and `genesis` methods are defined to return this type (`Result<T, anyhow::Error>`).
+
+- **When:** Invalid user input, insufficient balance, unauthorized access.
+- **What it does:** The SDK automatically reverts all state changes from the transaction, ensuring atomicity.
+- **Goal:** Inform the user why their transaction failed.
+
+The `anyhow` crate provides several convenient macros for this. While you can always use `return Err(anyhow::anyhow!(...))`, the `bail!` and `ensure!` macros are often more ergonomic and are the preferred style in the Sovereign SDK.
+
+- **`bail!(message)`**: Immediately returns an `Err`. It's a direct shortcut for `return Err(anyhow::anyhow!(message))`.
+- **`ensure!(condition, message)`**: Checks a condition. If it's false, it returns an `Err` with the given message. It's perfect for validating inputs at the start of a function.
+
+Here’s how they look in practice, using the `Bank` module as an example:
 
 ```rust
-use anyhow::{Context, Result};
+// From the Bank module's `create_token` method
+pub fn create_token(
+    // ...
+    token_decimals: Option<u8>,
+    initial_balance: Amount,
+    supply_cap: Option<Amount>,
+) -> Result<TokenId> {
+    // Using `ensure!` to validate an input parameter.
+    // If decimals > MAX_DECIMALS, this returns an Err immediately.
+    anyhow::ensure!(
+        token_decimals.unwrap_or(0) <= Amount::MAX_DECIMALS,
+        "Too many decimal places."
+    );
 
-fn transfer(&self, from: &S::Address, to: &S::Address, token_id: &TokenId, amount: u64, state: &mut impl TxState<S>) -> Result<()> {
-    let balance = self.balances
-        .get(&(from, token_id), state)
-        .context("Failed to read sender balance")?
-        .unwrap_or(0);
-    
-    if balance < amount {
-        // User-facing error message
-        return Err(anyhow::anyhow!("Insufficient balance: {} < {}", balance, amount));
+    // Using `bail!` to return an error after a more complex check.
+    if initial_balance > supply_cap.unwrap_or(Amount::MAX) {
+        bail!(
+            "Initial balance {} is greater than the supply cap {}",
+            initial_balance,
+            supply_cap.unwrap_or(Amount::MAX)
+        );
     }
-    
-    let new_balance = balance - amount;
-    
-    // Add context for debugging when operations fail
-    self.balances
-        .set(&(from, token_id), &new_balance, state)
-        .with_context(|| format!("Failed to update balance for {} token {}", from, token_id))?;
-    
-    // ... rest of transfer logic
-    Ok(())
+    // ...
+    Ok(token_id)
 }
 ```
 
 Transaction reverts are normal and expected - log them at `debug!` level if needed for debugging, not as warnings or errors.
+
+### 2. System Bugs: `panic!`
+
+This is an emergency stop for critical, unrecoverable bugs.
+- **When:** An impossible state is reached or a core invariant is broken.
+- **What it does:** Shuts down the rollup node to prevent state corruption.
+- **Goal:** Alert the node operator to a critical software bug.
+
+Use `panic!` as your last line of defense. It signals that your module's integrity is compromised and continuing would be dangerous.
 
 ## Native-Only Code
 
@@ -239,6 +264,8 @@ impl<S: Spec> Evm<S> {
 
 ### Mastering Your Module
 
-By leveraging Hooks, robust error handling, and custom APIs, you can build sophisticated, production-grade modules that are both powerful and easy to operate.
+You are now equipped with the full suite of tools for building sophisticated, production-grade modules. 
+By leveraging Hooks for automation, robust error handling for reliability, and custom APIs for rich off-chain 
+experiences, you can create applications that are both powerful and easy to operate.
 
-With a deep understanding of module implementation, you may next want to optimize your rollup's performance. The next section on **"Understanding Performance"** will dive into state access patterns and cryptographic considerations that can significantly impact your application's throughput.
+With a deep understanding of module implementation, you're ready to shift your focus to a critical aspect of any rollup: performance. . The next section, **"Understanding Performance,"** will dive into  patterns and considerations that can significantly impact your application's latency and throughput.

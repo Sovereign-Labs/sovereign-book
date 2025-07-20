@@ -18,7 +18,7 @@ Here is the path we'll take:
 2.  [**Testing Your Module:**](3-2-testing-your-module.md) We'll then write robust tests to ensure your logic is correct and secure.
 3.  [**Integrating Your Module:**](3-3-integrating-your-module.md) Next, you'll learn how to add your finished module into a live rollup runtime.
 4.  [**Wallets and Accounts:**](3-4-signing-and-submitting-txs.md) With your module integrated, we'll explore how users can create accounts and sign transactions to interact with it.
-5.  [**Advanced Topics:**](3-5-advanced.md) From there, we'll dive into powerful features like hooks and custom APIs to extend your module's capabilities.
+5.  [**Advanced Topics:**](3-5-advanced.md) From there, we'll dive into powerful features like configurable delays, hooks and custom APIs to extend your module's capabilities.
 6.  [**Performance:**](3-6-performance.md) You'll learn how to optimize your module for maximum throughput and efficiency.
 7.  [**Prebuilt Modules:**](3-7-prebuilt-modules.md) Finally, we'll review the rich ecosystem of existing modules you can leverage to accelerate your development.
 
