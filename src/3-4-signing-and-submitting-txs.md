@@ -1,6 +1,6 @@
 # Wallets and Accounts
 
-Now that you've built, tested, and integrated your module, the final step is enabling users to interact with it. This section covers how accounts, wallets, and transaction signing work in the Sovereign SDK.
+With your module running live on-chain, the focus shifts from building the backend to enabling user interaction. This section covers how accounts, wallets, and transaction signing work in the Sovereign SDK.
 
 The core design principle is **Ethereum wallet compatibility**. Sovereign SDK rollups use standard Ethereum addresses and signatures (Secp256k1), which unlocks the vast Ethereum wallet tooling. However, there are important nuances to understand.
 

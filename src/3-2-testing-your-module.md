@@ -138,6 +138,7 @@ fn test_regular_user_cannot_set_value() {
 
     // 2. Execute the transaction from the non-admin user
     runner.execute_transaction(TransactionTestCase {
+        // This time we're sending the transaction from the regular_user
         input: regular_user.create_plain_message::<TestRuntime<S>, ValueSetter<S>>(
             CallMessage::SetValue(99),
         ),
