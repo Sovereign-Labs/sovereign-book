@@ -1,167 +1,103 @@
 # Adding Your Module to Your Runtime
 
-Once you've built and tested your module, the final step is to integrate it into your rollup runtime. This section will walk you through the process of adding your module to a new rollup project based on our rollup starter template.
+Once you've built and tested your module, the final step is to integrate it into your rollup's runtime. The `sov-rollup-starter` that we've been working in already has the `ValueSetter` module integrated. This section will walk you through how it's integrated, so you can follow the same pattern for your own future modules.
 
 ## Step 1: Add Your Module as a Dependency
 
-First, add your module to the workspace dependencies in the root `Cargo.toml`:
+First, your module needs to be added as a dependency of the runtime crate. In the starter template, the `value-setter` is an example inside the same workspace, so we add it via a path dependency.
+
+In the root `Cargo.toml`, you'll find it under [workspace.dependencies]:
 
 ```toml
+# In sov-rollup-starter/Cargo.toml
+
 [workspace.dependencies]
 # ... existing dependencies ...
 
-# Add your module here
-your-module = { path = "../path/to/your-module" }
-# Or if published:
-# your-module = { version = "0.1.0" }
-# Or if the module is available on Github:
-# your-module = { git = "https://github.com/your-github/your-module", rev = "dfd0624c32f5fb363c2190e9d911605663f7d693" }
+value-setter = { path = "examples/value-setter" }
 ```
 
-Then add it to your STF crate's dependencies in `crates/stf/Cargo.toml` (where your `Runtime` is typically located in):
+Then, in the runtime crate's `Cargo.toml` (located at `crates/stf/Cargo.toml`), it's included as a dependency:
 
 ```toml
+# In sov-rollup-starter/crates/stf/Cargo.toml
+
 [dependencies]
 # ... existing dependencies ...
 
-your-module = { workspace = true }
+value-setter = { workspace = true }
 
 [features]
 default = []
 native = [
     # ... existing native features ...
-    "your-module/native",
+    "value-setter/native",
 ]
 ```
 
 ## Step 2: Add Your Module to the Runtime Struct
 
-The central piece of your rollup's logic is the [`Runtime` struct](fix-link), usually found in `crates/stf/src/runtime.rs`. This struct lists all the modules that compose your rollup. To integrate your module, simply add it as a new field to this struct.
+The central piece of your rollup's logic is the [`Runtime` struct](fix-link), usually found in `crates/stf/src/runtime.rs`. This struct lists all the modules that compose your rollup. 
 
-The Runtime struct uses several derive macros (`#[derive(Genesis, DispatchCall, ...)]`) that automatically generate the boilerplate code for state initialization, transaction dispatching, and message encoding.
+To integrate the `ValueSetter`, we simply add it as a new field to this struct. The derive macros (`#[derive(Genesis, DispatchCall, ...)]`) on the Runtime automatically generate the necessary boilerplate code for initialization, transaction dispatching, and message encoding.
 
 ```rust
+// In sov-rollup-starter/crates/stf/src/runtime.rs
+
 use your_module::YourModule;
 
 #[derive(Genesis, Hooks, DispatchCall, Event, MessageCodec, RuntimeRestApi)]
 pub struct Runtime<S: Spec> {
-    /// The bank module is responsible for managing tokens
     pub bank: sov_bank::Bank<S>,
-    
-    /// The accounts module manages user accounts and addresses
     pub accounts: sov_accounts::Accounts<S>,
-    
     // ... other modules ...
     
-    /// Your custom module
-    pub your_module: YourModule<S>,
+    // Add the value_setter module here
+    pub value_setter: ValueSetter<S>,
 }
 ```
 
 ## Step 3: Configure Genesis State
 
-When your rollup is first launched, it populates its initial state from a `genesis.json` file. You need to tell the rollup how to initialize your module by adding a corresponding entry to this file.
+When your rollup is first launched, it populates its initial state from a `genesis.json` file. You need to add a configuration entry for your module so the runtime knows how to initialize its state.
 
-### Understanding `genesis.json`
-
-The `genesis.json` is a simple key-value store where each key is the snake-case name of a module in your `Runtime` struct, and the value is the initial configuration for that module.
-
-When the rollup starts, it deserializes this JSON into your module's `Config` struct (which you define in your module) and passes it to your module's `genesis()` method.
-
-You will find this file in the root of your rollup project: `your-rollup/{DA_LAYER_NAME}/genesis.json`.
-
-### Adding Your Module's Configuration
-
-There are two cases:
-
-**1. Your Module Requires No Initial Configuration:**
-
-If your module's `Config` is an empty struct (e.g., `pub struct MyModuleConfig {}`) or can be created with `Default::default()`, you just need to add its name to `genesis.json` with an empty JSON object `{}`.
+In the previous section, we defined this `Config` struct for the `ValueSetter`:
+```rust
+pub struct ValueSetterConfig<S: Spec> {
+    pub initial_value: u32,
+    pub admin: S::Address,
+}
+```
+Now, we provide the corresponding values in `genesis.json`. The key in the JSON object (`"value_setter"`) must exactly match the snake-cased field name in the `Runtime` struct.
 
 ```json
-// In your-rollup/genesis.json
+// In sov-rollup-starter/configs/{da-layer}/genesis.json
+
 {
   "bank": { ... },
   "sequencer_registry": { ... },
   "accounts": { ... },
-  "my_awesome_module": {}
-}
-```
-
-**2. Your Module Requires Initial Configuration:**
-
-If your module needs initial parameters (like an admin address or an initial value), you must provide them in the JSON object. The JSON fields must exactly match the fields of your module's `Config` struct.
-
-For example, if your module has this `Config` struct:
-```rust
-// In modules/my-awesome-module/src/lib.rs
-#[derive(serde::Deserialize, serde::Serialize)]
-pub struct MyAwesomeModuleConfig {
-    pub admin_address: S::Address,
-    pub initial_counter: u64,
-}
-```
-
-Your `genesis.json` entry would look like this:
-```json
-// In your-rollup/genesis.json
-{
-  // ... other modules
-  "my_awesome_module": {
-    "admin_address": "0x633dD354F65261d7a64E10459508F8713a537149",
-    "initial_counter": 100
+  "value_setter": {
+    "admin": "sov1h6t82p7my6k02tcz9a27nnsyd9chg490rwn3r09e8k02y5qew2qsl2a4vg",
+    "initial_value": 123
   }
 }
 ```
 
-## Step 4: Configure Rollup Constant
+## Step 4: Build and Run
 
-The `constants.toml` file in your rollup's root directory allows you to configure chain-level parameters that don't change often. You should update this file to reflect your rollup's identity.
-
-```toml
-# Change these to make your chain unique
-CHAIN_ID = 12345  # Your unique chain ID
-CHAIN_NAME = "my-awesome-rollup"
-
-# Gas configuration
-GAS_TOKEN_NAME = "GAS"
-
-# Other compile time parameters...
-```
-These values are compiled into your rollup binary.
-
-## Step 5: Build and Run
-
-With everything configured, you can run your rollup with your module:
+With everything configured, you can build and run your rollup:
 
 ```bash
-# Run the node
-cargo run --bin node
+# From the root of sov-rollup-starter
+cargo run --bin node -- run
 ```
 
-Your rollup is now operational! You can:
-- Send transactions to your module
-- Query its state via the REST API
-- See events in transaction receipts
+Your rollup is now live with the `ValueSetter` module fully integrated! You can send it transactions, query its state via the REST API, and listen for its events.
 
-## Troubleshooting
+## Your Module is Live!
 
-### Common Issues
-
-**Module not found in genesis**
-- Ensure the module name in `genesis.json` matches the field name in your Runtime struct
-
-**Serialization errors**
-- Verify your genesis configuration matches your module's `Config` type
-- Check that all addresses use the correct format (0x-prefixed hex)
-
-**Build errors**
-- Ensure all feature flags are properly configured
-- Check that your module exports all required types
-
-### Your Module is Live!
-
-Congratulations! Your module is now a fully integrated part of a running rollup. You have successfully navigated the complete development lifecycle, from implementation and testing to deployment on your local machine.
+Congratulations! You have successfully navigated the complete development lifecycle, from implementation and testing to deployment on your local machine.
 
 You've built the core logic, but now the crucial question is: how do users actually interact with it? How do they create accounts, manage keys, and sign transactions to call your new module's methods?
 
