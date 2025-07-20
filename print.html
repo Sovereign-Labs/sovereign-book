@@ -434,14 +434,7 @@ pub struct ValueSetterConfig&lt;S: Spec&gt; {
 pub enum CallMessage {
     SetValue(u32),
 }
-
-// The event our module will emit after a successful action.
-#[derive(Clone, Debug, PartialEq, Eq, JsonSchema)]
-#[serialize(Borsh, Serde)]
-#[serde(rename_all = "snake_case")]
-pub enum Event {
-    ValueChanged(u32),
-}</code></pre>
+</code></pre>
 <h3 id="3-implement-the-module-trait-logic"><a class="header" href="#3-implement-the-module-trait-logic">3. Implement the <code>Module</code> Trait Logic</a></h3>
 <p>With our types defined, we can now implement the <code>Module</code> trait itself.</p>
 <pre><code class="language-rust">use anyhow::Result;
@@ -452,7 +445,8 @@ impl&lt;S: Spec&gt; Module for ValueSetter&lt;S&gt; {
     type Spec = S;
     type Config = ValueSetterConfig&lt;S&gt;;
     type CallMessage = CallMessage;
-    type Event = Event;
+    // We'll add events later...
+    type Event = ();
 
     // `genesis` is called once when the rollup is deployed to initialize the state.
     fn genesis(&amp;mut self, _header: &amp;&lt;S::Da as sov_modules_api::DaSpec&gt;::BlockHeader, config: &amp;Self::Config, state: &amp;mut impl GenesisState&lt;S&gt;) -&gt; Result&lt;()&gt; {
@@ -474,21 +468,19 @@ impl&lt;S: Spec&gt; Module for ValueSetter&lt;S&gt; {
 }</code></pre>
 <h3 id="4-write-the-business-logic"><a class="header" href="#4-write-the-business-logic">4. Write the Business Logic</a></h3>
 <p>The final piece is to write the private <code>set_value</code> method containing our business logic.</p>
-<pre><code class="language-rust">use sov_modules_api::EventEmitter;
-
-impl&lt;S: Spec&gt; ValueSetter&lt;S&gt; {
+<pre><code class="language-rust">impl&lt;S: Spec&gt; ValueSetter&lt;S&gt; {
     fn set_value(&amp;mut self, new_value: u32, context: &amp;Context&lt;S&gt;, state: &amp;mut impl TxState&lt;S&gt;) -&gt; Result&lt;()&gt; {
+        // `get_or_err` returns a nested Result, so we use `??` to unpack it.
         let admin = self.admin.get_or_err(state)??;
 
+        // Check if the sender is admin
         if admin != *context.sender() {
             return Err(anyhow::anyhow!("Only the admin can set the value.").into());
         }
 
-        // We update the `value` in our state.
+        // Update the `value` in our state
         self.value.set(&amp;new_value, state)?;
 
-        // We emit an event to record this change off-chain.
-        self.emit_event(state, Event::ValueChanged(new_value));
         Ok(())
     }
 }</code></pre>
@@ -567,33 +559,57 @@ This is a necessary hint for <code>schemars</code>, a library that generates a J
 <p>The <code>call</code> function provides the transaction processing logic. It accepts a structured <code>CallMessage</code> from a user and a <code>Context</code> containing metadata like the sender's address. If your <code>call</code> function returns an error, the SDK automatically reverts all state changes and discards any events, ensuring that transactions are atomic.</p>
 <p>You can define the <code>CallMessage</code> to be any type you wish, but an enum is usually the best. Be sure to derive <code>borsh</code> and <code>serde</code> serialization (you can use our <code>#[serialize(Borsh, Serde])]</code> helper macro as in the example), as well as <code>schemars::JsonSchema</code> and <code>UniversalWallet</code>. This ensures your <code>CallMessage</code> is portable across different languages and frontends.</p>
 <p><strong>A Note on Gas and Security</strong>: Just like Ethereum smart contracts, modules accept inputs that are pre-validated by the chain. Your call method does not need to worry about authenticating the transaction sender. The SDK also automatically meters gas for state accesses. You only need to manually charge gas (using <code>self::charge_gas(...)</code> within your module logic) if your module performs heavy computation outside of state reads/writes.</p>
-<h3 id="events"><a class="header" href="#events">Events</a></h3>
-<p>Events are the primary way your module communicates with the outside world. They are structured data included in transaction receipts and are essential for:</p>
-<ul>
-<li>Querying via REST API.</li>
-<li>Streaming in real-time via WebSockets.</li>
-<li>Building off-chain indexers and databases.</li>
-</ul>
-<h4 id="emitting-an-event"><a class="header" href="#emitting-an-event">Emitting an Event</a></h4>
-<p>To emit an event, you call the <code>self.emit_event(..)</code> method from within your module's logic. This method takes two arguments: a key (as a string) and a value (an instance of your module's <code>Event</code> enum).</p>
-<p><strong>Important</strong>: Events are only emitted when transactions succeed. If a transaction reverts, all its events are discarded. This makes events perfect for reliably indexing onchain state.</p>
+<h3 id="events-bridging-on-chain-and-off-chain-data"><a class="header" href="#events-bridging-on-chain-and-off-chain-data">Events: Bridging On-Chain and Off-Chain Data</a></h3>
+<p>While call methods alter your module's state, <strong>events</strong> are how your module broadcasts those changes. They are the primary mechanism for streaming on-chain data to off-chain systems like databases and front-ends in real-time.</p>
+<p>A key guarantee of the Sovereign SDK is that event emission is <strong>atomic</strong> with transaction execution—if a transaction reverts, so do its events. This ensures any off-chain system remains perfectly consistent with the on-chain state. The sequencer provides a robust websocket endpoint that streams sequentially numbered transactions along with their corresponding events. If a client disconnects, it can reliably resume the stream from the last transaction it processed, making it simple to build scalable and fault-tolerant off-chain data pipelines.</p>
+<p>To implement events, you first define an <code>Event</code> enum, then emit it from your call method using <code>self.emit_event(state, &lt;your_event_variant&gt;)</code>.</p>
+<p><strong>1. Define the Event</strong></p>
+<pre><code class="language-rust">// The event our module will emit after a successful action.
+#[derive(Clone, Debug, PartialEq, Eq, JsonSchema)]
+#[serialize(Borsh, Serde)]
+#[serde(rename_all = "snake_case")]
+pub enum Event {
+    ValueUpdated(u32),
+}
+
+// Now, implement the `Module` trait with Event defined.
+impl&lt;S: Spec&gt; Module for ValueSetter&lt;S&gt; {
+    // ... existing code ...
+    type CallMessage = CallMessage;
+
+    // Plug in the Event type
+    type Event = Event;</code></pre>
+<p><strong>2. Emit the Event</strong></p>
+<p>Now, modify <code>set_value</code> in <code>module-system/module-implementations/examples/value-setter/src/call.rs</code> to emit <code>ValueUpdated</code>:</p>
+<pre><code class="language-rust">use sov_modules_api::EventEmitter;
+
+impl&lt;S: Spec&gt; ValueSetter&lt;S&gt; {
+    fn set_value(&amp;mut self, new_value: u32, context: &amp;Context&lt;S&gt;, state: &amp;mut impl TxState&lt;S&gt;) -&gt; Result&lt;()&gt; {
+
+        // ... existing code ...
+        self.value.set(&amp;new_value, state)?;
+
+        // Emit an event to record this change off-chain.
+        self.emit_event(state, Event::ValueUpdated(new_value));
+
+        Ok(())
+    }
+}</code></pre>
+<p>With these changes, every successful <code>set_value</code> transaction will emit an event that can be consumed by off-chain services.</p>
 <h3 id="error-handling"><a class="header" href="#error-handling">Error Handling</a></h3>
 <p>Modules use <code>anyhow::Result</code> for error handling, providing rich context that helps both developers and users understand what went wrong.</p>
 <p>When your call method returns an Err, the SDK automatically reverts all state changes made during the transaction. This ensures that your module's logic is atomic.</p>
-<pre><code class="language-rust">use anyhow::{Context, Result};
+<pre><code class="language-rust">impl&lt;S: Spec&gt; ValueSetter&lt;S&gt; {
+    fn set_value(&amp;mut self, new_value: u32, context: &amp;Context&lt;S&gt;, state: &amp;mut impl TxState&lt;S&gt;) -&gt; Result&lt;()&gt; {
+        // ... existing code ...
 
-// Simplified code snippet from Bank module
-fn transfer(&amp;self, from: &amp;S::Address, amount: u64, state: &amp;mut impl TxState&lt;S&gt;) -&gt; Result&lt;()&gt; {
-    let balance = self.balances.get(from, state)?
-        .with_context(|| format!("Failed to read balance for sender {}", from))?
-        .unwrap_or(0);
-    
-    if balance &lt; amount {
-        return Err(anyhow::anyhow!("Insufficient balance: {} &lt; {}", balance, amount));
-    }
-    // ...
-    Ok(())
-}</code></pre>
+        // Check if the sender is admin
+        if admin != *context.sender() {
+            return Err(anyhow::anyhow!("Only the admin can set the value.").into());
+        }
+
+        // ... existing code ...
+    }</code></pre>
 <p>For more details on error handling patterns, see the <a href="3-5-advanced.html#error-handling">Advanced Topics</a> section.</p>
 <h3 id="next-step-ensuring-correctness"><a class="header" href="#next-step-ensuring-correctness">Next Step: Ensuring Correctness</a></h3>
 <p>You now have a deep understanding of how to define, implement, and structure a module. With this foundation, you're ready to test your module.</p>
