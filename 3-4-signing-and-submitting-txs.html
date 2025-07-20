@@ -178,7 +178,7 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="wallets-and-accounts"><a class="header" href="#wallets-and-accounts">Wallets and Accounts</a></h1>
-<p>With your module running live on-chain, the focus shifts from building the backend to enabling user interaction. This section covers how accounts, wallets, and transaction signing work in the Sovereign SDK.</p>
+<p>With your module being live onchain, the focus shifts from building the backend to enabling user interaction. This section covers how accounts, wallets, and transaction signing work in the Sovereign SDK.</p>
 <p>The core design principle is <strong>Ethereum wallet compatibility</strong>. Sovereign SDK rollups use standard Ethereum addresses and signatures (Secp256k1), which unlocks the vast Ethereum wallet tooling. However, there are important nuances to understand.</p>
 <h4 id="the-sovereign-sdk-transaction-type"><a class="header" href="#the-sovereign-sdk-transaction-type">The Sovereign SDK Transaction Type</a></h4>
 <p>A critical distinction to grasp is that while addresses and signatures are Ethereum-compatible, the <strong>transaction format itself is unique to your rollup</strong>. A Sovereign SDK rollup does not natively accept a raw, RLP-encoded Ethereum transaction.</p>
@@ -197,7 +197,7 @@ const signer = new Secp256k1Signer(privKey);
 await rollup.call(myCallMessage, { signer });
 </code></pre>
 <p><strong>2. <code>PrivySigner</code> (For User-Facing Applications)</strong></p>
-<p>For most applications, asking users for a private key is not feasible or secure. This is where <strong>Privy</strong> comes in. Privy is a powerful wallet-as-a-service provider that allows users to create a non-custodial wallet using familiar Web2 logins like email or social accounts. They can also connect their existing wallets (like MetaMask or Phantom).</p>
+<p>For most applications, asking users for a private key is not feasible or secure. This is where <strong>Privy</strong> comes in. <a href="https://www.privy.io/">Privy</a> is a powerful wallet-as-a-service provider that allows users to create a non-custodial wallet using familiar Web2 logins like email or social accounts. They can also connect their existing wallets (like MetaMask or Phantom).</p>
 <p>The <code>sov-rollup-starter</code> repository includes a <a href="fix-link">full example of integrating the <code>PrivySigner</code></a>, making it the most realistic and user-friendly way to onboard users to your rollup today. It handles all the complexity of wallet creation and signing, allowing users to interact with your application seamlessly.</p>
 <h4 id="the-future-supporting-all-ethereum-wallets-by-leveraging-eip-712"><a class="header" href="#the-future-supporting-all-ethereum-wallets-by-leveraging-eip-712">The Future: Supporting All Ethereum Wallets by Leveraging EIP-712</a></h4>
 <p>While Privy provides an excellent experience, it is crucial to meet users where they're at and enable support for all existing Ethereum wallets (including hardware wallets). This will be enabled by implementing a new <strong>EIP-712 Authenticator</strong> for the Sovereign SDK runtime (which we hope to complete by August 24, 2025).</p>

@@ -178,71 +178,91 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="advanced-topics"><a class="header" href="#advanced-topics">Advanced Topics</a></h1>
-<p>This section covers advanced module development features that go beyond basic functionality. While the core module implementation handles state management and transaction processing, you may need these additional capabilities for production use cases.</p>
-<p>All features in this section are optional. Start with the basic module implementation and add these capabilities as your requirements grow.</p>
-<h2 id="hooks"><a class="header" href="#hooks">Hooks</a></h2>
-<p>In addition to <code>call</code>, modules may <em>optionally</em> implement <code>Hooks</code>. Hooks can run at
-the begining and end of every rollup block and every transaction. <code>BlockHooks</code>
-are great for taking actions that need to happen before or after any
-transaction executes in a block - but be careful, no one pays for the
-computation done by <code>BlockHooks</code>, so doing any heavy computation can make your
-rollup vulnerable to DOS attacks.</p>
-<p><code>TxHooks</code> are useful for checking invariants, or to allow your module to monitor actions
-being taken by other modules. Unlike <code>BlockHooks</code>, <code>TxHooks</code> are paid for by the
-user who sent each transaction.</p>
-<p>The <code>FinalizeHook</code> is great for doing indexing. It can only modify
-<code>AccessoryState</code>, which makes it cheap to run but means that the results will
-only be visible via the API.</p>
-<p>Using the hooks is somewhat unusual - most applications only need to modify
-their state in response to user actions - but it's a powerful tool in some
-cases. See the documentation on
-<a href="fix-link/crates/module-system/sov-modules-api/src/hooks.rs#L76"><code>BlockHooks</code></a>
-and
-<a href="fix-link/crates/module-system/sov-modules-api/src/hooks.rs#L12"><code>TxHooks</code></a>
-and
-<a href="fix-link/crates/module-system/sov-modules-api/src/hooks.rs#L120"><code>FinalizeHook</code></a>
-more details.</p>
-<h2 id="error-handling"><a class="header" href="#error-handling">Error Handling</a></h2>
-<h3 id="when-to-panic-vs-return-errors"><a class="header" href="#when-to-panic-vs-return-errors">When to Panic vs Return Errors</a></h3>
-<p><strong>Panic when:</strong></p>
+<p>This section covers advanced module development features that go beyond basic functionality.</p>
+<p>Need to run logic on every block? Want to build custom APIs or integrate with off-chain services? Need configurable delays to reduce MEV for your application? You'll find the answers here.</p>
+<p>Each of these features is optional, designed to be adopted as your application's needs evolve.</p>
+<h2 id="hooks-responding-to-on-chain-events"><a class="header" href="#hooks-responding-to-on-chain-events">Hooks: Responding to On-Chain Events</a></h2>
+<p>While the <code>call</code> method allows your module to react to direct user transactions, sometimes
+you need your module to execute logic in response to broader onchain events. This is where <code>Hooks</code> come in.
+They allow your module to "hook into" the lifecycle of a block or transaction, enabling
+powerful automation and cross-module interactions.</p>
+<h3 id="blockhooks-running-logic-at-block-boundaries"><a class="header" href="#blockhooks-running-logic-at-block-boundaries"><code>BlockHooks</code>: Running Logic at Block Boundaries</a></h3>
+<p><code>BlockHooks</code> are triggered at the beginning and end of every block. They are ideal for logic that
+needs to run periodically, independent of any specific transaction. For example, you could use
+a <code>BlockHook</code> to:</p>
 <ul>
-<li>You encounter a bug that indicates broken invariants</li>
-<li>The error is unrecoverable and continuing would compromise state integrity</li>
+<li>Distribute rewards once per block.</li>
+<li>Update funding rate looking at the number of open positions at the end of every N blocks.</li>
 </ul>
-<p>When you panic, the rollup will shut down. This is correct for bugs that could corrupt your state.</p>
-<p><strong>Return errors when:</strong></p>
+<p><strong>A word of caution</strong>: BlockHook computation is not paid for by any single user, so it's a "public good" of your rollup.
+Be mindful of performance here; heavy computation in a BlockHook can make your rollup vulnerable to Denial-of-Service (DoS) attacks.</p>
+<h3 id="txhooks-monitoring-all-transactions"><a class="header" href="#txhooks-monitoring-all-transactions">TxHooks: Monitoring All Transactions</a></h3>
+<p>TxHooks run before and after every single transaction processed by the rollup. This makes them perfect for:</p>
 <ul>
-<li>User input is invalid</li>
-<li>Business logic conditions aren't met (insufficient balance, unauthorized access, etc.)</li>
-<li>Any expected failure condition</li>
+<li><strong>Global Invariant Checks</strong>: Ensuring a global property (like total supply of a token) is never violated by any module.</li>
+<li><strong>Monitoring and Reactions</strong>: Allowing a compliance module to monitor all transfers and flag suspicious activity.</li>
 </ul>
-<p>Transaction errors automatically revert all state changes.</p>
-<h3 id="writing-error-messages"><a class="header" href="#writing-error-messages">Writing Error Messages</a></h3>
-<p>Your error messages serve both end users and developers. Use <code>anyhow</code> with context to provide meaningful errors:</p>
-<pre><code class="language-rust">use anyhow::{Context, Result};
+<p>Unlike <code>BlockHooks</code>, the gas for <code>TxHooks</code> is paid by the user who submitted the transaction.</p>
+<h3 id="finalizehook-cheap-off-chain-indexing"><a class="header" href="#finalizehook-cheap-off-chain-indexing"><code>FinalizeHook</code>: Cheap Off-Chain Indexing</a></h3>
+<p>The <code>FinalizeHook</code> runs at the very end of a block's execution and can only write to <code>AccessoryState</code>. This makes it
+cheap to run and perfect for storing data that are only meant to be read by off-chain APIs, not used by on-chain logic.</p>
+<p>See more documentation on hooks here:</p>
+<ul>
+<li><a href="fix-link/crates/module-system/sov-modules-api/src/hooks.rs#L76"><code>BlockHooks</code></a></li>
+<li><a href="fix-link/crates/module-system/sov-modules-api/src/hooks.rs#L12"><code>TxHooks</code></a></li>
+<li><a href="fix-link/crates/module-system/sov-modules-api/src/hooks.rs#L120"><code>FinalizeHook</code></a></li>
+</ul>
+<h2 id="error-handling-user-errors-vs-system-bugs"><a class="header" href="#error-handling-user-errors-vs-system-bugs">Error Handling: User Errors vs. System Bugs</a></h2>
+<p>In a blockchain, handling failure correctly is critical. Your module must distinguish between expected <strong>user errors</strong>
+(like an invalid transaction) and critical <strong>system bugs</strong> (which could corrupt state).</p>
+<p>The Sovereign SDK provides a clear pattern for this:</p>
+<h3 id="1-user-errors-returning-anyhowresult"><a class="header" href="#1-user-errors-returning-anyhowresult">1. User Errors: Returning <code>anyhow::Result</code></a></h3>
+<p>For all expected business logic failures, you should return the <code>Err</code> variant of <code>anyhow::Result</code>. The <code>call</code> and <code>genesis</code> methods are defined to return this type (<code>Result&lt;T, anyhow::Error&gt;</code>).</p>
+<ul>
+<li><strong>When:</strong> Invalid user input, insufficient balance, unauthorized access.</li>
+<li><strong>What it does:</strong> The SDK automatically reverts all state changes from the transaction, ensuring atomicity.</li>
+<li><strong>Goal:</strong> Inform the user why their transaction failed.</li>
+</ul>
+<p>The <code>anyhow</code> crate provides several convenient macros for this. While you can always use <code>return Err(anyhow::anyhow!(...))</code>, the <code>bail!</code> and <code>ensure!</code> macros are often more ergonomic and are the preferred style in the Sovereign SDK.</p>
+<ul>
+<li><strong><code>bail!(message)</code></strong>: Immediately returns an <code>Err</code>. It's a direct shortcut for <code>return Err(anyhow::anyhow!(message))</code>.</li>
+<li><strong><code>ensure!(condition, message)</code></strong>: Checks a condition. If it's false, it returns an <code>Err</code> with the given message. It's perfect for validating inputs at the start of a function.</li>
+</ul>
+<p>Here’s how they look in practice, using the <code>Bank</code> module as an example:</p>
+<pre><code class="language-rust">// From the Bank module's `create_token` method
+pub fn create_token(
+    // ...
+    token_decimals: Option&lt;u8&gt;,
+    initial_balance: Amount,
+    supply_cap: Option&lt;Amount&gt;,
+) -&gt; Result&lt;TokenId&gt; {
+    // Using `ensure!` to validate an input parameter.
+    // If decimals &gt; MAX_DECIMALS, this returns an Err immediately.
+    anyhow::ensure!(
+        token_decimals.unwrap_or(0) &lt;= Amount::MAX_DECIMALS,
+        "Too many decimal places."
+    );
 
-fn transfer(&amp;self, from: &amp;S::Address, to: &amp;S::Address, token_id: &amp;TokenId, amount: u64, state: &amp;mut impl TxState&lt;S&gt;) -&gt; Result&lt;()&gt; {
-    let balance = self.balances
-        .get(&amp;(from, token_id), state)
-        .context("Failed to read sender balance")?
-        .unwrap_or(0);
-    
-    if balance &lt; amount {
-        // User-facing error message
-        return Err(anyhow::anyhow!("Insufficient balance: {} &lt; {}", balance, amount));
+    // Using `bail!` to return an error after a more complex check.
+    if initial_balance &gt; supply_cap.unwrap_or(Amount::MAX) {
+        bail!(
+            "Initial balance {} is greater than the supply cap {}",
+            initial_balance,
+            supply_cap.unwrap_or(Amount::MAX)
+        );
     }
-    
-    let new_balance = balance - amount;
-    
-    // Add context for debugging when operations fail
-    self.balances
-        .set(&amp;(from, token_id), &amp;new_balance, state)
-        .with_context(|| format!("Failed to update balance for {} token {}", from, token_id))?;
-    
-    // ... rest of transfer logic
-    Ok(())
+    // ...
+    Ok(token_id)
 }</code></pre>
 <p>Transaction reverts are normal and expected - log them at <code>debug!</code> level if needed for debugging, not as warnings or errors.</p>
+<h3 id="2-system-bugs-panic"><a class="header" href="#2-system-bugs-panic">2. System Bugs: <code>panic!</code></a></h3>
+<p>This is an emergency stop for critical, unrecoverable bugs.</p>
+<ul>
+<li><strong>When:</strong> An impossible state is reached or a core invariant is broken.</li>
+<li><strong>What it does:</strong> Shuts down the rollup node to prevent state corruption.</li>
+<li><strong>Goal:</strong> Alert the node operator to a critical software bug.</li>
+</ul>
+<p>Use <code>panic!</code> as your last line of defense. It signals that your module's integrity is compromised and continuing would be dangerous.</p>
 <h2 id="native-only-code"><a class="header" href="#native-only-code">Native-Only Code</a></h2>
 <p>Some functionality should only run natively on the full nodes (and sequencer), not in the zkVM during proof generation. This is a critical concept for separating verifiable on-chain logic from off-chain operational tooling.</p>
 <p>Any code that is not part of the core state transition must be gated with <code>#[cfg(feature = "native")]</code>:</p>
@@ -372,8 +392,10 @@ impl&lt;S: Spec&gt; Evm&lt;S&gt; {
     }
 }</code></pre>
 <h3 id="mastering-your-module"><a class="header" href="#mastering-your-module">Mastering Your Module</a></h3>
-<p>By leveraging Hooks, robust error handling, and custom APIs, you can build sophisticated, production-grade modules that are both powerful and easy to operate.</p>
-<p>With a deep understanding of module implementation, you may next want to optimize your rollup's performance. The next section on <strong>"Understanding Performance"</strong> will dive into state access patterns and cryptographic considerations that can significantly impact your application's throughput.</p>
+<p>You are now equipped with the full suite of tools for building sophisticated, production-grade modules.
+By leveraging Hooks for automation, robust error handling for reliability, and custom APIs for rich off-chain
+experiences, you can create applications that are both powerful and easy to operate.</p>
+<p>With a deep understanding of module implementation, you're ready to shift your focus to a critical aspect of any rollup: performance. . The next section, <strong>"Understanding Performance,"</strong> will dive into  patterns and considerations that can significantly impact your application's latency and throughput.</p>
 
                     </main>
 
