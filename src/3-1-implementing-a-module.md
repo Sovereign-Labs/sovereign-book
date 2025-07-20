@@ -230,7 +230,7 @@ You can define the `CallMessage` to be any type you wish, but an enum is usually
 
 **A Note on Gas and Security**: Just like Ethereum smart contracts, modules accept inputs that are pre-validated by the chain. Your call method does not need to worry about authenticating the transaction sender. The SDK also automatically meters gas for state accesses. You only need to manually charge gas (using `self::charge_gas(...)` within your module logic) if your module performs heavy computation outside of state reads/writes.
 
-### **Events: Bridging On-Chain and Off-Chain Data**
+### Events: Bridging On-Chain and Off-Chain Data
 
 While call methods alter your module's state, **events** are how your module broadcasts those changes. They are the primary mechanism for streaming on-chain data to off-chain systems like databases and front-ends in real-time.
 
