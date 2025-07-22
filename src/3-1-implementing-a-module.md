@@ -1,8 +1,14 @@
 # Anatomy of a Module
 
-In the quickstart, you integrated and interacted with the pre-built `ValueSetter` module. Now, we'll dissect what makes a module tick by taking a deeper look at the core components and design patterns you'll use to build your own.
+As we begin our journey into building a production-ready module, the first step is to understand the two most important architectural concepts in the Sovereign SDK: the **Runtime** and its **Modules**.
 
-Understanding these concepts in detail is the key to unlocking the full power of the Sovereign SDK. This chapter is the primary conceptual reference for module development. We will explore a complete, production-ready version of the `ValueSetter` module, breaking it down piece by piece.
+### Runtime vs. Modules
+
+The **runtime** is the orchestrator of your rollup. It receives transactions, deserializes them, and routes them to the appropriate modules for execution. Think of it as the central nervous system that connects all your application logic. The `Runtime` struct you define in your rollup code is what specifies which modules are included.
+
+**Modules**, on the other hand, contain the actual, isolated business-logic. Each module manages its own state and defines the specific actions (called "call messages") that users can perform. In our case, `ValueSetter` is a module. When a user wants to interact with it, they send a `CallMessage` targeting the `value_setter` module, and the runtime ensures it gets delivered and executed atomically.
+
+Now that we understand this high-level structure, let's dissect the production-ready version of the `ValueSetter` module piece by piece.
 
 ---
 

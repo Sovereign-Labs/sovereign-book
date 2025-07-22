@@ -2,7 +2,7 @@
 
 This section covers advanced module development features that go beyond basic functionality. 
 
- Need to run logic on every block? Want to build custom APIs or integrate with off-chain services? Need configurable delays to reduce MEV for your application? You'll find the answers here.
+Need to run logic on every block? Want to build custom APIs or integrate with off-chain services? Need configurable delays to reduce MEV for your application? You'll find the answers here.
 
 Each of these features is optional, designed to be adopted as your application's needs evolve.
 

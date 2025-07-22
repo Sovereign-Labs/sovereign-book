@@ -8,7 +8,7 @@ This chapter is about one thing: **verifying your development environment is set
 
 Before you begin, ensure you have the following installed on your system:
 
--   **Rust**: Version 1.78 or later. We recommend installing it via [rustup](https://rustup.rs/). The starter repository uses a `rust-toolchain.toml` file to automatically select the correct toolchain version.
+-   **Rust**: Version 1.88 or later. We recommend installing it via [rustup](https://rustup.rs/). The starter repository uses a `rust-toolchain.toml` file to automatically select the correct toolchain version.
 -   **Node.js and npm**: Version 18.0 or later. We'll use this for the Typescript client in a later chapter.
 -   **Git**: For cloning the starter repository.
 
