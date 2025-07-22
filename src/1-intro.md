@@ -8,7 +8,7 @@ With P99 of transaction executions under 10 milliseconds, the Sovereign SDK is f
 
 Let's build the next Hyperliquid.
 
-<img src="https://github.com/Sovereign-Labs/sovereign-sdk/blob/nightly/assets/banner.jpg?raw=true" style="border-radius: 10px">
+<img src="./assets/sov-sdk-low-res.jpeg" style="border-radius: 10px">
 
 ## Why Build a Dedicated Rollup For Your Application?
 

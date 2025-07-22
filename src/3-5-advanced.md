@@ -46,47 +46,38 @@ See more documentation on hooks here:
 
 ## Error Handling: User Errors vs. System Bugs
 
-In a blockchain, handling failure correctly is critical. Your module must distinguish between expected **user errors**
-(like an invalid transaction) and critical **system bugs** (which could corrupt state).
-
-The Sovereign SDK provides a clear pattern for this:
+In a blockchain context, handling failure correctly is critical. Your module must clearly distinguish between two types of failures: expected **user errors** (which should gracefully revert a transaction) and unexpected **system bugs** (which may require halting the chain to prevent state corruption). The Sovereign SDK provides a clear pattern for this distinction.
 
 ### 1. User Errors: Returning `anyhow::Result`
 
-For all expected business logic failures, you should return the `Err` variant of `anyhow::Result`. The `call` and `genesis` methods are defined to return this type (`Result<T, anyhow::Error>`).
+For all expected, business-logic-level failures, your `call` method should return an `Err`. These are the errors you anticipate, such as a user attempting to transfer more tokens than they own, calling a method without the proper permissions, or providing invalid parameters.
 
-- **When:** Invalid user input, insufficient balance, unauthorized access.
-- **What it does:** The SDK automatically reverts all state changes from the transaction, ensuring atomicity.
-- **Goal:** Inform the user why their transaction failed.
+When you return an `Err`, the SDK automatically reverts all state changes from the transaction. The goal is to safely reject the invalid transaction while providing a clear error message to the user and/or developer.
 
-The `anyhow` crate provides several convenient macros for this. While you can always use `return Err(anyhow::anyhow!(...))`, the `bail!` and `ensure!` macros are often more ergonomic and are the preferred style in the Sovereign SDK.
+The `anyhow` crate provides several convenient macros for this. While you can always construct an error with `anyhow::anyhow!()`, the `bail!` and `ensure!` macros are generally preferred for their conciseness.
 
-- **`bail!(message)`**: Immediately returns an `Err`. It's a direct shortcut for `return Err(anyhow::anyhow!(message))`.
-- **`ensure!(condition, message)`**: Checks a condition. If it's false, it returns an `Err` with the given message. It's perfect for validating inputs at the start of a function.
+*   **`bail!(message)`**: Immediately returns an `Err`. It's a direct shortcut for `return Err(anyhow::anyhow!(message))`.
+*   **`ensure!(condition, message)`**: Checks a condition. If it's false, it returns an `Err` with the given message. This is perfect for validating inputs and permissions at the start of a function.
 
 Here’s how they look in practice, using the `Bank` module as an example:
 
 ```rust
 // From the Bank module's `create_token` method
-pub fn create_token(
+fn create_token(
     // ...
-    token_decimals: Option<u8>,
-    initial_balance: Amount,
-    supply_cap: Option<Amount>,
 ) -> Result<TokenId> {
     // Using `ensure!` to validate an input parameter.
-    // If decimals > MAX_DECIMALS, this returns an Err immediately.
     anyhow::ensure!(
-        token_decimals.unwrap_or(0) <= Amount::MAX_DECIMALS,
+        token_decimals <= MAX_DECIMALS,
         "Too many decimal places."
     );
 
     // Using `bail!` to return an error after a more complex check.
-    if initial_balance > supply_cap.unwrap_or(Amount::MAX) {
+    if initial_balance > supply_cap {
         bail!(
             "Initial balance {} is greater than the supply cap {}",
             initial_balance,
-            supply_cap.unwrap_or(Amount::MAX)
+            supply_cap
         );
     }
     // ...
@@ -94,16 +85,17 @@ pub fn create_token(
 }
 ```
 
-Transaction reverts are normal and expected - log them at `debug!` level if needed for debugging, not as warnings or errors.
+Because transaction reverts are a normal part of operation, they should be logged at a `debug` level if necessary, not as warnings or errors.
 
 ### 2. System Bugs: `panic!`
 
-This is an emergency stop for critical, unrecoverable bugs.
-- **When:** An impossible state is reached or a core invariant is broken.
-- **What it does:** Shuts down the rollup node to prevent state corruption.
-- **Goal:** Alert the node operator to a critical software bug.
+A `panic!` is an emergency stop. It should only be used for critical, unrecoverable bugs where a core assumption or invariant of your system has been violated.
 
-Use `panic!` as your last line of defense. It signals that your module's integrity is compromised and continuing would be dangerous.
+*   **When:** An impossible state is reached (e.g., total supply becomes negative).
+*   **What it does:** Shuts down the rollup node to prevent state corruption.
+*   **Goal:** Alert the node operator to a critical software bug that needs immediate attention.
+
+Use `panic!` as your last line of defense. It signals that your module's integrity is compromised and continuing execution would be dangerous.
 
 ## Native-Only Code
 

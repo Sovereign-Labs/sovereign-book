@@ -1,12 +1,13 @@
 # Summary
 
 - [Intro](1-intro.md)
-- [Getting Started](2-getting-started.md)
+- [Running the Starter Rollup](2-getting-started.md)
 
-- [Writing Your Application](3-0-intro.md)
-  - [Implementing a Module](3-1-implementing-a-module.md)
+- [**Quickstart: Your First Module**](3-your-first-module.md)
+
+- [Building for Production](3-0-intro.md)
+  - [Anatomy of a Module](3-1-implementing-a-module.md)
   - [Testing Your Module](3-2-testing-your-module.md)
-  - [Adding Your Module to Your Runtime](3-3-adding-your-module.md)
   - [Wallets and Accounts](3-4-signing-and-submitting-txs.md)
   - [Advanced Topics](3-5-advanced.md)
   - [Performance](3-6-performance.md)
