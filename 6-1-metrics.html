@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>SDK Advanced Features - The Sovereign SDK Book</title>
+        <title>Metrics - The Sovereign SDK Book</title>
 
 
         <!-- Custom HTML head -->
@@ -91,7 +91,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="1-intro.html"><strong aria-hidden="true">1.</strong> Intro</a></li><li class="chapter-item expanded "><a href="2-getting-started.html"><strong aria-hidden="true">2.</strong> Getting Started</a></li><li class="chapter-item expanded "><a href="3-0-intro.html"><strong aria-hidden="true">3.</strong> Writing Your Application</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="3-1-implementing-a-module.html"><strong aria-hidden="true">3.1.</strong> Implementing a Module</a></li><li class="chapter-item expanded "><a href="3-2-testing-your-module.html"><strong aria-hidden="true">3.2.</strong> Testing Your Module</a></li><li class="chapter-item expanded "><a href="3-3-adding-your-module.html"><strong aria-hidden="true">3.3.</strong> Adding Your Module to Your Runtime</a></li><li class="chapter-item expanded "><a href="3-4-signing-and-submitting-txs.html"><strong aria-hidden="true">3.4.</strong> Wallets and Accounts</a></li><li class="chapter-item expanded "><a href="3-5-advanced.html"><strong aria-hidden="true">3.5.</strong> Advanced Topics</a></li><li class="chapter-item expanded "><a href="3-6-performance.html"><strong aria-hidden="true">3.6.</strong> Performance</a></li><li class="chapter-item expanded "><a href="3-7-prebuilt-modules.html"><strong aria-hidden="true">3.7.</strong> Prebuilt Modules</a></li></ol></li><li class="chapter-item expanded "><a href="4-0-intro.html"><strong aria-hidden="true">4.</strong> Instrumenting Your Rollup</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="4-1-metrics.html"><strong aria-hidden="true">4.1.</strong> Metrics</a></li><li class="chapter-item expanded "><a href="4-2-logging.html"><strong aria-hidden="true">4.2.</strong> Logging</a></li></ol></li><li class="chapter-item expanded "><a href="5-sdk-advanced-features.html"><strong aria-hidden="true">5.</strong> SDK Advanced Features</a></li><li class="chapter-item expanded "><a href="6-0-intro.html"><strong aria-hidden="true">6.</strong> SDK Contributors</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="6-1-transaction-lifecycle.html"><strong aria-hidden="true">6.1.</strong> Transaction Lifecyle</a></li><li class="chapter-item expanded "><a href="6-2-abstractions.html"><strong aria-hidden="true">6.2.</strong> Main Abstractions</a></li><li class="chapter-item expanded "><a href="6-3-forced-sequencer-registration.html"><strong aria-hidden="true">6.3.</strong> Forced Sequencer Registration</a></li><li class="chapter-item expanded "><a href="6-4-gas.html"><strong aria-hidden="true">6.4.</strong> Gas</a></li></ol></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="1-intro.html"><strong aria-hidden="true">1.</strong> Intro</a></li><li class="chapter-item expanded "><a href="2-running-starter.html"><strong aria-hidden="true">2.</strong> Running the Starter Rollup</a></li><li class="chapter-item expanded "><a href="3-quickstart.html"><strong aria-hidden="true">3.</strong> Quickstart: Your First Module</a></li><li class="chapter-item expanded "><a href="4-0-build-for-production-intro.html"><strong aria-hidden="true">4.</strong> Building for Production</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="4-1-anatomy-of-a-module.html"><strong aria-hidden="true">4.1.</strong> Anatomy of a Module</a></li><li class="chapter-item expanded "><a href="4-2-testing-your-module.html"><strong aria-hidden="true">4.2.</strong> Testing Your Module</a></li><li class="chapter-item expanded "><a href="4-3-wallets-and-accounts.html"><strong aria-hidden="true">4.3.</strong> Wallets and Accounts</a></li><li class="chapter-item expanded "><a href="4-4-advanced-topics.html"><strong aria-hidden="true">4.4.</strong> Advanced Topics</a></li><li class="chapter-item expanded "><a href="4-5-performance.html"><strong aria-hidden="true">4.5.</strong> Performance</a></li><li class="chapter-item expanded "><a href="4-6-prebuilt-modules.html"><strong aria-hidden="true">4.6.</strong> Prebuilt Modules</a></li></ol></li><li class="chapter-item expanded "><a href="5-additional-capabilities.html"><strong aria-hidden="true">5.</strong> Additional Capabilities</a></li><li class="chapter-item expanded "><a href="6-0-intro.html"><strong aria-hidden="true">6.</strong> Instrumenting Your Rollup</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="6-1-metrics.html"><strong aria-hidden="true">6.1.</strong> Metrics</a></li><li class="chapter-item expanded "><a href="6-2-logging.html"><strong aria-hidden="true">6.2.</strong> Logging</a></li></ol></li><li class="chapter-item expanded "><a href="7-0-intro.html"><strong aria-hidden="true">7.</strong> SDK Contributors</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="7-1-transaction-lifecycle.html"><strong aria-hidden="true">7.1.</strong> Transaction Lifecyle</a></li><li class="chapter-item expanded "><a href="7-2-abstractions.html"><strong aria-hidden="true">7.2.</strong> Main Abstractions</a></li><li class="chapter-item expanded "><a href="7-3-forced-sequencer-registration.html"><strong aria-hidden="true">7.3.</strong> Forced Sequencer Registration</a></li><li class="chapter-item expanded "><a href="7-4-gas.html"><strong aria-hidden="true">7.4.</strong> Gas</a></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -177,35 +177,156 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="advanced-features"><a class="header" href="#advanced-features">Advanced Features</a></h1>
-<p>The Sovereign SDK includes many advanced features beyond the core functionality covered in this documentation.</p>
-<p><strong>To learn more about implementing these features in your rollup, just shoot us a message in our <a href="https://join.slack.com/t/sovereigndevelopers/shared_invite/zt-39aolimfp-XsFK6dL6LhOFHhtXsD_kCA">support channel</a> or fill out our <a href="fix-link">partner form</a> and we'll reach out to you.</strong></p>
-<h3 id="performance--reliability"><a class="header" href="#performance--reliability">Performance &amp; Reliability</a></h3>
+                        <h1 id="metrics"><a class="header" href="#metrics">Metrics</a></h1>
+<p>The SDK includes a custom metrics system called <a href="fix-link"><code>sov-metrics</code></a> designed specifically for rollup monitoring. It uses the <a href="https://docs.influxdata.com/influxdb/cloud/reference/syntax/line-protocol/">Telegraf line protocol</a> format and integrates with Telegraf through socket listeners for efficient data collection. Metrics are automatically timestamped and sent to your configured Telegraf endpoint, which typically forwards them to InfluxDB for storage and Grafana for visualization. Metrics can only be tracked in <strong>native mode</strong> (not in zkVM).</p>
+<p><strong>Important</strong>: Metrics are emitted immediately when tracked and are NOT rolled back if a transaction reverts. This means failed transactions will still have their metrics recorded, which can be useful for debugging and monitoring error rates.</p>
+<h2 id="basic-example"><a class="header" href="#basic-example">Basic Example</a></h2>
+<pre><code class="language-rust">#[cfg(feature = "native")]
+use sov_metrics::{track_metrics, start_timer, save_elapsed};
+
+impl&lt;S: Spec&gt; MyModule&lt;S&gt; {
+    fn process_batch(&amp;self, items: Vec&lt;Item&gt;) -&gt; Result&lt;()&gt; {
+        // Time the operation using the provided macros
+        start_timer!(batch_timer);
+            
+        for item in items {
+            self.process_item(item)?;
+        }
+            
+        save_elapsed!(elapsed SINCE batch_timer);
+
+        #[cfg(feature = "native")] 
+        {
+            // Track batch size
+            track_metrics(|tracker| {
+                tracker.submit_inline(
+                    "mymodule_batch_size",
+                    format!("items={}", items.len()),
+                );
+            });
+            
+            // Track processing time
+            track_metrics(|tracker| {
+                tracker.submit_inline(
+                    "mymodule_batch_processing_time",
+                    format!("duration_ms={}", elapsed.as_millis()),
+                );
+            });
+        }
+        
+        Ok(())
+    }
+}</code></pre>
+<h2 id="tracking-custom-metrics"><a class="header" href="#tracking-custom-metrics">Tracking Custom Metrics</a></h2>
+<p>To track custom metrics, implement the <code>Metric</code> trait:</p>
+<pre><code class="language-rust">// Implement your custom metric in a file of your own choosing...
+#![cfg(feature = "native")]
+use sov_metrics::Metric;
+use sov_metrics::{track_metrics, start_timer, save_elapsed};
+use std::io::Write;
+
+#[derive(Debug)]
+struct TransferMetric {
+    from: String,
+    to: String,
+    token_id: TokenId,
+    amount: u64,
+    duration_ms: u64,
+}
+
+impl Metric for TransferMetric {
+    fn measurement_name(&amp;self) -&gt; &amp;'static str {
+        "mymodule_transfers"
+    }
+    
+    fn serialize_for_telegraf(&amp;self, buffer: &amp;mut Vec&lt;u8&gt;) -&gt; std::io::Result&lt;()&gt; {
+        // Format: measurement_name,tag1=value1,tag2=value2 field1=value1,field2=value2
+        write!(
+            buffer,
+            "{},from={},to={},token_id={} amount={},duration_ms={}",
+            self.measurement_name(),
+            self.from,
+            self.to,
+            self.token_id,
+            self.amount,
+            self.duration_ms
+        )
+    }
+}
+
+// In your module file...
+#[cfg(feature = "native")]
+use sov_metrics::{track_metrics, start_timer, save_elapsed};
+#[cfg(feature = "native")]
+use my_custom_metrics::TransferMetric;
+
+// Adapted from Bank module 
+impl&lt;S: Spec&gt; Bank&lt;S&gt; {
+    fn transfer(&amp;self, from: &amp;S::Address, to: &amp;S::Address, token_id: &amp;TokenId, amount: u64, state: &amp;mut impl TxState&lt;S&gt;) -&gt; Result&lt;()&gt; {
+
+        start_timer!(transfer_timer);
+        
+        // Perform the transfer
+        self.do_transfer(from, to, token_id, amount, state)?;
+        
+        save_elapsed!(elapsed SINCE transfer_timer);
+        
+        #[cfg(feature = "native")]
+        {
+            // Track your custom metric
+            track_metrics(|tracker| {
+                tracker.submit_metric(TransferMetric {
+                    from: from.to_string(),
+                    to: to.to_string(),
+                    token_id: token_id.clone(),
+                    amount,
+                    duration_ms: elapsed.as_millis() as u64,
+                });
+            });
+        }
+        
+        Ok(())
+    }
+}</code></pre>
+<h2 id="best-practices"><a class="header" href="#best-practices">Best Practices</a></h2>
+<p>Note: While the SDK provides comprehensive metrics infrastructure, individual modules in the SDK don't currently use metrics directly. Most metrics are tracked at the system level (runner, sequencer, state transitions). The examples here show how you <em>could</em> add metrics to your custom modules.</p>
+<ol>
+<li><strong>Always gate with <code>#[cfg(feature = "native")]</code></strong> - Metrics are not available in zkVM</li>
+<li><strong>Use meaningful measurement names</strong>
 <ul>
-<li><strong>Configurable delays</strong> – Enable instant cancels &amp; oracle updates while throttling toxic flow</li>
-<li><strong>Automatic sequencer fail-over</strong> – Seamless failover across data centers ensures your soft-confirmations survive even the worst outages</li>
-<li><strong>Intra-block caching</strong> – Cache state that's repeatedly accessed throughout a block, eliminating redundant instantiation per transaction and significantly boosting performance</li>
-<li><strong>Dev-ops tooling</strong> – Production-ready observability and deployment tools</li>
+<li>A lot of the packages that Sovereign SDK runs under the hood emit metrics.
+To make it easy to discern that the metrics come from a Sovereign SDK component, we
+follow the pattern of <code>sov_</code> in our metric names. We recommend following the
+pattern <code>sov_user_module_name_metric_type</code> so that it's easy to discern user level
+metric types.</li>
 </ul>
-<h3 id="integrations--compatibility"><a class="header" href="#integrations--compatibility">Integrations &amp; Compatibility</a></h3>
+</li>
+<li><strong>Separate tags and fields properly</strong>:
 <ul>
-<li><strong>Privy integration</strong> – Click-to-sign flow using Privy</li>
-<li><strong>Ethereum or Solana addresses and wallet support</strong> – Use any address format or wallet you prefer</li>
-<li><strong>Hyperlane integration</strong> – Bridge liquidity from any EVM, SVM, or Cosmos SDK chain</li>
-<li><strong>Multiple DA layers</strong> – Run with Celestia, Bitcoin, Solana, or bring your own DA solution</li>
-<li><strong>Multiple zkVM integrations</strong> – Leverage the zkVM that best suits your application's performance characteristics: Risc0, SP1 (or soon any other Rust-compatible zkVM)</li>
+<li><a href="https://docs.influxdata.com/influxdb/cloud/reference/syntax/line-protocol/#elements-of-line-protocol">Telegraf line protocol discerns between Tags and Fields by separating them with a single whitespace</a>. Make sure to write your metrics accordingly.</li>
+<li>Tags: Categorical values for filtering (types, status, enum variants), both their keys and values can only be strings</li>
+<li>Fields: Numerical values you want to aggregate (counts, durations, amounts), their keys can be strings, and values can be one of: floats, integers, unsigned integers, strings, and booleans</li>
 </ul>
-<p>We're happy to help you leverage these features to build production-ready rollups tailored to your exact requirements.</p>
+</li>
+<li><strong>Track business-critical metrics</strong>:
+<ul>
+<li>Transaction volumes and types</li>
+<li>Processing times for key operations</li>
+<li>Error rates and types</li>
+</ul>
+</li>
+<li><strong>Avoid high-cardinality tags</strong> - Don't use unique identifiers like transaction hashes as tags</li>
+</ol>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="4-2-logging.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="6-0-intro.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="6-0-intro.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="6-2-logging.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -215,11 +336,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="4-2-logging.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="6-0-intro.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="6-0-intro.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="6-2-logging.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

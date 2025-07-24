@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Intro - The Sovereign SDK Book</title>
+        <title>Anatomy of a Module - The Sovereign SDK Book</title>
 
 
         <!-- Custom HTML head -->
@@ -177,49 +177,121 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="introduction"><a class="header" href="#introduction">Introduction</a></h1>
-<p>Welcome to <em>The Sovereign SDK Book</em>, a comprehensive guide to the industry's most flexible toolkit for building high-performance, real-time rollups.</p>
-<p>We built this SDK to give developers, from solo builders to large teams, the power to create onchain applications that were previously impossible.</p>
-<p>With P99 of transaction executions under 10 milliseconds, the Sovereign SDK is fast enough to bring complex financial systems, like Central-Limit Orderbooks (CLOBs), fully on-chain.</p>
-<p>Let's build the next Hyperliquid.</p>
-<img src="./assets/sov-sdk-low-res.jpeg" style="border-radius: 10px">
-<h2 id="why-build-a-dedicated-rollup-for-your-application"><a class="header" href="#why-build-a-dedicated-rollup-for-your-application">Why Build a Dedicated Rollup For Your Application?</a></h2>
-<p>For almost a decade, developers have been forced to build applications on shared, general-purpose blockchains. This model forces apps with vastly different needs to compete for the same limited blockspace. Building your application as a dedicated rollup gives you three strategic advantages:</p>
-<ol>
-<li><strong>Dedicated Throughput:</strong> Your users will never have to compete with a viral NFT drop. A rollup gives your application its own dedicated lane, ensuring a consistently fast and affordable user experience.</li>
-<li><strong>Capturing More Value:</strong> On shared blockchains, user fees primarily benefit the chain operators (i.e. L1 validators or general-purpose L2 sequencers). With a rollup, your application and its users can capture the vast majority of that value, creating a sustainable economic engine for your project.</li>
-<li><strong>Full Control &amp; Flexibility:</strong> Go beyond the limitations of a shared virtual machine. A rollup gives you full control over the execution environment, allowing you to define your own rules for how transactions are processed. <strong>With a rollup, you're in the driver's seat.</strong></li>
-</ol>
-<h2 id="why-choose-the-sovereign-sdk"><a class="header" href="#why-choose-the-sovereign-sdk">Why Choose the Sovereign SDK?</a></h2>
-<p>The Sovereign SDK is designed around four key goals to provide an unmatched developer and user experience:</p>
+                        <h1 id="anatomy-of-a-module"><a class="header" href="#anatomy-of-a-module">Anatomy of a Module</a></h1>
+<p>As we begin our journey into building a production-ready module, the first step is to understand the two most important architectural concepts in the Sovereign SDK: the <strong>Runtime</strong> and its <strong>Modules</strong>.</p>
+<h2 id="runtime-vs-modules"><a class="header" href="#runtime-vs-modules">Runtime vs. Modules</a></h2>
+<p>The <strong>runtime</strong> is the orchestrator of your rollup. It receives transactions, deserializes them, and routes them to the appropriate modules for execution. Think of it as the central nervous system that connects all your application logic. The <a href="fix-link"><code>Runtime</code></a> struct you define in your rollup code is what specifies which modules are included.</p>
+<p><strong>Modules</strong>, on the other hand, contain the actual, isolated business-logic. Each module manages its own state and defines the specific actions (called "call messages") that users can perform.  In the quickstart, <code>ValueSetter</code> was your module.</p>
+<p>Now that we understand this high-level structure, let's dissect the <code>ValueSetter</code> module you built and enhance it with production-grade features.</p>
+<h2 id="dissecting-the-valuesetter-module"><a class="header" href="#dissecting-the-valuesetter-module">Dissecting the <code>ValueSetter</code> Module</a></h2>
+<h4 id="the-module-struct-state-and-dependencies"><a class="header" href="#the-module-struct-state-and-dependencies">The Module Struct: State and Dependencies</a></h4>
+<p>You started by defining the <code>ValueSetter</code> struct. This is the entry point to any module, defining its state variables and its dependencies on other modules.</p>
+<pre><code class="language-rust">#[derive(Clone, ModuleInfo, ModuleRestApi)]
+pub struct ValueSetter&lt;S: Spec&gt; {
+    #[id]
+    pub id: ModuleId,
+
+    #[state]
+    pub value: StateValue&lt;u32&gt;,
+
+    #[state]
+    pub admin: StateValue&lt;S::Address&gt;,
+}</code></pre>
+<p>This struct is defined by several key attributes and the <code>Spec</code> generic:</p>
 <ul>
-<li><strong>Total Customization:</strong> While rollups promise flexibility, existing frameworks are overly restrictive. With its modular Rust runtime,Sovereign SDK empowers you to customize as much or as little as neeeded. Easily add custom fee logic, integrate tailored authenticators, prioritize specific transaction types, or even swap out the authenticated state store. All without wrestling with legacy code.</li>
-<li><strong>Best-in-Class Performance:</strong> With 2-5ms soft confirmations and throughput exceeding 10,000 TPS, the Sovereign SDK is orders of magnitude faster than competing frameworks like Orbit, the OP Stack, or the Cosmos SDK.</li>
-<li><strong>Developer-Friendly Experience:</strong> Write your logic in standard Rust, run <code>cargo build</code>, and get a complete full-node implementation with REST &amp; WebSocket APIs, an indexer, auto-generated OpenAPI specs, and a sequencer  with automatic failover out of the box. No deep blockchain expertise required.</li>
-<li><strong>Future-Proof Architecture:</strong> Never get locked into yesterday's tech stack. With the Sovereign SDK, you can switch data availability layers or zkVMs with just a few lines of code, ensuring your project remains agile for years to come.</li>
+<li><code>#[derive(ModuleInfo)]</code>: This derive macro is mandatory. It performs essential setup, like laying out your state values in the database.</li>
+<li><code>#[id]</code>: Every module must have exactly one field with this attribute. The SDK uses it to store the module's unique, auto-generated identifier.</li>
+<li><code>#[state]</code>: This attribute marks a field as a state variable that will be stored in the database. More on <a href="#state-management-in-depth">state management</a> later.</li>
+<li><strong>The</strong> <code>Spec</code> <strong>Generic</strong>: All modules are generic over a <code>Spec</code>. This provides core types like <code>S::Address</code> and makes your module portable across things like DA layers, zkVMs, and address formats.</li>
+<li><code>#[module]</code>: While not used in this example, this attribute declares a dependency on another module. For example, if our <code>ValueSetter</code> needed to charge a fee, we could add <code>#[module] pub bank: sov_bank::Bank&lt;S&gt;</code>, allowing us to call methods like <code>self.bank.transfer(...)</code> from our own logic.</li>
 </ul>
-<h2 id="how-it-works"><a class="header" href="#how-it-works">How It Works</a></h2>
-<p>As a developer, you write your rollup's business logic in Rust, and the SDK handles the complexity of creating a complete, production-ready node implementation.</p>
-<p>The magic happens in two stages: <strong>real-time execution</strong> and <strong>on-chain settlement</strong>.</p>
-<ol>
+<h4 id="the-modulerestapi-trait"><a class="header" href="#the-modulerestapi-trait">The <code>ModuleRestApi</code> Trait</a></h4>
+<p>Deriving the <code>ModuleRestApi</code> trait is optional but highly recommended. It automatically generates RESTful API endpoints for the <code>#[state]</code> items in your module. Each item's endpoint will have the name <code>{hostname}/modules/{module-name}/{field-name}/</code>, with all items automatically converted to <code>kebab-casing</code>. For example, for the <code>value</code> field in our <code>ValueSetter</code> module, the SDK generates an endpoint at the path <code>/modules/value-setter/value</code>.</p>
+<p>Note that <code>ModuleRestApi</code> can't always generate endpoints for you. If it can't figure out how to generate an endpoint for a particular state value, it will simply skip it by default. If you want to override this behavior and throw a compiler error if endpoint generation fails, you can add the <code>#[rest_api(include)]</code> attribute.</p>
+<h3 id="state-management-in-depth"><a class="header" href="#state-management-in-depth">State Management In-Depth</a></h3>
+<p>The SDK provides several "state" types for different use cases, all designed to be stored within your module struct using the <code>#[state]</code> attribute.</p>
+<ul>
+<li><code>StateValue&lt;T&gt;</code>: Stores a single item of type <code>T</code>. We use this for the <code>value</code> and <code>admin</code> variables in our example.</li>
+<li><code>StateMap&lt;K, V&gt;</code>: Stores a key-value mapping. Ideal for balances or other user-specific data.</li>
+<li><code>StateVec&lt;T&gt;</code>: Stores an ordered list of items, accessible by index.</li>
+</ul>
+<p>The generic types can be any deterministic Rust data structure, anything from a simple <code>u32</code> to a complex <code>BTreeMap</code>.</p>
+<p><strong>Accessory State</strong>: For each state type, there is a corresponding <code>AccessoryState*</code> variant (e.g., <code>AccessoryStateMap</code>). Accessory state is special: it can be read via the API, but it is <strong>write-only</strong> during a transaction. This makes it a simple and cheap storage to use for data that doesn't affect onchain logic, like purchase histories for an off-chain frontend.</p>
+<h3 id="the-module-trait-understanding-your-logic"><a class="header" href="#the-module-trait-understanding-your-logic">The <code>Module</code> Trait: Understanding Your Logic</a></h3>
+<p>The <code>Module</code> trait is where your business logic lives. Let's review the pieces you implemented for <code>ValueSetter</code> in the quickstart.</p>
+<ul>
 <li>
-<p><strong>Real-Time Execution (Soft Confirmations):</strong> Users send transactions to a <strong>sequencer</strong>. The sequencer executes these transactions instantly (typically in under 2-5ms) and returns a "soft confirmation" back to the user. This provides a real-time user experience that feels like a traditional web application.</p>
+<p><strong><code>type Config</code> and <code>fn genesis()</code></strong>: You created a <code>ValueSetterConfig</code> and used it in the <code>genesis</code> method to initialize the <code>admin</code> state. This is a standard pattern: <code>Config</code> defines the initial data, read from <code>genesis.json</code>, and <code>genesis()</code> applies it to the module's state when the rollup is first deployed.</p>
 </li>
 <li>
-<p><strong>On-Chain Settlement &amp; Verification:</strong> Periodically, the sequencer batches thousands of these transactions and posts them to an underlying <strong>Data Availability (DA) layer</strong> like Celestia. From this point, the rest of the network—the full nodes—can read the ordered data and execute the transactions to independently verify the new state of the rollup.</p>
+<p><strong><code>type CallMessage</code> and <code>fn call()</code></strong>: You defined a <code>CallMessage</code> enum for the public <code>SetValue</code> action. This enum is the public API of your module, representing the actions a user can take. The <code>call()</code> method is the entry point for these actions. The runtime passes in the <code>CallMessage</code> and a <code>Context</code> containing metadata like the sender's address, which you used for the admin check.</p>
 </li>
-</ol>
-<p>Finally, specialized actors called <strong>provers</strong> (in zk-rollup mode) or <strong>attesters</strong> (in optimistic-rollup mode) generate cryptographic proofs  or attestations that the state was computed correctly. These are posted back to the DA layer, allowing light clients and bridges to securely verify the rollup's state without having to re-execute every transaction.</p>
-<p>This two-stage process gives you the best of both worlds: the instant, centralized execution needed for high-performance applications, combined with the censorship-resistance and trust-minimized verification of a traditional blockchain.</p>
-<h2 id="ready-to-build"><a class="header" href="#ready-to-build">Ready to Build?</a></h2>
-<p>Let's walk you through cloning our starter repository and running your first rollup in seconds.</p>
+<li>
+<p><strong>Error Handling</strong>: In your <code>call</code> method, you used <code>anyhow::ensure!</code> to handle a <strong>user error</strong> (an invalid sender). When a <code>call</code> method returns an <code>Err</code>, the SDK guarantees that all state changes are automatically reverted, ensuring atomicity. This <code>Result</code>-based approach is for predictable user errors, while unrecoverable system bugs should cause a <code>panic!</code>. A more detailed guide is available in the <a href="./4-4-advanced-topics.html"><code>Advanced Topics</code></a> section.</p>
+</li>
+</ul>
+<blockquote>
+<p><strong>A Quick Tip on Parametrizing Your Types Over S</strong></p>
+<p>If you parameterize your <code>CallMessage</code> or <code>Event</code> over <code>S</code> (for example, to include an address of type <code>S::Address</code>), you must add the <code>#[schemars(bound = "S: Spec", rename = "MyEnum")]</code> attribute on top your enum definition. This is a necessary hint for <code>schemars</code>, a library that generates a JSON schema for your module's API. It ensures that your generic types can be correctly represented for external tools.</p>
+</blockquote>
+<h2 id="adding-events"><a class="header" href="#adding-events">Adding Events</a></h2>
+<p>Your <code>ValueSetter</code> module works, but it's a "black box." Off-chain applications have no way of knowing when the value changes without constantly polling the API. To solve this, we introduce <strong>Events</strong>.</p>
+<p>Events are the primary mechanism for streaming on-chain data to off-chain systems like indexers and front-ends in real-time. Let's add one to our module.</p>
+<p>First, define an <code>Event</code> enum.</p>
+<pre><code class="language-rust">// In examples/value-setter/src/lib.rs
+
+#[derive(Clone, Debug, PartialEq, Eq, JsonSchema)]
+#[serialize(Borsh, Serde)]
+#[serde(rename_all = "snake_case")]
+pub enum Event {
+    ValueUpdated(u32),
+}</code></pre>
+<p>Next, update your <code>Module</code> implementation to use this new <code>Event</code> type and emit it from the <code>call</code> method.</p>
+<pre><code class="language-rust">// In examples/value-setter/src/lib.rs
+
+impl&lt;S: Spec&gt; Module for ValueSetter&lt;S&gt; {
+    type Spec = S;
+    type Config = ValueSetterConfig&lt;S&gt;;
+    type CallMessage = CallMessage;
+    type Event = Event; // Change this from ()
+
+    // The `genesis` method is unchanged.
+    fn genesis(&amp;mut self, _header: &amp;&lt;S::Da as sov_modules_api::DaSpec&gt;::BlockHeader, config: &amp;Self::Config, state: &amp;mut impl GenesisState&lt;S&gt;) -&gt; Result&lt;()&gt; {
+        // ...
+    }
+
+    fn call(&amp;mut self, msg: Self::CallMessage, context: &amp;Context&lt;S&gt;, state: &amp;mut impl TxState&lt;S&gt;) -&gt; Result&lt;()&gt; {
+        match msg {
+            CallMessage::SetValue(new_value) =&gt; {
+                let admin = self.admin.get(state)??;
+                anyhow::ensure!(admin == *context.sender(), "Only the admin can set the value.");
+
+                self.value.set(&amp;new_value, state)?;
+
+                // NEW: Emit an event to record this change.
+                self.emit_event(state, Event::ValueUpdated(new_value));
+
+                Ok(())
+            }
+        }
+    }
+}</code></pre>
+<p>Now, whenever the admin successfully calls <code>set_value</code>, the module will emit a <code>ValueUpdated</code> event.</p>
+<p>A key guarantee of the Sovereign SDK is that event emission is <strong>atomic</strong> with transaction execution—if a transaction reverts, so do its events. This ensures any off-chain system remains perfectly consistent with the on-chain state.</p>
+<p>To make it simple to build scalable and faul-tolertant off-chain data pipelines, the sequencer provides a websocket endpoint that streams sequentially numbered transactions along with their corresponding events. If a client disconnects, it can reliably resume the stream from the last transaction it processed.</p>
+<h2 id="next-step-ensuring-correctness"><a class="header" href="#next-step-ensuring-correctness">Next Step: Ensuring Correctness</a></h2>
+<p>You now have a deep, conceptual understanding of how a Sovereign SDK module is structured.</p>
+<p>In the next chapter, <strong>"Testing Your Module,"</strong> we'll show you how to test your modules.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="4-0-build-for-production-intro.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
 
-                            <a rel="next prefetch" href="2-running-starter.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="4-2-testing-your-module.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -229,8 +301,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="4-0-build-for-production-intro.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
 
-                    <a rel="next prefetch" href="2-running-starter.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="4-2-testing-your-module.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Adding Your Module to Your Runtime - The Sovereign SDK Book</title>
+        <title>Performance - The Sovereign SDK Book</title>
 
 
         <!-- Custom HTML head -->
@@ -91,7 +91,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="1-intro.html"><strong aria-hidden="true">1.</strong> Intro</a></li><li class="chapter-item expanded "><a href="2-getting-started.html"><strong aria-hidden="true">2.</strong> Getting Started</a></li><li class="chapter-item expanded "><a href="3-0-intro.html"><strong aria-hidden="true">3.</strong> Writing Your Application</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="3-1-implementing-a-module.html"><strong aria-hidden="true">3.1.</strong> Implementing a Module</a></li><li class="chapter-item expanded "><a href="3-2-testing-your-module.html"><strong aria-hidden="true">3.2.</strong> Testing Your Module</a></li><li class="chapter-item expanded "><a href="3-3-adding-your-module.html"><strong aria-hidden="true">3.3.</strong> Adding Your Module to Your Runtime</a></li><li class="chapter-item expanded "><a href="3-4-signing-and-submitting-txs.html"><strong aria-hidden="true">3.4.</strong> Wallets and Accounts</a></li><li class="chapter-item expanded "><a href="3-5-advanced.html"><strong aria-hidden="true">3.5.</strong> Advanced Topics</a></li><li class="chapter-item expanded "><a href="3-6-performance.html"><strong aria-hidden="true">3.6.</strong> Performance</a></li><li class="chapter-item expanded "><a href="3-7-prebuilt-modules.html"><strong aria-hidden="true">3.7.</strong> Prebuilt Modules</a></li></ol></li><li class="chapter-item expanded "><a href="4-0-intro.html"><strong aria-hidden="true">4.</strong> Instrumenting Your Rollup</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="4-1-metrics.html"><strong aria-hidden="true">4.1.</strong> Metrics</a></li><li class="chapter-item expanded "><a href="4-2-logging.html"><strong aria-hidden="true">4.2.</strong> Logging</a></li></ol></li><li class="chapter-item expanded "><a href="5-sdk-advanced-features.html"><strong aria-hidden="true">5.</strong> SDK Advanced Features</a></li><li class="chapter-item expanded "><a href="6-0-intro.html"><strong aria-hidden="true">6.</strong> SDK Contributors</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="6-1-transaction-lifecycle.html"><strong aria-hidden="true">6.1.</strong> Transaction Lifecyle</a></li><li class="chapter-item expanded "><a href="6-2-abstractions.html"><strong aria-hidden="true">6.2.</strong> Main Abstractions</a></li><li class="chapter-item expanded "><a href="6-3-forced-sequencer-registration.html"><strong aria-hidden="true">6.3.</strong> Forced Sequencer Registration</a></li><li class="chapter-item expanded "><a href="6-4-gas.html"><strong aria-hidden="true">6.4.</strong> Gas</a></li></ol></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="1-intro.html"><strong aria-hidden="true">1.</strong> Intro</a></li><li class="chapter-item expanded "><a href="2-running-starter.html"><strong aria-hidden="true">2.</strong> Running the Starter Rollup</a></li><li class="chapter-item expanded "><a href="3-quickstart.html"><strong aria-hidden="true">3.</strong> Quickstart: Your First Module</a></li><li class="chapter-item expanded "><a href="4-0-build-for-production-intro.html"><strong aria-hidden="true">4.</strong> Building for Production</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="4-1-anatomy-of-a-module.html"><strong aria-hidden="true">4.1.</strong> Anatomy of a Module</a></li><li class="chapter-item expanded "><a href="4-2-testing-your-module.html"><strong aria-hidden="true">4.2.</strong> Testing Your Module</a></li><li class="chapter-item expanded "><a href="4-3-wallets-and-accounts.html"><strong aria-hidden="true">4.3.</strong> Wallets and Accounts</a></li><li class="chapter-item expanded "><a href="4-4-advanced-topics.html"><strong aria-hidden="true">4.4.</strong> Advanced Topics</a></li><li class="chapter-item expanded "><a href="4-5-performance.html"><strong aria-hidden="true">4.5.</strong> Performance</a></li><li class="chapter-item expanded "><a href="4-6-prebuilt-modules.html"><strong aria-hidden="true">4.6.</strong> Prebuilt Modules</a></li></ol></li><li class="chapter-item expanded "><a href="5-additional-capabilities.html"><strong aria-hidden="true">5.</strong> Additional Capabilities</a></li><li class="chapter-item expanded "><a href="6-0-intro.html"><strong aria-hidden="true">6.</strong> Instrumenting Your Rollup</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="6-1-metrics.html"><strong aria-hidden="true">6.1.</strong> Metrics</a></li><li class="chapter-item expanded "><a href="6-2-logging.html"><strong aria-hidden="true">6.2.</strong> Logging</a></li></ol></li><li class="chapter-item expanded "><a href="7-0-intro.html"><strong aria-hidden="true">7.</strong> SDK Contributors</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="7-1-transaction-lifecycle.html"><strong aria-hidden="true">7.1.</strong> Transaction Lifecyle</a></li><li class="chapter-item expanded "><a href="7-2-abstractions.html"><strong aria-hidden="true">7.2.</strong> Main Abstractions</a></li><li class="chapter-item expanded "><a href="7-3-forced-sequencer-registration.html"><strong aria-hidden="true">7.3.</strong> Forced Sequencer Registration</a></li><li class="chapter-item expanded "><a href="7-4-gas.html"><strong aria-hidden="true">7.4.</strong> Gas</a></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -177,88 +177,56 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="adding-your-module-to-your-runtime"><a class="header" href="#adding-your-module-to-your-runtime">Adding Your Module to Your Runtime</a></h1>
-<p>Once you've built and tested your module, the final step is to integrate it into your rollup's runtime. The <code>sov-rollup-starter</code> that we've been working in already has the <code>ValueSetter</code> module integrated. This section will walk you through how it's integrated, so you can follow the same pattern for your own future modules.</p>
-<h2 id="step-1-add-your-module-as-a-dependency"><a class="header" href="#step-1-add-your-module-as-a-dependency">Step 1: Add Your Module as a Dependency</a></h2>
-<p>First, your module needs to be added as a dependency of the runtime crate. In the starter template, the <code>value-setter</code> is an example inside the same workspace, so we add it via a path dependency.</p>
-<p>In the root <code>Cargo.toml</code>, you'll find it under [workspace.dependencies]:</p>
-<pre><code class="language-toml"># In sov-rollup-starter/Cargo.toml
-
-[workspace.dependencies]
-# ... existing dependencies ...
-
-value-setter = { path = "examples/value-setter" }
-</code></pre>
-<p>Then, in the runtime crate's <code>Cargo.toml</code> (located at <code>crates/stf/Cargo.toml</code>), it's included as a dependency:</p>
-<pre><code class="language-toml"># In sov-rollup-starter/crates/stf/Cargo.toml
-
-[dependencies]
-# ... existing dependencies ...
-
-value-setter = { workspace = true }
-
-[features]
-default = []
-native = [
-    # ... existing native features ...
-    "value-setter/native",
-]
-</code></pre>
-<h2 id="step-2-add-your-module-to-the-runtime-struct"><a class="header" href="#step-2-add-your-module-to-the-runtime-struct">Step 2: Add Your Module to the Runtime Struct</a></h2>
-<p>The central piece of your rollup's logic is the <a href="fix-link"><code>Runtime</code> struct</a>, usually found in <code>crates/stf/src/runtime.rs</code>. This struct lists all the modules that compose your rollup.</p>
-<p>To integrate the <code>ValueSetter</code>, we simply add it as a new field to this struct. The derive macros (<code>#[derive(Genesis, DispatchCall, ...)]</code>) on the Runtime automatically generate the necessary boilerplate code for initialization, transaction dispatching, and message encoding.</p>
-<pre><code class="language-rust">// In sov-rollup-starter/crates/stf/src/runtime.rs
-
-use your_module::YourModule;
-
-#[derive(Genesis, Hooks, DispatchCall, Event, MessageCodec, RuntimeRestApi)]
-pub struct Runtime&lt;S: Spec&gt; {
-    pub bank: sov_bank::Bank&lt;S&gt;,
-    pub accounts: sov_accounts::Accounts&lt;S&gt;,
-    // ... other modules ...
-    
-    // Add the value_setter module here
-    pub value_setter: ValueSetter&lt;S&gt;,
-}</code></pre>
-<h2 id="step-3-configure-genesis-state"><a class="header" href="#step-3-configure-genesis-state">Step 3: Configure Genesis State</a></h2>
-<p>When your rollup is first launched, it populates its initial state from a <code>genesis.json</code> file. You need to add a configuration entry for your module so the runtime knows how to initialize its state.</p>
-<p>In the previous section, we defined this <code>Config</code> struct for the <code>ValueSetter</code>:</p>
-<pre><code class="language-rust">pub struct ValueSetterConfig&lt;S: Spec&gt; {
-    pub initial_value: u32,
-    pub admin: S::Address,
-}</code></pre>
-<p>Now, we provide the corresponding values in <code>genesis.json</code>. The key in the JSON object (<code>"value_setter"</code>) must exactly match the snake-cased field name in the <code>Runtime</code> struct.</p>
-<pre><code class="language-json">// In sov-rollup-starter/configs/{da-layer}/genesis.json
-
-{
-  "bank": { ... },
-  "sequencer_registry": { ... },
-  "accounts": { ... },
-  "value_setter": {
-    "admin": "sov1h6t82p7my6k02tcz9a27nnsyd9chg490rwn3r09e8k02y5qew2qsl2a4vg",
-    "initial_value": 123
-  }
+                        <h1 id="understanding-performance"><a class="header" href="#understanding-performance">Understanding Performance</a></h1>
+<p>The performance of your modules directly impacts your rollup's throughput, latency, and user transaction costs. While the SDK handles many optimizations automatically, your design choices—especially regarding state accesses and cryptography—are the biggest levers you have.</p>
+<h2 id="state-access-the-golden-rule-is-to-minimize-distinct-accesses"><a class="header" href="#state-access-the-golden-rule-is-to-minimize-distinct-accesses">State Access: The Golden Rule is to Minimize Distinct Accesses</a></h2>
+<p><strong>The Problem: Every State Access Has a High Fixed Cost</strong></p>
+<p>The vast majority of the cost of executing a transaction comes from state accesses. Each time you call <code>.get()</code> or <code>.set()</code> on a <em>distinct</em> state item for the first time in a block (a "cold" access), the SDK must generate a Merkle proof for that item. This proof is required by the ZK-prover to verify that the data is part of the correct state root. Generating these proofs is expensive.</p>
+<p>Accessing a value that has already been touched in the current block (a "hot" access) is much cheaper because the proof has already been generated and cached.</p>
+<p><strong>The Solution: Bundle Related Data</strong></p>
+<p>The most effective optimization is to group data that is frequently read or written together into a single <code>StateValue</code>.</p>
+<p>Consider a user profile module. A naive implementation might look like this:</p>
+<pre><code class="language-rust">// ANTI-PATTERN: Separated state items
+#[state]
+pub usernames: StateMap&lt;S::Address, String&gt;,
+#[state]
+pub bios: StateMap&lt;S::Address, String&gt;,
+#[state]
+pub follower_counts: StateMap&lt;S::Address, u64&gt;,</code></pre>
+<p>Loading a single user's profile would require three distinct (and expensive) state accesses. A much better approach is to bundle the data:</p>
+<pre><code class="language-rust">// GOOD PATTERN: Bundled state
+pub struct ProfileData {
+    pub username: String,
+    pub bio: String,
+    pub follower_count: u64,
 }
-</code></pre>
-<h2 id="step-4-build-and-run"><a class="header" href="#step-4-build-and-run">Step 4: Build and Run</a></h2>
-<p>With everything configured, you can build and run your rollup:</p>
-<pre><code class="language-bash"># From crates/rollup
-cargo run --bin node
-</code></pre>
-<p>Congratulations! Your module <code>ValueSetter</code> is now live - integrated into a running rollup! You can send it transactions, query its state via the REST API, and listen for its events.</p>
-<p>You've successfully navigated the entire development lifecycle, from implementation and testing to local deployment.
-You have built the core on-chain logic, but a crucial question remains: how do users actually interact with it? How do they create accounts, manage keys, and sign transactions to call your module's methods?</p>
-<p>The next section, <strong>"Wallets and Accounts,"</strong> will bridge this gap. We'll explore how to leverage the SDK's Ethereum-compatible account system and use client-side tooling to sign and submit transactions to your rollup, bringing your application to life for end-users.</p>
+
+#[state]
+pub profiles: StateMap&lt;S::Address, ProfileData&gt;,</code></pre>
+<p>Now, loading a profile requires only one state access.</p>
+<p><strong>The Trade-off:</strong> This bundling increases the size of the value being read from storage, but it saves the massive fixed cost of generating a new Merkle proof for a separate state access. This trade-off is almost always worth it.</p>
+<p>While precise numbers can change with SDK updates, the cost of reading even a few hundred extra bytes is negligible compared to the cost of a distinct "cold" state access. Therefore, the guiding principle is: if data items have a reasonable probability of being used together, you should bundle them. If two items are <strong>always</strong> accessed together, they should <strong>always</strong> be in the same state item, regardless of size.</p>
+<h2 id="cryptography-use-zk-optimized-implementations"><a class="header" href="#cryptography-use-zk-optimized-implementations">Cryptography: Use ZK-Optimized Implementations</a></h2>
+<p><strong>The Problem: General-Purpose Crypto is Slow to Prove</strong></p>
+<p>The other common source of performance issues is heavy-duty cryptography. Many standard Rust crypto libraries are not optimized for ZK environments and can be extremely slow to prove, creating a bottleneck that limits your rollup's throughput.</p>
+<p><strong>The Solution Hierarchy:</strong></p>
+<ol>
+<li><strong>Preferred:</strong> Use the implementations provided by the <code>Spec::CryptoSpec</code> associated type. These are guaranteed to be selected for their ZK-friendly performance.</li>
+<li><strong>If you must use an external library:</strong> Be aware of the potential for a severe performance penalty during proof generation.</li>
+<li><strong>For advanced, specialized needs:</strong> Consider using a library tailored to a specific ZKVM (like <code>SP1</code> or <code>Risc0</code>). This will give you better performance but will tie your module to that specific proving system.</li>
+</ol>
+<h2 id="next-up-prebuilt-modules"><a class="header" href="#next-up-prebuilt-modules">Next up: Prebuilt Modules</a></h2>
+<p>Building custom modules is powerful, but you don't always have to start from scratch. The next chapter introduces the SDK's <strong>"Prebuilt Modules,"</strong> which provide ready-to-use solutions for common tasks like token management and bridging.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="3-2-testing-your-module.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="4-4-advanced-topics.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="3-4-signing-and-submitting-txs.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="4-6-prebuilt-modules.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -268,11 +236,11 @@ You have built the core on-chain logic, but a crucial question remains: how do u
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="3-2-testing-your-module.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="4-4-advanced-topics.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="3-4-signing-and-submitting-txs.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="4-6-prebuilt-modules.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

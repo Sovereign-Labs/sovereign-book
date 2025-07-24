@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Intro - The Sovereign SDK Book</title>
+        <title>Quickstart: Your First Module - The Sovereign SDK Book</title>
 
 
         <!-- Custom HTML head -->
@@ -177,49 +177,209 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="introduction"><a class="header" href="#introduction">Introduction</a></h1>
-<p>Welcome to <em>The Sovereign SDK Book</em>, a comprehensive guide to the industry's most flexible toolkit for building high-performance, real-time rollups.</p>
-<p>We built this SDK to give developers, from solo builders to large teams, the power to create onchain applications that were previously impossible.</p>
-<p>With P99 of transaction executions under 10 milliseconds, the Sovereign SDK is fast enough to bring complex financial systems, like Central-Limit Orderbooks (CLOBs), fully on-chain.</p>
-<p>Let's build the next Hyperliquid.</p>
-<img src="./assets/sov-sdk-low-res.jpeg" style="border-radius: 10px">
-<h2 id="why-build-a-dedicated-rollup-for-your-application"><a class="header" href="#why-build-a-dedicated-rollup-for-your-application">Why Build a Dedicated Rollup For Your Application?</a></h2>
-<p>For almost a decade, developers have been forced to build applications on shared, general-purpose blockchains. This model forces apps with vastly different needs to compete for the same limited blockspace. Building your application as a dedicated rollup gives you three strategic advantages:</p>
+                        <h1 id="quickstart-your-first-module"><a class="header" href="#quickstart-your-first-module">Quickstart: Your First Module</a></h1>
+<p>This guide is about getting you to <strong>write and deploy your own logic</strong> on a rollup.</p>
+<p>We'll start with a very basic <a href="fix-link"><code>ValueSetter</code></a> module that's already included in the <code>sov-rollup-starter-wip</code>.</p>
+<p>Our <code>ValueSetter</code> module currently stores a single number, and any user can update it. We want to ensure that only one user—the admin—has permission to update this number.</p>
+<p>This requires four changes:</p>
 <ol>
-<li><strong>Dedicated Throughput:</strong> Your users will never have to compete with a viral NFT drop. A rollup gives your application its own dedicated lane, ensuring a consistently fast and affordable user experience.</li>
-<li><strong>Capturing More Value:</strong> On shared blockchains, user fees primarily benefit the chain operators (i.e. L1 validators or general-purpose L2 sequencers). With a rollup, your application and its users can capture the vast majority of that value, creating a sustainable economic engine for your project.</li>
-<li><strong>Full Control &amp; Flexibility:</strong> Go beyond the limitations of a shared virtual machine. A rollup gives you full control over the execution environment, allowing you to define your own rules for how transactions are processed. <strong>With a rollup, you're in the driver's seat.</strong></li>
+<li><strong>Add an</strong> <code>admin</code> <strong>field</strong> to the module's state to store the admin address.</li>
+<li><strong>Create a configuration struct</strong> so we can set the admin address when the rollup launches.</li>
+<li><strong>Initialize the</strong> <code>admin</code>from the configuration struct in the <code>genesis</code> method, which sets up the module's initial state.</li>
+<li><strong>Add a check</strong> in the <code>call</code> method to verify that the transaction sender is the admin.</li>
 </ol>
-<h2 id="why-choose-the-sovereign-sdk"><a class="header" href="#why-choose-the-sovereign-sdk">Why Choose the Sovereign SDK?</a></h2>
-<p>The Sovereign SDK is designed around four key goals to provide an unmatched developer and user experience:</p>
+<p>Let's get started.</p>
+<h2 id="step-1-understand-the-starting-point"><a class="header" href="#step-1-understand-the-starting-point">Step 1: Understand the Starting Point</a></h2>
+<p>First, navigate to the <code>value-setter</code> module in the starter repository and open the <code>src/lib.rs</code> file.</p>
+<pre><code class="language-bash"># From the sov-rollup-starter root
+cd examples/value-setter/
+</code></pre>
+<p>The initial code is minimal. It defines the module's structure and a <code>call</code> method that lets anyone set the value.</p>
+<p>Here’s the simplified <code>lib.rs</code> that we'll start with:</p>
+<pre><code class="language-rust">// In examples/value-setter/src/lib.rs
+use schemars::JsonSchema;
+use sov_modules_api::{Module, ModuleId, ModuleInfo, ModuleRestApi, StateValue, Spec, UniversalWallet};
+use sov_module_macros::serialize;
+
+#[derive(Clone, ModuleInfo, ModuleRestApi)]
+pub struct ValueSetter&lt;S: Spec&gt; {
+    #[id]
+    pub id: ModuleId,
+
+    #[state]
+    pub value: StateValue&lt;u32&gt;,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, JsonSchema, UniversalWallet)]
+#[serialize(Borsh, Serde)]
+#[serde(rename_all = "snake_case")]
+pub enum CallMessage {
+    SetValue(u32),
+}
+
+impl&lt;S: Spec&gt; Module for ValueSetter&lt;S&gt; {
+    type Spec = S;
+    type Config = (); // No configuration yet!
+    type CallMessage = CallMessage;
+    type Event = ();
+
+    // The `call` method handles incoming transactions.
+    // Notice it doesn't check *who* is calling.
+    fn call(&amp;mut self, msg: Self::CallMessage, _context: &amp;Context&lt;S&gt;, state: &amp;mut impl TxState&lt;S&gt;) -&gt; Result&lt;()&gt; {
+        match msg {
+            CallMessage::SetValue(new_value) =&gt; {
+                self.value.set(&amp;new_value, state)?;
+                Ok(())
+            }
+        }
+    }
+}</code></pre>
+<h2 id="step-2-implement-the-admin-logic"><a class="header" href="#step-2-implement-the-admin-logic">Step 2: Implement the Admin Logic</a></h2>
+<p>Now, let's secure our module. We'll perform the four edits we outlined earlier.</p>
+<h3 id="a-add-the-admin-state-variable"><a class="header" href="#a-add-the-admin-state-variable">a) Add the <code>admin</code> State Variable</a></h3>
+<p>First, we need a place to store the admin's address. We'll add a new <code>admin</code> field to the <code>ValueSetter</code> struct and mark it with the <code>#[state]</code> attribute.</p>
+<pre><code class="language-rust">// In examples/value-setter/src/lib.rs
+
+#[derive(Clone, ModuleInfo)]
+pub struct ValueSetter&lt;S: Spec&gt; {
+    // ... existing code ...
+
+    // The new state value to hold the address of the admin.
+    #[state]
+    pub admin: StateValue&lt;S::Address&gt;,
+}</code></pre>
+<h3 id="b-define-a-configuration-struct"><a class="header" href="#b-define-a-configuration-struct">b) Define a Configuration Struct</a></h3>
+<p>Next, we need a way to tell the module who the admin is when the rollup first starts. We do this by defining a <code>Config</code> struct. The SDK will automatically load data from a <code>genesis.json</code> file into this struct.</p>
+<pre><code class="language-rust">// In examples/value-setter/src/lib.rs
+
+// Add the module's configuration, read from genesis.json
+#[derive(Clone, Debug, PartialEq, Eq)]
+#[serialize(Serde)]
+#[serde(rename_all = "snake_case")]
+pub struct ValueSetterConfig&lt;S: Spec&gt; {
+    pub admin: S::Address,
+}</code></pre>
+<h3 id="c-initialize-the-admin-at-genesis"><a class="header" href="#c-initialize-the-admin-at-genesis">c) Initialize the Admin at Genesis</a></h3>
+<p>With our <code>Config</code> struct defined, we can now implement the <code>genesis</code> method. This function is called once when the rollup is launched. It takes the <code>config</code> as an argument and uses it to set the initial state.</p>
+<p>We also need to tell the <code>Module</code> implementation to use our new <code>ValueSetterConfig</code>.</p>
+<pre><code class="language-rust">// In examples/value-setter/src/lib.rs
+
+// ... existing code ...
+
+impl&lt;S: Spec&gt; Module for ValueSetter&lt;S&gt; {
+    type Spec = S;
+    type Config = ValueSetterConfig&lt;S&gt;; // Use the new config struct
+    type CallMessage = CallMessage;
+    type Event = ();
+
+    // `genesis` initializes the module's state. Here, we set the admin address.
+    fn genesis(&amp;mut self, _header: &amp;&lt;S::Da as sov_modules_api::DaSpec&gt;::BlockHeader, config: &amp;Self::Config, state: &amp;mut impl GenesisState&lt;S&gt;) -&gt; Result&lt;()&gt; {
+        self.admin.set(&amp;config.admin, state)?;
+        Ok(())
+    }
+
+    fn call(&amp;mut self, msg: Self::CallMessage, context: &amp;Context&lt;S&gt;, state: &amp;mut impl TxState&lt;S&gt;) -&gt; Result&lt;()&gt; {
+// ... existing code ...</code></pre>
+<h3 id="d-add-the-admin-check-in-call"><a class="header" href="#d-add-the-admin-check-in-call">d) Add the Admin Check in <code>call</code></a></h3>
+<p>The final piece. We'll modify the <code>call</code> method to read the <code>admin</code> address from state and compare it to the transaction sender. If they don't match, the transaction fails.</p>
+<pre><code class="language-rust">// In examples/value-setter/src/lib.rs
+// ... existing code ...
+
+    fn call(&amp;mut self, msg: Self::CallMessage, context: &amp;Context&lt;S&gt;, state: &amp;mut impl TxState&lt;S&gt;) -&gt; Result&lt;()&gt; {
+        match msg {
+            CallMessage::SetValue(new_value) =&gt; {
+                // Read the admin's address from state.
+                let admin = self.admin.get(state)??;
+
+                // Ensure the sender is the admin.
+                anyhow::ensure!(admin == *context.sender(), "Only the admin can set the value.");
+
+                // If the check passes, update the state.
+                self.value.set(&amp;new_value, state)?;
+                Ok(())
+            }
+        }
+    }
+}</code></pre>
+<h2 id="step-3-configure-the-genesis-state"><a class="header" href="#step-3-configure-the-genesis-state">Step 3: Configure the Genesis State</a></h2>
+<p>Our <code>genesis</code> method reads the admin's address from a configuration file. We need to provide that value in <code>configs/mock_da/genesis.json</code>.</p>
+<p>The SDK automatically deserializes this JSON into our <code>ValueSetterConfig</code> struct (since we plugged in said struct as the <code>Config</code> associated type of our module) when the rollup starts.</p>
+<pre><code class="language-json">// In sov-rollup-starter/configs/mock_da/genesis.json
+{
+  // ... other module configs
+  "value_setter": {
+    "admin": "0x9b08ce57a93751aE790698A2C9ebc76A78F23E25"
+  }
+}
+</code></pre>
+<p>Previously, the <code>value_setter</code> field was an empty object, <code>{}</code>. Now, we've given it the data our module needs to initialize the admin address.</p>
+<h2 id="how-is-the-module-integrated"><a class="header" href="#how-is-the-module-integrated">How is the Module Integrated?</a></h2>
+<p>You might be wondering how the rollup knows about the <code>value-setter</code> module in the first place. In the <code>sov-rollup-starter</code>, we've already "wired it up" for you to keep this quickstart focused on module logic.</p>
+<p>For your own future modules, the process involves:</p>
+<ol>
+<li>Adding the module crate to the workspace in the root <code>Cargo.toml</code>.</li>
+<li>Adding it as a dependency to the core logic in <code>crates/stf/Cargo.toml</code>.</li>
+<li>Adding the module as a field on the <code>Runtime</code> struct in <code>crates/stf/src/runtime.rs</code>.</li>
+</ol>
+<p>You can remove <code>value-setter</code> from these files to see what it's like to build and integrate a module from scratch.</p>
+<h2 id="step-4-build-run-and-interact"><a class="header" href="#step-4-build-run-and-interact">Step 4: Build, Run, and Interact!</a></h2>
+<p>Now let's see your logic in action.</p>
+<ol>
+<li>
+<p><strong>Build and Run the Rollup:</strong> From the root directory, start the rollup.</p>
+<pre><code class="language-bash">cargo run
+</code></pre>
+</li>
+<li>
+<p><strong>Query the Initial State:</strong> In another terminal, use <code>curl</code> to check the initial value. It should be <code>null</code> because our <code>genesis</code> method only sets the <code>admin</code>, not the <code>value</code>.</p>
+<pre><code class="language-bash">curl -X GET 'http://127.0.0.1:12346/module/value-setter/value'
+# Expected output: {"value":null}
+</code></pre>
+</li>
+<li>
+<p><strong>Submit a Transaction:</strong> Now, let's change the value. We'll edit the example js script in starter to call our module.</p>
 <ul>
-<li><strong>Total Customization:</strong> While rollups promise flexibility, existing frameworks are overly restrictive. With its modular Rust runtime,Sovereign SDK empowers you to customize as much or as little as neeeded. Easily add custom fee logic, integrate tailored authenticators, prioritize specific transaction types, or even swap out the authenticated state store. All without wrestling with legacy code.</li>
-<li><strong>Best-in-Class Performance:</strong> With 2-5ms soft confirmations and throughput exceeding 10,000 TPS, the Sovereign SDK is orders of magnitude faster than competing frameworks like Orbit, the OP Stack, or the Cosmos SDK.</li>
-<li><strong>Developer-Friendly Experience:</strong> Write your logic in standard Rust, run <code>cargo build</code>, and get a complete full-node implementation with REST &amp; WebSocket APIs, an indexer, auto-generated OpenAPI specs, and a sequencer  with automatic failover out of the box. No deep blockchain expertise required.</li>
-<li><strong>Future-Proof Architecture:</strong> Never get locked into yesterday's tech stack. With the Sovereign SDK, you can switch data availability layers or zkVMs with just a few lines of code, ensuring your project remains agile for years to come.</li>
+<li>Open the <code>examples/starter-js/src/index.ts</code> file.</li>
+<li>The <code>signer</code> in this script corresponds to the <code>admin</code> address we set in <code>genesis.json</code>.</li>
+<li>Find the <code>call</code> variable and replace it with a call to your <code>value_setter</code> module.</li>
 </ul>
-<h2 id="how-it-works"><a class="header" href="#how-it-works">How It Works</a></h2>
-<p>As a developer, you write your rollup's business logic in Rust, and the SDK handles the complexity of creating a complete, production-ready node implementation.</p>
-<p>The magic happens in two stages: <strong>real-time execution</strong> and <strong>on-chain settlement</strong>.</p>
-<ol>
-<li>
-<p><strong>Real-Time Execution (Soft Confirmations):</strong> Users send transactions to a <strong>sequencer</strong>. The sequencer executes these transactions instantly (typically in under 2-5ms) and returns a "soft confirmation" back to the user. This provides a real-time user experience that feels like a traditional web application.</p>
+<pre><code class="language-ts">// In sov-rollup-starter/examples/starter-js/src/index.ts
+
+// Replace the existing call message with this one:
+const call = {
+    value_setter: {   // The module's name in the Runtime struct
+        set_value: 99,  // The CallMessage variant (in snake_case) and its new value
+    },
+};
+</code></pre>
+<ul>
+<li>Install js dependencies, and run the script to send the transaction:</li>
+</ul>
+<pre><code class="language-bash"># From the sov-rollup-starter/examples/starter-js directory
+npm install
+npm run dev
+</code></pre>
 </li>
 <li>
-<p><strong>On-Chain Settlement &amp; Verification:</strong> Periodically, the sequencer batches thousands of these transactions and posts them to an underlying <strong>Data Availability (DA) layer</strong> like Celestia. From this point, the rest of the network—the full nodes—can read the ordered data and execute the transactions to independently verify the new state of the rollup.</p>
+<p><strong>Verify the Change:</strong> Now for the "Aha!" moment. Query the state again:</p>
+<pre><code class="language-bash">curl -X GET 'http://127.0.0.1:12346/module/value-setter/value'
+# Expected output: {"value":99}
+</code></pre>
 </li>
 </ol>
-<p>Finally, specialized actors called <strong>provers</strong> (in zk-rollup mode) or <strong>attesters</strong> (in optimistic-rollup mode) generate cryptographic proofs  or attestations that the state was computed correctly. These are posted back to the DA layer, allowing light clients and bridges to securely verify the rollup's state without having to re-execute every transaction.</p>
-<p>This two-stage process gives you the best of both worlds: the instant, centralized execution needed for high-performance applications, combined with the censorship-resistance and trust-minimized verification of a traditional blockchain.</p>
-<h2 id="ready-to-build"><a class="header" href="#ready-to-build">Ready to Build?</a></h2>
-<p>Let's walk you through cloning our starter repository and running your first rollup in seconds.</p>
+<p><strong>Congratulations!</strong> You have successfully written and interacted with your own custom logic on a Sovereign SDK rollup!</p>
+<h2 id="whats-next"><a class="header" href="#whats-next">What's Next?</a></h2>
+<p>This quickstart intentionally skipped over some important concepts like events, comprehensive error handling, and testing. The next chapters will explore the deeper concepts and best practices required to take your module from a simple example to a production-ready component.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="2-running-starter.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
 
-                            <a rel="next prefetch" href="2-running-starter.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="4-0-build-for-production-intro.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -229,8 +389,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="2-running-starter.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
 
-                    <a rel="next prefetch" href="2-running-starter.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="4-0-build-for-production-intro.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

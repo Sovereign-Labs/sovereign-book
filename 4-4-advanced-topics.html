@@ -91,7 +91,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="1-intro.html"><strong aria-hidden="true">1.</strong> Intro</a></li><li class="chapter-item expanded "><a href="2-getting-started.html"><strong aria-hidden="true">2.</strong> Getting Started</a></li><li class="chapter-item expanded "><a href="3-0-intro.html"><strong aria-hidden="true">3.</strong> Writing Your Application</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="3-1-implementing-a-module.html"><strong aria-hidden="true">3.1.</strong> Implementing a Module</a></li><li class="chapter-item expanded "><a href="3-2-testing-your-module.html"><strong aria-hidden="true">3.2.</strong> Testing Your Module</a></li><li class="chapter-item expanded "><a href="3-3-adding-your-module.html"><strong aria-hidden="true">3.3.</strong> Adding Your Module to Your Runtime</a></li><li class="chapter-item expanded "><a href="3-4-signing-and-submitting-txs.html"><strong aria-hidden="true">3.4.</strong> Wallets and Accounts</a></li><li class="chapter-item expanded "><a href="3-5-advanced.html"><strong aria-hidden="true">3.5.</strong> Advanced Topics</a></li><li class="chapter-item expanded "><a href="3-6-performance.html"><strong aria-hidden="true">3.6.</strong> Performance</a></li><li class="chapter-item expanded "><a href="3-7-prebuilt-modules.html"><strong aria-hidden="true">3.7.</strong> Prebuilt Modules</a></li></ol></li><li class="chapter-item expanded "><a href="4-0-intro.html"><strong aria-hidden="true">4.</strong> Instrumenting Your Rollup</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="4-1-metrics.html"><strong aria-hidden="true">4.1.</strong> Metrics</a></li><li class="chapter-item expanded "><a href="4-2-logging.html"><strong aria-hidden="true">4.2.</strong> Logging</a></li></ol></li><li class="chapter-item expanded "><a href="5-sdk-advanced-features.html"><strong aria-hidden="true">5.</strong> SDK Advanced Features</a></li><li class="chapter-item expanded "><a href="6-0-intro.html"><strong aria-hidden="true">6.</strong> SDK Contributors</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="6-1-transaction-lifecycle.html"><strong aria-hidden="true">6.1.</strong> Transaction Lifecyle</a></li><li class="chapter-item expanded "><a href="6-2-abstractions.html"><strong aria-hidden="true">6.2.</strong> Main Abstractions</a></li><li class="chapter-item expanded "><a href="6-3-forced-sequencer-registration.html"><strong aria-hidden="true">6.3.</strong> Forced Sequencer Registration</a></li><li class="chapter-item expanded "><a href="6-4-gas.html"><strong aria-hidden="true">6.4.</strong> Gas</a></li></ol></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="1-intro.html"><strong aria-hidden="true">1.</strong> Intro</a></li><li class="chapter-item expanded "><a href="2-running-starter.html"><strong aria-hidden="true">2.</strong> Running the Starter Rollup</a></li><li class="chapter-item expanded "><a href="3-quickstart.html"><strong aria-hidden="true">3.</strong> Quickstart: Your First Module</a></li><li class="chapter-item expanded "><a href="4-0-build-for-production-intro.html"><strong aria-hidden="true">4.</strong> Building for Production</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="4-1-anatomy-of-a-module.html"><strong aria-hidden="true">4.1.</strong> Anatomy of a Module</a></li><li class="chapter-item expanded "><a href="4-2-testing-your-module.html"><strong aria-hidden="true">4.2.</strong> Testing Your Module</a></li><li class="chapter-item expanded "><a href="4-3-wallets-and-accounts.html"><strong aria-hidden="true">4.3.</strong> Wallets and Accounts</a></li><li class="chapter-item expanded "><a href="4-4-advanced-topics.html"><strong aria-hidden="true">4.4.</strong> Advanced Topics</a></li><li class="chapter-item expanded "><a href="4-5-performance.html"><strong aria-hidden="true">4.5.</strong> Performance</a></li><li class="chapter-item expanded "><a href="4-6-prebuilt-modules.html"><strong aria-hidden="true">4.6.</strong> Prebuilt Modules</a></li></ol></li><li class="chapter-item expanded "><a href="5-additional-capabilities.html"><strong aria-hidden="true">5.</strong> Additional Capabilities</a></li><li class="chapter-item expanded "><a href="6-0-intro.html"><strong aria-hidden="true">6.</strong> Instrumenting Your Rollup</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="6-1-metrics.html"><strong aria-hidden="true">6.1.</strong> Metrics</a></li><li class="chapter-item expanded "><a href="6-2-logging.html"><strong aria-hidden="true">6.2.</strong> Logging</a></li></ol></li><li class="chapter-item expanded "><a href="7-0-intro.html"><strong aria-hidden="true">7.</strong> SDK Contributors</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="7-1-transaction-lifecycle.html"><strong aria-hidden="true">7.1.</strong> Transaction Lifecyle</a></li><li class="chapter-item expanded "><a href="7-2-abstractions.html"><strong aria-hidden="true">7.2.</strong> Main Abstractions</a></li><li class="chapter-item expanded "><a href="7-3-forced-sequencer-registration.html"><strong aria-hidden="true">7.3.</strong> Forced Sequencer Registration</a></li><li class="chapter-item expanded "><a href="7-4-gas.html"><strong aria-hidden="true">7.4.</strong> Gas</a></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -185,7 +185,7 @@
 <p>While the <code>call</code> method allows your module to react to direct user transactions, sometimes
 you need your module to execute logic in response to broader onchain events. This is where <code>Hooks</code> come in.
 They allow your module to "hook into" the lifecycle of a block or transaction, enabling
-powerful automation and cross-module interactions.</p>
+powerful automation.</p>
 <h3 id="blockhooks-running-logic-at-block-boundaries"><a class="header" href="#blockhooks-running-logic-at-block-boundaries"><code>BlockHooks</code>: Running Logic at Block Boundaries</a></h3>
 <p><code>BlockHooks</code> are triggered at the beginning and end of every block. They are ideal for logic that
 needs to run periodically, independent of any specific transaction. For example, you could use
@@ -206,66 +206,71 @@ Be mindful of performance here; heavy computation in a BlockHook can make your r
 <h3 id="finalizehook-cheap-off-chain-indexing"><a class="header" href="#finalizehook-cheap-off-chain-indexing"><code>FinalizeHook</code>: Cheap Off-Chain Indexing</a></h3>
 <p>The <code>FinalizeHook</code> runs at the very end of a block's execution and can only write to <code>AccessoryState</code>. This makes it
 cheap to run and perfect for storing data that are only meant to be read by off-chain APIs, not used by on-chain logic.</p>
-<p>See more documentation on hooks here:</p>
-<ul>
-<li><a href="fix-link/crates/module-system/sov-modules-api/src/hooks.rs#L76"><code>BlockHooks</code></a></li>
-<li><a href="fix-link/crates/module-system/sov-modules-api/src/hooks.rs#L12"><code>TxHooks</code></a></li>
-<li><a href="fix-link/crates/module-system/sov-modules-api/src/hooks.rs#L120"><code>FinalizeHook</code></a></li>
-</ul>
+<h3 id="implementing-hooks"><a class="header" href="#implementing-hooks">Implementing Hooks</a></h3>
+<p>To use a hook, you simply import the corresponding trait from <code>sov_modules_api</code> and implement it for your module. The SDK automatically detects this implementation and will call the appropriate methods at the correct time during block processing.</p>
+<p><strong>Example: Implementing</strong> <code>BlockHooks</code></p>
+<p>To run logic at the beginning of each block, import the <code>BlockHooks</code> trait and implement it for your module:</p>
+<pre><code class="language-rust">use sov_modules_api::{BlockHooks, Spec, StateCheckpoint};
+// ... other imports
+
+impl&lt;S: Spec&gt; BlockHooks for MyModule&lt;S&gt; {
+    type Spec = S;
+
+    // This method will be called at the beginning of every block.
+    fn begin_rollup_block_hook(
+        &amp;mut self,
+        _pre_state_user_root: &amp;&lt;S::Storage as Storage&gt;::Root,
+        _state: &amp;mut StateCheckpoint&lt;S&gt;,
+    ) {
+        // Your custom logic here...
+    }
+}</code></pre>
+<p><strong>Note:</strong> Since the <code>FinalizeHook</code> only runs <em>natively</em>, it should be implemented under the <a href="#the-native-feature-flag"><code>native</code></a> flag. More on that later.</p>
 <h2 id="error-handling-user-errors-vs-system-bugs"><a class="header" href="#error-handling-user-errors-vs-system-bugs">Error Handling: User Errors vs. System Bugs</a></h2>
-<p>In a blockchain, handling failure correctly is critical. Your module must distinguish between expected <strong>user errors</strong>
-(like an invalid transaction) and critical <strong>system bugs</strong> (which could corrupt state).</p>
-<p>The Sovereign SDK provides a clear pattern for this:</p>
+<p>In a blockchain context, handling failure correctly is critical. Your module must clearly distinguish between two types of failures: expected <strong>user errors</strong> (which should gracefully revert a transaction) and unexpected <strong>system bugs</strong> (which may require halting the chain to prevent state corruption). The Sovereign SDK provides a clear pattern for this distinction.</p>
 <h3 id="1-user-errors-returning-anyhowresult"><a class="header" href="#1-user-errors-returning-anyhowresult">1. User Errors: Returning <code>anyhow::Result</code></a></h3>
-<p>For all expected business logic failures, you should return the <code>Err</code> variant of <code>anyhow::Result</code>. The <code>call</code> and <code>genesis</code> methods are defined to return this type (<code>Result&lt;T, anyhow::Error&gt;</code>).</p>
+<p>For all expected, business-logic-level failures, your <code>call</code> method should return an <code>Err</code> containing an <code>anyhow::Error</code>. These are the errors you anticipate, such as a user attempting to transfer more tokens than they own, calling a method without the proper permissions, or providing invalid parameters.</p>
+<p>When you return an <code>Err</code>, the SDK automatically reverts all state changes from the transaction. The goal is to safely reject the invalid transaction while providing a clear error message to the user and developer.</p>
+<p>The <code>anyhow</code> crate provides several convenient macros for this. While you can always construct an error with <code>anyhow::anyhow!()</code>, the <code>bail!</code> and <code>ensure!</code> macros are generally preferred for their conciseness.</p>
 <ul>
-<li><strong>When:</strong> Invalid user input, insufficient balance, unauthorized access.</li>
-<li><strong>What it does:</strong> The SDK automatically reverts all state changes from the transaction, ensuring atomicity.</li>
-<li><strong>Goal:</strong> Inform the user why their transaction failed.</li>
-</ul>
-<p>The <code>anyhow</code> crate provides several convenient macros for this. While you can always use <code>return Err(anyhow::anyhow!(...))</code>, the <code>bail!</code> and <code>ensure!</code> macros are often more ergonomic and are the preferred style in the Sovereign SDK.</p>
-<ul>
-<li><strong><code>bail!(message)</code></strong>: Immediately returns an <code>Err</code>. It's a direct shortcut for <code>return Err(anyhow::anyhow!(message))</code>.</li>
-<li><strong><code>ensure!(condition, message)</code></strong>: Checks a condition. If it's false, it returns an <code>Err</code> with the given message. It's perfect for validating inputs at the start of a function.</li>
+<li><code>bail!(message)</code>: Immediately returns an <code>Err</code>. It's a direct shortcut for <code>return Err(anyhow::anyhow!(message))</code>.</li>
+<li><code>ensure!(condition, message)</code>: Checks a condition. If it's false, it returns an <code>Err</code> with the given message. This is perfect for validating inputs and permissions at the start of a function.</li>
 </ul>
 <p>Here’s how they look in practice, using the <code>Bank</code> module as an example:</p>
 <pre><code class="language-rust">// From the Bank module's `create_token` method
-pub fn create_token(
+fn create_token(
     // ...
-    token_decimals: Option&lt;u8&gt;,
-    initial_balance: Amount,
-    supply_cap: Option&lt;Amount&gt;,
 ) -&gt; Result&lt;TokenId&gt; {
     // Using `ensure!` to validate an input parameter.
-    // If decimals &gt; MAX_DECIMALS, this returns an Err immediately.
     anyhow::ensure!(
-        token_decimals.unwrap_or(0) &lt;= Amount::MAX_DECIMALS,
+        token_decimals &lt;= MAX_DECIMALS,
         "Too many decimal places."
     );
 
     // Using `bail!` to return an error after a more complex check.
-    if initial_balance &gt; supply_cap.unwrap_or(Amount::MAX) {
+    if initial_balance &gt; supply_cap {
         bail!(
             "Initial balance {} is greater than the supply cap {}",
             initial_balance,
-            supply_cap.unwrap_or(Amount::MAX)
+            supply_cap
         );
     }
     // ...
     Ok(token_id)
 }</code></pre>
-<p>Transaction reverts are normal and expected - log them at <code>debug!</code> level if needed for debugging, not as warnings or errors.</p>
+<p><strong>Note:</strong> Because transaction reverts are a normal part of operation, they should be logged at a <code>debug</code> level if necessary, not as warnings or errors.</p>
 <h3 id="2-system-bugs-panic"><a class="header" href="#2-system-bugs-panic">2. System Bugs: <code>panic!</code></a></h3>
-<p>This is an emergency stop for critical, unrecoverable bugs.</p>
+<p>A <code>panic!</code> is an emergency stop. It should only be used for critical, unrecoverable bugs where a core assumption or invariant of your system has been violated.</p>
 <ul>
-<li><strong>When:</strong> An impossible state is reached or a core invariant is broken.</li>
+<li><strong>When:</strong> An impossible state is reached (e.g., total supply becomes negative).</li>
 <li><strong>What it does:</strong> Shuts down the rollup node to prevent state corruption.</li>
-<li><strong>Goal:</strong> Alert the node operator to a critical software bug.</li>
+<li><strong>Goal:</strong> Alert the node operator to a critical software bug that needs immediate attention.</li>
 </ul>
-<p>Use <code>panic!</code> as your last line of defense. It signals that your module's integrity is compromised and continuing would be dangerous.</p>
-<h2 id="native-only-code"><a class="header" href="#native-only-code">Native-Only Code</a></h2>
-<p>Some functionality should only run natively on the full nodes (and sequencer), not in the zkVM during proof generation. This is a critical concept for separating verifiable on-chain logic from off-chain operational tooling.</p>
-<p>Any code that is not part of the core state transition must be gated with <code>#[cfg(feature = "native")]</code>:</p>
+<p>Use <code>panic!</code> as your last line of defense. It signals that your module's integrity is compromised and continuing execution would be dangerous.</p>
+<h2 id="node-side-logic-with-native-features"><a class="header" href="#node-side-logic-with-native-features">Node-Side Logic with Native Features</a></h2>
+<p>A crucial architectural concept in the Sovereign SDK is the distinction between logic that is part of the verifiable state transition and logic that only runs natively on the full node or sequencer. The former must be deterministic and provable in a zkVM, while the latter is used for off-chain tooling like APIs, metrics, and transaction scheduling.</p>
+<h3 id="the-native-feature-flag"><a class="header" href="#the-native-feature-flag">The <code>native</code> Feature Flag</a></h3>
+<p>Any code that is <strong>not</strong> part of the core state transition must be gated with <code>#[cfg(feature = "native")]</code>:</p>
 <pre><code class="language-rust">#[cfg(feature = "native")]
 impl&lt;S: Spec&gt; MyModule&lt;S&gt; {
     // This code only compiles natively, not in zkVM
@@ -280,41 +285,8 @@ impl&lt;S: Spec&gt; MyModule&lt;S&gt; {
 <li>Debugging tools</li>
 <li>Integrations with external services</li>
 </ul>
-<h2 id="transaction-prioritization-and-mev-mitigation"><a class="header" href="#transaction-prioritization-and-mev-mitigation">Transaction Prioritization and MEV Mitigation</a></h2>
-<p>For latency-sensitive financial applications, managing transaction order and mitigating Maximum Extractable Value (MEV) is critical. The Sovereign SDK provides a powerful, sequencer-level tool to combat toxic orderflow by allowing developers to introduce fine-grained processing delays for specific transaction types.</p>
-<p>This is a powerful technique for applications like on-chain Central Limit Orderbooks (CLOBs). By introducing a small, artificial delay on aggressive "take" orders, a rollup can implicitly prioritize "cancel" orders. This gives market makers a crucial window to pull stale quotes before they can be exploited by low-latency arbitrageurs, leading to fairer and more liquid markets.</p>
-<p>This functionality is implemented via the <code>get_transaction_delay_ms</code> method on your <code>Runtime</code> struct. Because this is a sequencer-level scheduling feature and not part of the core state transition logic, it must be gated behind the <code>native</code> feature flag.</p>
-<p>The method receives a decoded <code>CallMessage</code> and returns the number of milliseconds the sequencer should wait before processing it. A return value of <code>0</code> means the transaction should be processed immediately.</p>
-<h3 id="example-prioritizing-cancels-in-a-clob"><a class="header" href="#example-prioritizing-cancels-in-a-clob">Example: Prioritizing Cancels in a CLOB</a></h3>
-<pre><code class="language-rust">// In your-rollup/stf/src/runtime.rs
-
-// In the `impl&lt;S&gt; sov_modules_stf_blueprint::Runtime&lt;S&gt; for Runtime&lt;S&gt;` block:
-
-#[cfg(feature = "native")]
-fn get_transaction_delay_ms(&amp;self, call: &amp;Self::Decodable) -&gt; u64 {
-    // `Self::Decodable` is the auto-generated `RuntimeCall` enum for your runtime.
-    // It has one variant for each module in your `Runtime` struct.
-    match call {
-        // Introduce a small 10ms delay on all "take" orders to give
-        // market makers time to cancel stale orders.
-        // (Here, `Clob` is the variant corresponding to the `clob` field in your `Runtime` struct,
-        // and `PlaceTakeOrder` is the variant of the `clob` module's `CallMessage` enum.)
-        Self::Decodable::Clob(clob::CallMessage::PlaceTakeOrder { .. }) =&gt; 50,
-
-        // All other CLOB operations, like placing or cancelling "make" orders,
-        // are processed immediately with zero delay.
-        Self::Decodable::Clob(..) =&gt; 0,
-        
-        // All other transactions in other modules are also processed immediately.
-        _ =&gt; 0,
-    }
-}</code></pre>
-<p>This feature gives you precise control over your sequencer's processing queue, enabling sophisticated MEV mitigation strategies without altering your core onchain business logic.</p>
-<h2 id="adding-custom-rest-apis"><a class="header" href="#adding-custom-rest-apis">Adding Custom REST APIs</a></h2>
-<p>You can easily add custom APIs to your module by implementing the
-<code>HasCustomRestApi</code> trait. This trait has two methods - one which actually
-implements the routes, and an optional one which provides an <code>OpenApi</code> spec. You
-can see a good example in the <code>Bank</code> module:</p>
+<h3 id="adding-custom-rest-apis"><a class="header" href="#adding-custom-rest-apis">Adding Custom REST APIs</a></h3>
+<p>You can easily add custom APIs to your module by implementing the <code>HasCustomRestApi</code> trait. This trait has two methods - one which actually implements the routes, and an optional one which provides an <code>OpenApi</code> spec. You can see a good example in the <code>Bank</code> module:</p>
 <pre><code class="language-rust">#![cfg(feature = "native")]
 impl&lt;S: Spec&gt; HasCustomRestApi for Bank&lt;S&gt; {
     type Spec = S;
@@ -350,28 +322,12 @@ async fn route_balance(
 
     Ok(Coins { amount, token_id }.into())
 }</code></pre>
-<p>REST API methods get access to an <code>ApiStateAccessor</code>. This special struct gives
-you access to both normal and <code>Accessory</code> state values. You can freely read and
-write to state during your API calls, which makes it easy to reuse code from the
-rest of your module. However, it's important to remember API calls do <em>not</em>
-durably mutate state. Any state changes are thrown away at the end of the
-request.</p>
-<p>If you implement a custom REST API, your new routes will be automatically nested
-under your module's router. So, in the following example, the
-<code>tokens/:tokenId/total-supply</code> function can be found at
-<code>/modules/bank/tokens/:tokenId/total-supply</code>. Similarly, your OpenApi spec will
-get combined with the auto-generated one automatically.</p>
-<p>Note that for for custom REST APIs, you'll need to manually write an <code>OpenApi</code>
-specification if you want client support.</p>
-<h2 id="legacy-rpc-support"><a class="header" href="#legacy-rpc-support">Legacy RPC Support</a></h2>
-<p>In addition to custom RESTful APIs, the Sovereign SDK lets you create JSON-RPC
-methods. This is useful to provide API compatibility with existing chains like
-Ethereum and Solana, but we recommend using REST APIs whenever compatibility
-isn't a concern.</p>
-<p>To implement RPC methods, simply annotate an <code>impl</code> block on your module with
-the <code>#[rpc_gen(client, server)]</code> macro, and then write methods which accept an
-<code>ApiStateAcessor</code> as their final argument and return an <code>RpcResult</code>. You can see
-some examples in the <a href="fix-link"><code>Evm</code> module</a>.</p>
+<p>REST API methods get access to an <code>ApiStateAccessor</code>. This accessor provides a read-only view of the latest committed state. While it allows you to call state mutation methods (e.g., <code>set</code>, <code>delete</code>), these changes are temporary and are discarded at the end of the request. This design allows you to reuse view-logic from your module without the risk of accidentally modifying persistent state.</p>
+<p>If you implement a custom REST API, your new routes will be automatically nested under your module's router. So, in the following example, the <code>tokens/:tokenId/total-supply</code> function can be found at <code>/modules/bank/tokens/:tokenId/total-supply</code>. Similarly, your OpenApi spec will get combined with the auto-generated one automatically.</p>
+<p>Note that for for custom REST APIs, you'll need to manually write an <code>OpenApi</code> specification if you want client support.</p>
+<h3 id="adding-legacy-rpc-support"><a class="header" href="#adding-legacy-rpc-support">Adding Legacy RPC Support</a></h3>
+<p>In addition to custom RESTful APIs, the Sovereign SDK lets you create JSON-RPC methods. This is useful to provide API compatibility with existing chains like Ethereum and Solana, but we recommend using REST APIs whenever compatibility isn't a concern.</p>
+<p>To implement RPC methods, simply annotate an <code>impl</code> block on your module with the <code>#[rpc_gen(client, server)]</code> macro, and then write methods which accept an <code>ApiStateAcessor</code> as their final argument and return an <code>RpcResult</code>. You can see some examples in the <a href="fix-link"><code>Evm</code> module</a>.</p>
 <pre><code class="language-rust">#![cfg(feature = "native")]
 #[rpc_gen(client, server)]
 impl&lt;S: Spec&gt; Evm&lt;S&gt; {
@@ -391,21 +347,48 @@ impl&lt;S: Spec&gt; Evm&lt;S&gt; {
         Ok(storage_slot)
     }
 }</code></pre>
-<h3 id="mastering-your-module"><a class="header" href="#mastering-your-module">Mastering Your Module</a></h3>
-<p>You are now equipped with the full suite of tools for building sophisticated, production-grade modules.
-By leveraging Hooks for automation, robust error handling for reliability, and custom APIs for rich off-chain
-experiences, you can create applications that are both powerful and easy to operate.</p>
-<p>With a deep understanding of module implementation, you're ready to shift your focus to a critical aspect of any rollup: performance. . The next section, <strong>"Understanding Performance,"</strong> will dive into  patterns and considerations that can significantly impact your application's latency and throughput.</p>
+<h3 id="transaction-scheduling-for-mev-mitigation"><a class="header" href="#transaction-scheduling-for-mev-mitigation">Transaction Scheduling for MEV Mitigation</a></h3>
+<p>For latency-sensitive financial applications, managing transaction order and mitigating Maximum Extractable Value (MEV) is critical. The Sovereign SDK provides a powerful, sequencer-level tool to combat toxic orderflow by allowing developers to introduce fine-grained processing delays for specific transaction types.</p>
+<p>This is a powerful technique for applications like on-chain Central Limit Orderbooks (CLOBs). By introducing a small, artificial delay on aggressive "take" orders, a rollup can implicitly prioritize "cancel" orders. This gives market makers a crucial window to pull stale quotes before they can be exploited by low-latency arbitrageurs, leading to fairer and more liquid markets.</p>
+<p>This functionality is implemented via the <code>get_transaction_delay_ms</code> method on your <code>Runtime</code> struct. Because this is a sequencer-level scheduling feature and not part of the core state transition logic, it must be gated behind the <code>native</code> feature flag.</p>
+<p>The method receives a decoded <code>CallMessage</code> and returns the number of milliseconds the sequencer should wait before processing it. A return value of <code>0</code> means the transaction should be processed immediately.</p>
+<h4 id="example-prioritizing-cancels-in-a-clob"><a class="header" href="#example-prioritizing-cancels-in-a-clob">Example: Prioritizing Cancels in a CLOB</a></h4>
+<pre><code class="language-rust">// In your-rollup/stf/src/runtime.rs
+
+// In the `impl&lt;S&gt; sov_modules_stf_blueprint::Runtime&lt;S&gt; for Runtime&lt;S&gt;` block:
+
+#[cfg(feature = "native")]
+fn get_transaction_delay_ms(&amp;self, call: &amp;Self::Decodable) -&gt; u64 {
+    // `Self::Decodable` is the auto-generated `RuntimeCall` enum for your runtime.
+    // It has one variant for each module in your `Runtime` struct.
+    match call {
+        // Introduce a small 50ms delay on all "take" orders to give
+        // market makers time to cancel stale orders.
+        // (Here, `Clob` is the variant corresponding to the `clob` field in your `Runtime` struct,
+        // and `PlaceTakeOrder` is the variant of the `clob` module's `CallMessage` enum.)
+        Self::Decodable::Clob(clob::CallMessage::PlaceTakeOrder { .. }) =&gt; 50,
+
+        // All other CLOB operations, like placing or cancelling "make" orders,
+        // are processed immediately with zero delay.
+        Self::Decodable::Clob(..) =&gt; 0,
+        
+        // All other transactions in other modules are also processed immediately.
+        _ =&gt; 0,
+    }
+}</code></pre>
+<p>This feature gives you precise control over your sequencer's processing queue, enabling sophisticated MEV mitigation strategies without altering your onchain business logic.</p>
+<h2 id="mastering-your-module"><a class="header" href="#mastering-your-module">Mastering Your Module</a></h2>
+<p>With a solid grasp of module implementation, it's time to focus on performance. The next chapter, <strong>"Understanding Performance,"</strong> dives into the key considerations for building a fast and efficient rollup.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="3-4-signing-and-submitting-txs.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="4-3-wallets-and-accounts.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="3-6-performance.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="4-5-performance.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -415,11 +398,11 @@ experiences, you can create applications that are both powerful and easy to oper
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="3-4-signing-and-submitting-txs.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="4-3-wallets-and-accounts.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="3-6-performance.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="4-5-performance.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
