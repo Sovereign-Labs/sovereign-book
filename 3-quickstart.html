@@ -197,15 +197,13 @@ cd examples/value-setter/
 <p>The initial code is minimal. It defines the module's structure and a <code>call</code> method that lets anyone set the value.</p>
 <p>Here’s the simplified <code>lib.rs</code> that we'll start with:</p>
 <pre><code class="language-rust">// In examples/value-setter/src/lib.rs
-use schemars::JsonSchema;
-use sov_modules_api::{Module, ModuleId, ModuleInfo, ModuleRestApi, StateValue, Spec, UniversalWallet};
-use sov_module_macros::serialize;
 
 #[derive(Clone, ModuleInfo, ModuleRestApi)]
 pub struct ValueSetter&lt;S: Spec&gt; {
     #[id]
     pub id: ModuleId,
 
+    /// Holds the value
     #[state]
     pub value: StateValue&lt;u32&gt;,
 }
@@ -228,7 +226,9 @@ impl&lt;S: Spec&gt; Module for ValueSetter&lt;S&gt; {
     fn call(&amp;mut self, msg: Self::CallMessage, _context: &amp;Context&lt;S&gt;, state: &amp;mut impl TxState&lt;S&gt;) -&gt; Result&lt;()&gt; {
         match msg {
             CallMessage::SetValue(new_value) =&gt; {
+
                 self.value.set(&amp;new_value, state)?;
+
                 Ok(())
             }
         }
@@ -240,11 +240,11 @@ impl&lt;S: Spec&gt; Module for ValueSetter&lt;S&gt; {
 <p>First, we need a place to store the admin's address. We'll add a new <code>admin</code> field to the <code>ValueSetter</code> struct and mark it with the <code>#[state]</code> attribute.</p>
 <pre><code class="language-rust">// In examples/value-setter/src/lib.rs
 
-#[derive(Clone, ModuleInfo)]
+#[derive(Clone, ModuleInfo, ModuleRestApi)]
 pub struct ValueSetter&lt;S: Spec&gt; {
     // ... existing code ...
 
-    // The new state value to hold the address of the admin.
+    /// The new state value to hold the address of the admin.
     #[state]
     pub admin: StateValue&lt;S::Address&gt;,
 }</code></pre>
@@ -289,7 +289,7 @@ impl&lt;S: Spec&gt; Module for ValueSetter&lt;S&gt; {
         match msg {
             CallMessage::SetValue(new_value) =&gt; {
                 // Read the admin's address from state.
-                let admin = self.admin.get(state)??;
+                let admin = self.admin.get_or_err(state)??;
 
                 // Ensure the sender is the admin.
                 anyhow::ensure!(admin == *context.sender(), "Only the admin can set the value.");
@@ -332,7 +332,7 @@ impl&lt;S: Spec&gt; Module for ValueSetter&lt;S&gt; {
 </li>
 <li>
 <p><strong>Query the Initial State:</strong> In another terminal, use <code>curl</code> to check the initial value. It should be <code>null</code> because our <code>genesis</code> method only sets the <code>admin</code>, not the <code>value</code>.</p>
-<pre><code class="language-bash">curl -X GET 'http://127.0.0.1:12346/module/value-setter/value'
+<pre><code class="language-bash">curl http://127.0.0.1:12346/modules/value-setter/state/value
 # Expected output: {"value":null}
 </code></pre>
 </li>
@@ -341,12 +341,12 @@ impl&lt;S: Spec&gt; Module for ValueSetter&lt;S&gt; {
 <ul>
 <li>Open the <code>examples/starter-js/src/index.ts</code> file.</li>
 <li>The <code>signer</code> in this script corresponds to the <code>admin</code> address we set in <code>genesis.json</code>.</li>
-<li>Find the <code>call</code> variable and replace it with a call to your <code>value_setter</code> module.</li>
+<li>Find the <code>callMessage</code> variable and replace it with a call to your <code>value_setter</code> module.</li>
 </ul>
 <pre><code class="language-ts">// In sov-rollup-starter/examples/starter-js/src/index.ts
 
 // Replace the existing call message with this one:
-const call = {
+const callMessage: RuntimeCall = {
     value_setter: {   // The module's name in the Runtime struct
         set_value: 99,  // The CallMessage variant (in snake_case) and its new value
     },
@@ -357,19 +357,17 @@ const call = {
 </ul>
 <pre><code class="language-bash"># From the sov-rollup-starter/examples/starter-js directory
 npm install
-npm run dev
+npm run start
 </code></pre>
 </li>
 <li>
 <p><strong>Verify the Change:</strong> Now for the "Aha!" moment. Query the state again:</p>
-<pre><code class="language-bash">curl -X GET 'http://127.0.0.1:12346/module/value-setter/value'
+<pre><code class="language-bash">curl http://127.0.0.1:12346/modules/value-setter/state/value
 # Expected output: {"value":99}
 </code></pre>
 </li>
 </ol>
 <p><strong>Congratulations!</strong> You have successfully written and interacted with your own custom logic on a Sovereign SDK rollup!</p>
-<h2 id="whats-next"><a class="header" href="#whats-next">What's Next?</a></h2>
-<p>This quickstart intentionally skipped over some important concepts like events, comprehensive error handling, and testing. The next chapters will explore the deeper concepts and best practices required to take your module from a simple example to a production-ready component.</p>
 
                     </main>
 
