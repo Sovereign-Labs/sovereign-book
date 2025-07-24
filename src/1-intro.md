@@ -1,6 +1,6 @@
-# The Sovereign SDK Book
+# Introduction
 
-Welcome to the Sovereign SDK Book, your comprehensive guide to the industry's most flexible toolkit for building high-performance, real-time rollups.
+Welcome to *The Sovereign SDK Book*, a comprehensive guide to the industry's most flexible toolkit for building high-performance, real-time rollups.
 
 We built this SDK to give developers, from solo builders to large teams, the power to create onchain applications that were previously impossible. 
 
@@ -8,7 +8,7 @@ With P99 of transaction executions under 10 milliseconds, the Sovereign SDK is f
 
 Let's build the next Hyperliquid.
 
-<img src="https://github.com/Sovereign-Labs/sovereign-sdk/blob/nightly/assets/banner.jpg?raw=true" style="border-radius: 10px">
+<img src="./assets/sov-sdk-low-res.jpeg" style="border-radius: 10px">
 
 ## Why Build a Dedicated Rollup For Your Application?
 
@@ -20,11 +20,11 @@ For almost a decade, developers have been forced to build applications on shared
 
 ## Why Choose the Sovereign SDK?
 
-The Sovereign SDK is designed around four key principles to provide an unmatched developer and user experience:
+The Sovereign SDK is designed around four key goals to provide an unmatched developer and user experience:
 
--   **Total Customization:** While rollups promise flexibility, existing frameworks are overly restrictive. Sovereign SDK delivers on that promise with its modular Rust runtime, empowering you to customize as much or as little as needed. Easily add custom fee logic, integrate tailored authenticators, prioritize specific transaction types, or even swap out the authenticated state store—all without wrestling with legacy code.
+-   **Total Customization:** While rollups promise flexibility, existing frameworks are overly restrictive. With its modular Rust runtime,Sovereign SDK empowers you to customize as much or as little as neeeded. Easily add custom fee logic, integrate tailored authenticators, prioritize specific transaction types, or even swap out the authenticated state store. All without wrestling with legacy code.
 -   **Best-in-Class Performance:** With 2-5ms soft confirmations and throughput exceeding 10,000 TPS, the Sovereign SDK is orders of magnitude faster than competing frameworks like Orbit, the OP Stack, or the Cosmos SDK.
--   **A Developer-Friendly Experience:** Write your logic in standard Rust, run `cargo build`, and get a complete full-node implementation with REST & WebSocket APIs, an indexer, auto-generated OpenAPI specs, and a sequencer  with automatic failover out of the box. No boilerplate or deep blockchain expertise required.
+-   **Developer-Friendly Experience:** Write your logic in standard Rust, run `cargo build`, and get a complete full-node implementation with REST & WebSocket APIs, an indexer, auto-generated OpenAPI specs, and a sequencer  with automatic failover out of the box. No deep blockchain expertise required.
 -   **Future-Proof Architecture:** Never get locked into yesterday's tech stack. With the Sovereign SDK, you can switch data availability layers or zkVMs with just a few lines of code, ensuring your project remains agile for years to come.
 
 
@@ -44,4 +44,4 @@ This two-stage process gives you the best of both worlds: the instant, centraliz
 
 ## Ready to Build?
 
-Now that you understand the power and flexibility of the Sovereign SDK, you're ready to get your hands dirty. In the next chapter, **"Getting Started,"** we'll walk you through cloning a starter repository and running your first rollup in minutes.
+Let's walk you through cloning our starter repository and running your first rollup in seconds.
