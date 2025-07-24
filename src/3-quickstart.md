@@ -174,7 +174,7 @@ The SDK automatically deserializes this JSON into our `ValueSetterConfig` struct
 }
 ```
 
-Previously, the `value_setter` field was an empty object, `{}`. Now, we've given it the data our module needs to initialize the admin address.
+Previously, the `value_setter` field was `null`. Now, we've given it the data our module needs to initialize the admin address.
 
 ## How is the Module Integrated?
 
