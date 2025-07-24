@@ -398,7 +398,7 @@ impl&lt;S: Spec&gt; Module for ValueSetter&lt;S&gt; {
   }
 }
 </code></pre>
-<p>Previously, the <code>value_setter</code> field was an empty object, <code>{}</code>. Now, we've given it the data our module needs to initialize the admin address.</p>
+<p>Previously, the <code>value_setter</code> field was <code>null</code>. Now, we've given it the data our module needs to initialize the admin address.</p>
 <h2 id="how-is-the-module-integrated"><a class="header" href="#how-is-the-module-integrated">How is the Module Integrated?</a></h2>
 <p>You might be wondering how the rollup knows about the <code>value-setter</code> module in the first place. In the <code>sov-rollup-starter</code>, we've already "wired it up" for you to keep this quickstart focused on module logic.</p>
 <p>For your own future modules, the process involves:</p>
@@ -750,7 +750,7 @@ const privKey = "0d87c12ea7c12024b3f70a26d735874608f17c8bce2b48e6fe8738931019126
 const signer = new Secp256k1Signer(privKey);
 
 // Use the signer to send a transaction
-await rollup.call(myCallMessage, { signer });
+await rollup.call(callMessage, { signer });
 </code></pre>
 <p><strong>2.</strong> <code>PrivySigner</code> <strong>(For User-Facing Applications)</strong></p>
 <p>For most applications, asking users for a private key is not feasible or secure. This is where <strong>Privy</strong> comes in. <a href="https://www.privy.io/">Privy</a> is a powerful wallet-as-a-service provider that allows users to create a non-custodial wallet using familiar Web2 logins like email or social accounts. They can also connect their existing wallets (like MetaMask or Phantom).</p>

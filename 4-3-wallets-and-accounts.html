@@ -202,7 +202,7 @@ const privKey = "0d87c12ea7c12024b3f70a26d735874608f17c8bce2b48e6fe8738931019126
 const signer = new Secp256k1Signer(privKey);
 
 // Use the signer to send a transaction
-await rollup.call(myCallMessage, { signer });
+await rollup.call(callMessage, { signer });
 </code></pre>
 <p><strong>2.</strong> <code>PrivySigner</code> <strong>(For User-Facing Applications)</strong></p>
 <p>For most applications, asking users for a private key is not feasible or secure. This is where <strong>Privy</strong> comes in. <a href="https://www.privy.io/">Privy</a> is a powerful wallet-as-a-service provider that allows users to create a non-custodial wallet using familiar Web2 logins like email or social accounts. They can also connect their existing wallets (like MetaMask or Phantom).</p>

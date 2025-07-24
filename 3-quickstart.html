@@ -312,7 +312,7 @@ impl&lt;S: Spec&gt; Module for ValueSetter&lt;S&gt; {
   }
 }
 </code></pre>
-<p>Previously, the <code>value_setter</code> field was an empty object, <code>{}</code>. Now, we've given it the data our module needs to initialize the admin address.</p>
+<p>Previously, the <code>value_setter</code> field was <code>null</code>. Now, we've given it the data our module needs to initialize the admin address.</p>
 <h2 id="how-is-the-module-integrated"><a class="header" href="#how-is-the-module-integrated">How is the Module Integrated?</a></h2>
 <p>You might be wondering how the rollup knows about the <code>value-setter</code> module in the first place. In the <code>sov-rollup-starter</code>, we've already "wired it up" for you to keep this quickstart focused on module logic.</p>
 <p>For your own future modules, the process involves:</p>
