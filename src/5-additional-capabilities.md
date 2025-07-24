@@ -2,7 +2,7 @@
 
 The Sovereign SDK includes many advanced features beyond the core functionality covered in this documentation.
 
-**To learn more about implementing these features in your rollup, just shoot us a message in our [support channel](https://join.slack.com/t/sovereigndevelopers/shared_invite/zt-39aolimfp-XsFK6dL6LhOFHhtXsD_kCA) or fill out our [partner form](fix-link) and we'll reach out to you.**
+**To learn more about implementing these features in your rollup, just shoot us a message in our [support channel](https://join.slack.com/t/sovereigndevelopers/shared_invite/zt-39aolimfp-XsFK6dL6LhOFHhtXsD_kCA) or fill out our [partner form](https://airtable.com/app9kbNZcvqdrOidH/shrPlG9rok3sVd8Mh) and we'll reach out to you.**
 
 ### Performance & Reliability
 

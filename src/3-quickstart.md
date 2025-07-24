@@ -2,7 +2,7 @@
 
 This guide is about getting you to **write and deploy your own logic** on a rollup.
 
-We'll start with a very basic [`ValueSetter`](fix-link) module that's already included in the `sov-rollup-starter-wip`. 
+We'll start with a very basic [`ValueSetter`](https://github.com/Sovereign-Labs/sov-rollup-starter-wip/tree/main/examples/value-setter) module that's already included in the `sov-rollup-starter-wip`.
 
 Our `ValueSetter` module currently stores a single number, and any user can update it. We want to ensure that only one user—the admin—has permission to update this number.
 

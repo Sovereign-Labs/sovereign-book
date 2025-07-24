@@ -197,7 +197,7 @@ Note that for for custom REST APIs, you'll need to manually write an `OpenApi` s
 
 In addition to custom RESTful APIs, the Sovereign SDK lets you create JSON-RPC methods. This is useful to provide API compatibility with existing chains like Ethereum and Solana, but we recommend using REST APIs whenever compatibility isn't a concern.
 
-To implement RPC methods, simply annotate an `impl` block on your module with the `#[rpc_gen(client, server)]` macro, and then write methods which accept an `ApiStateAcessor` as their final argument and return an `RpcResult`. You can see some examples in the [`Evm` module](fix-link).
+To implement RPC methods, simply annotate an `impl` block on your module with the `#[rpc_gen(client, server)]` macro, and then write methods which accept an `ApiStateAcessor` as their final argument and return an `RpcResult`. You can see some examples in the [`Evm` module](https://github.com/Sovereign-Labs/sovereign-sdk-wip/blob/nightly/crates/module-system/module-implementations/sov-evm/src/rpc/mod.rs#L187).
 
 ```rust
 #![cfg(feature = "native")]

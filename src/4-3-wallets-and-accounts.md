@@ -44,7 +44,7 @@ await rollup.call(callMessage, { signer });
 
 For most applications, asking users for a private key is not feasible or secure. This is where **Privy** comes in. [Privy](https://www.privy.io/) is a powerful wallet-as-a-service provider that allows users to create a non-custodial wallet using familiar Web2 logins like email or social accounts. They can also connect their existing wallets (like MetaMask or Phantom).
 
-The `sov-rollup-starter` repository includes a [full example of integrating the `PrivySigner`](fix-link), making it the most realistic and user-friendly way to onboard users to your rollup today. It handles all the complexity of wallet creation and signing, allowing users to interact with your application seamlessly.
+The `sov-rollup-starter` repository includes a [full example of integrating the `PrivySigner`](https://github.com/Sovereign-Labs/sov-rollup-starter-wip/tree/main/examples/privy), making it the most realistic and user-friendly way to onboard users to your rollup today. It handles all the complexity of wallet creation and signing, allowing users to interact with your application seamlessly.
 
 ## The Future: Supporting All Ethereum Wallets by Leveraging EIP-712
 
