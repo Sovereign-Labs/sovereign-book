@@ -37,7 +37,7 @@ const privKey = "0d87c12ea7c12024b3f70a26d735874608f17c8bce2b48e6fe8738931019126
 const signer = new Secp256k1Signer(privKey);
 
 // Use the signer to send a transaction
-await rollup.call(myCallMessage, { signer });
+await rollup.call(callMessage, { signer });
 ```
 
 **2.** `PrivySigner` **(For User-Facing Applications)**
