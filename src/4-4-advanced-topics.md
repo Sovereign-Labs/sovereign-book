@@ -34,10 +34,13 @@ TxHooks run before and after every single transaction processed by the rollup. T
 
 Unlike `BlockHooks`, the gas for `TxHooks` is paid by the user who submitted the transaction.
 
-### `FinalizeHook`: Cheap Off-Chain Indexing
+### `FinalizeHook`: Simple Off-Chain Indexing
 
 The `FinalizeHook` runs at the very end of a block's execution and can only write to `AccessoryState`. This makes it 
-cheap to run and perfect for storing data that are only meant to be read by off-chain APIs, not used by on-chain logic.
+cheap to run and very simple for storing data that are only meant to be read by off-chain APIs, not used by on-chain logic.
+**Note:** FinalizeHook with AccessoryState works for basic indexing, but for a scalable, long‑term solution we recommend 
+the transactions WebSocket endpoint, which emits events and lets you subscribe from any transaction number. Stream those 
+events into a horizontally scalable store such as Postgres or a platform like Kafka Streams.
 
 ### Implementing Hooks
 
