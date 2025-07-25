@@ -790,9 +790,12 @@ Be mindful of performance here; heavy computation in a BlockHook can make your r
 <li><strong>Monitoring and Reactions</strong>: Allowing a compliance module to monitor all transfers and flag suspicious activity.</li>
 </ul>
 <p>Unlike <code>BlockHooks</code>, the gas for <code>TxHooks</code> is paid by the user who submitted the transaction.</p>
-<h3 id="finalizehook-cheap-off-chain-indexing"><a class="header" href="#finalizehook-cheap-off-chain-indexing"><code>FinalizeHook</code>: Cheap Off-Chain Indexing</a></h3>
+<h3 id="finalizehook-simple-off-chain-indexing"><a class="header" href="#finalizehook-simple-off-chain-indexing"><code>FinalizeHook</code>: Simple Off-Chain Indexing</a></h3>
 <p>The <code>FinalizeHook</code> runs at the very end of a block's execution and can only write to <code>AccessoryState</code>. This makes it
-cheap to run and perfect for storing data that are only meant to be read by off-chain APIs, not used by on-chain logic.</p>
+cheap to run and very simple for storing data that are only meant to be read by off-chain APIs, not used by on-chain logic.
+<strong>Note:</strong> FinalizeHook with AccessoryState works for basic indexing, but for a scalable, long‑term solution we recommend
+the transactions WebSocket endpoint, which emits events and lets you subscribe from any transaction number. Stream those
+events into a horizontally scalable store such as Postgres or a platform like Kafka Streams.</p>
 <h3 id="implementing-hooks"><a class="header" href="#implementing-hooks">Implementing Hooks</a></h3>
 <p>To use a hook, you simply import the corresponding trait from <code>sov_modules_api</code> and implement it for your module. The SDK automatically detects this implementation and will call the appropriate methods at the correct time during block processing.</p>
 <p><strong>Example: Implementing</strong> <code>BlockHooks</code></p>
