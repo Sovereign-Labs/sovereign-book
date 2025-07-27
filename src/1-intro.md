@@ -23,7 +23,7 @@ For almost a decade, developers have been forced to build applications on shared
 The Sovereign SDK is designed around four key goals to provide an unmatched developer and user experience:
 
 -   **Total Customization:** While rollups promise flexibility, existing frameworks are overly restrictive. With its modular Rust runtime,Sovereign SDK empowers you to customize as much or as little as neeeded. Easily add custom fee logic, integrate tailored authenticators, prioritize specific transaction types, or even swap out the authenticated state store. All without wrestling with legacy code.
--   **Best-in-Class Performance:** With 2-5ms soft confirmations and throughput exceeding 10,000 TPS, the Sovereign SDK is orders of magnitude faster than competing frameworks like Orbit, the OP Stack, or the Cosmos SDK.
+-   **Best-in-Class Performance:** With P99 < 10 ms for transaction execution and throughput exceeding 4,500 TPS, the Sovereign SDK is orders of magnitude faster than competing frameworks like Orbit, the OP Stack, or the Cosmos SDK.
 -   **Developer-Friendly Experience:** Write your logic in standard Rust, run `cargo build`, and get a complete full-node implementation with REST & WebSocket APIs, an indexer, auto-generated OpenAPI specs, and a sequencer  with automatic failover out of the box. No deep blockchain expertise required.
 -   **Future-Proof Architecture:** Never get locked into yesterday's tech stack. With the Sovereign SDK, you can switch data availability layers or zkVMs with just a few lines of code, ensuring your project remains agile for years to come.
 
