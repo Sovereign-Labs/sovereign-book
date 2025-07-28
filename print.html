@@ -523,6 +523,10 @@ pub struct ValueSetter&lt;S: Spec&gt; {
 <p><strong>A Quick Tip on Parametrizing Your Types Over S</strong></p>
 <p>If you parameterize your <code>CallMessage</code> or <code>Event</code> over <code>S</code> (for example, to include an address of type <code>S::Address</code>), you must add the <code>#[schemars(bound = "S: Spec", rename = "MyEnum")]</code> attribute on top your enum definition. This is a necessary hint for <code>schemars</code>, a library that generates a JSON schema for your module's API. It ensures that your generic types can be correctly represented for external tools.</p>
 </blockquote>
+<blockquote>
+<p><strong>Quick Tip: Handling <code>Vector</code> and <code>String</code> in CallMessage</strong>
+Use the fixed‑size wrappers <code>SafeVector</code> and <code>SafeString</code> for any fields that are deserialized directly into a <code>CallMessage</code>; they limit payload size and prevent DoS attacks. After deserialization, feel free to convert them to regular <code>Vector</code> and <code>String</code> values and use them as usual.</p>
+</blockquote>
 <h2 id="adding-events"><a class="header" href="#adding-events">Adding Events</a></h2>
 <p>Your <code>ValueSetter</code> module works, but it's a "black box." Off-chain applications have no way of knowing when the value changes without constantly polling the API. To solve this, we introduce <strong>Events</strong>.</p>
 <p>Events are the primary mechanism for streaming on-chain data to off-chain systems like indexers and front-ends in real-time. Let's add one to our module.</p>
