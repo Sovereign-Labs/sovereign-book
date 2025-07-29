@@ -40,13 +40,4 @@ This section will teach you how to:
 
 All instrumentation code must be gated with `#[cfg(feature = "native")]` to ensure it only runs on full nodes, not in the zkVM during proof generation. This critical distinction allows you to instrument generously without affecting proof generation performance or determinism.
 
-```rust
-#[cfg(feature = "native")]
-{
-    // Your metrics and logging code here
-    metrics::counter!("my_custom_metric").increment(1);
-    info!("Processing transaction: {:?}", tx_id);
-}
-```
-
 Let's dive into the specifics of adding metrics and logging to your rollup.
