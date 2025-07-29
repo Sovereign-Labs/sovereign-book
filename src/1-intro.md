@@ -4,7 +4,7 @@ Welcome to the Sovereign SDK Book!
 
 With P99 of transaction executions under 10 milliseconds, the Sovereign SDK is fast enough to bring complex financial systems, like Central-Limit Orderbooks (CLOBs), fully on-chain.
 
-The Sovereign SDK is provides much more flexibility and performance than traditional blockchain frameworks. In this guide, you'll learn to take full advantage of the SDK's unique features and bring your app from idea to production.
+The Sovereign SDK provides much more flexibility and performance than traditional blockchain frameworks. In this guide, you'll learn to take full advantage of the SDK's unique features and bring your app from idea to production.
 
 Let's get started!
 
