@@ -4,7 +4,7 @@ As we begin our journey into building a production-ready rollup, the first step 
 
 ## Runtime vs. Modules
 
-The **runtime** is the orchestrator of your rollup. It receives transactions, deserializes them, and routes them to the appropriate modules for execution. Think of it as the central nervous system that connects all your application logic. The [`Runtime`](https://github.com/Sovereign-Labs/sov-rollup-starter-wip/blob/main/crates/stf/stf-declaration/src/lib.rs#L51) struct you define in your rollup code specifies which modules are included.
+The **runtime** is the orchestrator of your rollup. It receives transactions, deserializes them, and routes them to the appropriate modules for execution. Think of it as the central nervous system that connects all your application logic. The [`Runtime`](https://github.com/Sovereign-Labs/rollup-starter/blob/main/crates/stf/stf-declaration/src/lib.rs#L51) struct you define in your rollup code specifies which modules are included.
 
 **Modules** contain the actual business-logic. Each module manages its own state and defines the specific actions (called "call messages") that users can perform. Modules are usually small and self-contained, but they can contain dependencies on other modules when it 
 makes sense to.
