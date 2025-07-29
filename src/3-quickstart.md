@@ -4,7 +4,7 @@ In this section, you’ll write and deploy your own business logic as a rollup.
 
 We'll start with a very basic [`ValueSetter`](https://github.com/Sovereign-Labs/sov-rollup-starter-wip/tree/main/examples/value-setter) module that's already included in the `sov-rollup-starter-wip`.
 
-The `ValueSetter` module currently stores a single number that any use can update. We want to ensure that only one user (the admin) has permission to update this number.
+The `ValueSetter` module currently stores a single number that any user can update. We want to ensure that only one user (the admin) has permission to update this number.
 
 This requires four changes:
 1.  **Add an** `admin` **field** to the module's state to store the admin address.
