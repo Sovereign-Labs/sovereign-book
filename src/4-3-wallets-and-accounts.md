@@ -2,11 +2,11 @@
 
 This section covers how accounts are created, which wallets are supported, and how transactions are signed in the Sovereign SDK. In the quickstart, you already submitted a transaction using an example js script; now, we'll explore the concepts behind that interaction.
 
-The core design principle is **Ethereum wallet compatibility**. Sovereign SDK rollups use standard Ethereum addresses and signatures (Secp256k1), which unlocks the vast Ethereum wallet tooling. However, there are important nuances to understand.
+The core design principle is **Ethereum wallet compatibility**. Sovereign SDK rollups use standard Ethereum addresses and signatures (Secp256k1), and provide compatibility with many popular wallets. However, there are some important nuances to understand.
 
 ## The Sovereign SDK Transaction Type
 
-A critical distinction to grasp is that while addresses and signatures are Ethereum-compatible, the **transaction format itself is unique to your rollup**. A Sovereign SDK rollup does not natively accept a raw, RLP-encoded Ethereum transaction.
+A critical distinction to grasp is that while addresses and signatures are Ethereum-compatible, the **transaction format itself is unique to your rollup**. A Sovereign SDK rollup does not natively accept standard Ethereum transactions.
 
 Instead, your rollup's `Runtime` defines a custom `RuntimeCall` enum in Rust, which represents all possible actions a user can take. When a user sends a transaction, they are sending a signed message that contains this `RuntimeCall`. Remember the `call` object you created in the quickstart?
 

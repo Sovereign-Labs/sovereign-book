@@ -1,6 +1,6 @@
 # Prebuilt Modules
 
-Here are the suite of prebuilt, production-tested modules that handle common blockchain primitives. Leveraging these modules allows you to focus on your application's unique logic instead of reinventing the wheel.
+The SDK provides a large suite of prebuilt, well-maintained modules that handle common blockchain primitives. Leveraging these modules allows you to focus on your application's unique logic instead of reinventing the wheel.
 
 This page serves as a reference guide to the standard modules included with the SDK.
 
@@ -30,6 +30,4 @@ This page serves as a reference guide to the standard modules included with the 
 
 ## Next Steps
 
-While this section of the book covered the core development workflow, the SDK includes many more production-grade features. 
-
-The next section, **"Additional Capabilities,"** provides a high-level overview of these features and how we can help you integrate them.
+In the next section, **"Additional Capabilities,"** you'll get a high-level overview of these features and how we can help you integrate them.

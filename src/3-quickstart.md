@@ -1,15 +1,15 @@
 # Quickstart: Your First Module
 
-This guide is about getting you to **write and deploy your own logic** on a rollup.
+In this section, you’ll write and deploy your own business logic as a rollup.
 
 We'll start with a very basic [`ValueSetter`](https://github.com/Sovereign-Labs/sov-rollup-starter-wip/tree/main/examples/value-setter) module that's already included in the `sov-rollup-starter-wip`.
 
-Our `ValueSetter` module currently stores a single number, and any user can update it. We want to ensure that only one user—the admin—has permission to update this number.
+The `ValueSetter` module currently stores a single number that any use can update. We want to ensure that only one user (the admin) has permission to update this number.
 
 This requires four changes:
 1.  **Add an** `admin` **field** to the module's state to store the admin address.
-2.  **Create a configuration struct** so we can set the admin address when the rollup launches.
-3.  **Initialize the** `admin`from the configuration struct in the `genesis` method, which sets up the module's initial state.
+2.  **Create a configuration struct** so that we can set the admin address when the rollup launches.
+3.  **Initialize** the `admin`from the configuration struct in the `genesis` method, which sets up the module's initial state.
 4.  **Add a check** in the `call` method to verify that the transaction sender is the admin.
 
 Let's get started.
@@ -23,7 +23,7 @@ First, navigate to the `value-setter` module in the starter repository and open 
 cd examples/value-setter/
 ```
 
-The initial code is minimal. It defines the module's structure and a `call` method that lets anyone set the value.
+The code in this file defines the module's structure and a `call` method that lets anyone set the value.
 
 Here’s the simplified `lib.rs` that we'll start with:
 

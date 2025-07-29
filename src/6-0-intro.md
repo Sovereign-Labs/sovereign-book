@@ -3,8 +3,8 @@
 Proper instrumentation is essential for monitoring, debugging, and optimizing your rollup in production. The Sovereign SDK provides comprehensive observability tools that help you understand your rollup's behavior and performance.
 
 This section covers:
-- **[Metrics](/instrumenting/metrics.md)** - Track performance indicators and business metrics
-- **[Logging](/instrumenting/logging.md)** - Debug and monitor your rollup's execution
+- **[Metrics](6-1-metrics.md)** - Track performance indicators and business metrics
+- **[Logging](6-2-logging.md)** - Debug and monitor your rollup's execution
 
 [TODO: Insert section on spinning up Grafana dashboards to monitor your rollup seamlessly]
 
