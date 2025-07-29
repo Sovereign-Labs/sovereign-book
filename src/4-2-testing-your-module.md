@@ -1,6 +1,6 @@
 # Testing Your Module
 
-In this section, we'll walk you through writing tests for the `ValueSetter` module you've been working on. The Sovereign SDK provides a powerful testing framework in the [`sov-test-utils`](https://github.com/Sovereign-Labs/sovereign-sdk-wip/tree/nightly/crates/module-system/sov-test-utils) crate that allows you to test your module's logic in an isolated environment, without needing to run a full rollup.
+In this section, we'll walk you through writing tests for the `ValueSetter` module you've been working on. The Sovereign SDK provides a powerful testing framework in the [`sov-test-utils`](https://github.com/Sovereign-Labs/sovereign-sdk/tree/nightly/crates/module-system/sov-test-utils) crate that allows you to test your module's logic in an isolated environment, without needing to run a full rollup.
 
 ## Step 1: Setting Up the Test Environment
 
@@ -10,7 +10,7 @@ Let's build a `setup` helper function to handle this boilerplate.
 
 ### a) Create a Test Runtime
 
-The first thing we need is a runtime to test against. The `generate_optimistic_runtime!` macro creates a temporary runtime that includes your `ValueSetter` module alongside the core modules (like the [`Bank`](https://github.com/Sovereign-Labs/sovereign-sdk-wip/tree/nightly/crates/module-system/module-implementations/sov-bank)) needed for a functioning rollup.
+The first thing we need is a runtime to test against. The `generate_optimistic_runtime!` macro creates a temporary runtime that includes your `ValueSetter` module alongside the core modules (like the [`Bank`](https://github.com/Sovereign-Labs/sovereign-sdk/tree/nightly/crates/module-system/module-implementations/sov-bank)) needed for a functioning rollup.
 
 ```rust
 // Typically in tests/test_value_setter.rs
@@ -174,7 +174,7 @@ cargo test
 
 ## Additional Testing Capabilities
 
-The [`TestRunner`](https://github.com/Sovereign-Labs/sovereign-sdk-wip/blob/nightly/crates/module-system/sov-test-utils/src/runtime/mod.rs#L265) provides methods for more advanced scenarios, all documented in the [`sov-test-utils` crate](https://github.com/Sovereign-Labs/sovereign-sdk-wip/tree/nightly/crates/module-system/sov-test-utils). Key capabilities include:
+The [`TestRunner`](https://github.com/Sovereign-Labs/sovereign-sdk/blob/nightly/crates/module-system/sov-test-utils/src/runtime/mod.rs#L265) provides methods for more advanced scenarios, all documented in the [`sov-test-utils` crate](https://github.com/Sovereign-Labs/sovereign-sdk/tree/nightly/crates/module-system/sov-test-utils). Key capabilities include:
 
 *   **Batch Execution:** Execute and assert on a sequence of transactions with `runner.execute_batch(...)`.
 *   **Time Advancement:** Test time-sensitive logic (like in [`Hooks`](./4-4-advanced-topics.md#hooks-responding-to-on-chain-events)) by advancing the slot count with `runner.advance_slots(...)`.

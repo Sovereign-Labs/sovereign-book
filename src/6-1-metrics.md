@@ -1,6 +1,6 @@
 # Metrics
 
-The SDK includes a custom metrics system called [`sov-metrics`](https://github.com/Sovereign-Labs/sovereign-sdk-wip/tree/nightly/crates/full-node/sov-metrics) designed specifically for rollup monitoring. It uses the [Telegraf line protocol](https://docs.influxdata.com/influxdb/cloud/reference/syntax/line-protocol/) format and integrates with Telegraf through socket listeners for efficient data collection. Metrics are automatically timestamped and sent to your configured Telegraf endpoint, which typically forwards them to InfluxDB for storage and Grafana for visualization. Metrics can only be tracked in **native mode** (not in zkVM).
+The SDK includes a custom metrics system called [`sov-metrics`](https://github.com/Sovereign-Labs/sovereign-sdk/tree/nightly/crates/full-node/sov-metrics) designed specifically for rollup monitoring. It uses the [Telegraf line protocol](https://docs.influxdata.com/influxdb/cloud/reference/syntax/line-protocol/) format and integrates with Telegraf through socket listeners for efficient data collection. Metrics are automatically timestamped and sent to your configured Telegraf endpoint, which typically forwards them to InfluxDB for storage and Grafana for visualization. Metrics can only be tracked in **native mode** (not in zkVM).
 
 **Important**: Metrics are emitted immediately when tracked and are NOT rolled back if a transaction reverts. This means failed transactions will still have their metrics recorded, which can be useful for debugging and monitoring error rates.
 
