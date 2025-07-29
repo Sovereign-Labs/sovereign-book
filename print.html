@@ -2574,7 +2574,7 @@ starts.</li>
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="revenue-share-for-premium-components"><a class="header" href="#revenue-share-for-premium-components">Revenue Share for Premium Components</a></h1>
 <p>When using Sovereign SDK's premium components (such as the ultra-low latency soft-confirming sequencer), applications that generate revenue must comply with the Sovereign Permissionless Commercial License. This guide walks you through the implementation.
-<strong>Note:</strong> Non-commercial applications and development are all exempt from the revenue share requirements.</p>
+<strong>Note:</strong> Non-commercial and non-production use of the SDK is exempt from the revenue share requirements.</p>
 <h2 id="license-requirements"><a class="header" href="#license-requirements">License Requirements</a></h2>
 <p>The license requires two things:</p>
 <ol>
@@ -2585,7 +2585,7 @@ starts.</li>
 <h2 id="how-revenue-sharing-works"><a class="header" href="#how-revenue-sharing-works">How Revenue Sharing Works</a></h2>
 <p>The module acts as an escrow for Sovereign Labs' revenue share:</p>
 <ul>
-<li><strong>Default Rate</strong>: 10% (1,000 basis points) - can only be decreased, never increased</li>
+<li><strong>Default Rate</strong>: 10% (1,000 basis points) - Under the license, Sovereign Labs may modify the default rate but may not increase it above 10%</li>
 <li><strong>Activation</strong>: Disabled by default; Sovereign Labs activates it when ready</li>
 <li><strong>Conditional</strong>: Only applies to transactions from the preferred sequencer</li>
 <li><strong>Flexible</strong>: Supports any token compatible with <code>sov-bank</code></li>
