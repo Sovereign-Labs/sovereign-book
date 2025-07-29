@@ -179,14 +179,36 @@
                     <main>
                         <h1 id="instrumenting-your-rollup"><a class="header" href="#instrumenting-your-rollup">Instrumenting Your Rollup</a></h1>
 <p>Proper instrumentation is essential for monitoring, debugging, and optimizing your rollup in production. The Sovereign SDK provides comprehensive observability tools that help you understand your rollup's behavior and performance.</p>
-<p>This section covers:</p>
+<h2 id="getting-started-with-observability"><a class="header" href="#getting-started-with-observability">Getting Started with Observability</a></h2>
+<p>The <a href="https://github.com/Sovereign-Labs/rollup-starter">rollup starter</a> repository includes a complete observability stack that gives you instant visibility into your rollup. With a single command, you can spin up a local monitoring environment:</p>
+<pre><code class="language-bash">$ make start-obs
+...
+Waiting for all services to become healthy...
+⏳ Waiting for services... (45 seconds remaining)
+✅ All observability services are healthy!
+🚀 Observability stack is ready:
+   - Grafana:     http://localhost:3000 (admin/admin123)
+   - InfluxDB:    http://localhost:8086 (admin/admin123)
+</code></pre>
+<p>This command starts all necessary Docker containers and automatically provisions Grafana dashboards specifically designed for rollups. You'll immediately see key metrics like block production rate, transaction throughput, and system performance.</p>
+<p>To stop the observability stack:</p>
+<pre><code class="language-bash">make stop-obs
+</code></pre>
+<p>For production deployments and advanced configuration, check out our <a href="https://sovlabs.notion.site/Tutorial-Getting-started-with-Grafana-Cloud-17e47ef6566b80839fe5c563f5869017?pvs=74">Observability Tutorial</a>.</p>
+<h2 id="adding-custom-instrumentation"><a class="header" href="#adding-custom-instrumentation">Adding Custom Instrumentation</a></h2>
+<p>While the default dashboards provide excellent baseline monitoring, every rollup has unique requirements. You'll want to add custom instrumentation to track:</p>
 <ul>
-<li><strong><a href="6-1-metrics.html">Metrics</a></strong> - Track performance indicators and business metrics</li>
-<li><strong><a href="6-2-logging.html">Logging</a></strong> - Debug and monitor your rollup's execution</li>
+<li>Application-specific metrics (e.g., DEX trading volume, NFT mints)</li>
+<li>Performance bottlenecks in your custom modules</li>
 </ul>
-<p>[TODO: Insert section on spinning up Grafana dashboards to monitor your rollup seamlessly]</p>
+<p>This section will teach you how to:</p>
+<ul>
+<li><strong><a href="6-1-metrics.html">Add Custom Metrics</a></strong> - Track performance indicators and business metrics using the SDK's metrics framework</li>
+<li><strong><a href="6-2-logging.html">Implement Structured Logging</a></strong> - Debug and monitor your rollup's execution with contextual logs</li>
+</ul>
 <h2 id="important-native-only-features"><a class="header" href="#important-native-only-features">Important: Native-Only Features</a></h2>
-<p>All instrumentation code must be gated with <code>#[cfg(feature = "native")]</code> to ensure it only runs on full nodes, not in the zkVM during proof generation. This allows you to instrument generously without affecting proof generation performance.</p>
+<p>All instrumentation code must be gated with <code>#[cfg(feature = "native")]</code> to ensure it only runs on full nodes, not in the zkVM during proof generation. This critical distinction allows you to instrument generously without affecting proof generation performance or determinism.</p>
+<p>Let's dive into the specifics of adding metrics and logging to your rollup.</p>
 
                     </main>
 
