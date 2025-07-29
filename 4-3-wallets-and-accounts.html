@@ -179,9 +179,9 @@
                     <main>
                         <h1 id="wallets-and-accounts"><a class="header" href="#wallets-and-accounts">Wallets and Accounts</a></h1>
 <p>This section covers how accounts are created, which wallets are supported, and how transactions are signed in the Sovereign SDK. In the quickstart, you already submitted a transaction using an example js script; now, we'll explore the concepts behind that interaction.</p>
-<p>The core design principle is <strong>Ethereum wallet compatibility</strong>. Sovereign SDK rollups use standard Ethereum addresses and signatures (Secp256k1), which unlocks the vast Ethereum wallet tooling. However, there are important nuances to understand.</p>
+<p>The core design principle is <strong>Ethereum wallet compatibility</strong>. Sovereign SDK rollups use standard Ethereum addresses and signatures (Secp256k1), and provide compatibility with many popular wallets. However, there are some important nuances to understand.</p>
 <h2 id="the-sovereign-sdk-transaction-type"><a class="header" href="#the-sovereign-sdk-transaction-type">The Sovereign SDK Transaction Type</a></h2>
-<p>A critical distinction to grasp is that while addresses and signatures are Ethereum-compatible, the <strong>transaction format itself is unique to your rollup</strong>. A Sovereign SDK rollup does not natively accept a raw, RLP-encoded Ethereum transaction.</p>
+<p>A critical distinction to grasp is that while addresses and signatures are Ethereum-compatible, the <strong>transaction format itself is unique to your rollup</strong>. A Sovereign SDK rollup does not natively accept standard Ethereum transactions.</p>
 <p>Instead, your rollup's <code>Runtime</code> defines a custom <code>RuntimeCall</code> enum in Rust, which represents all possible actions a user can take. When a user sends a transaction, they are sending a signed message that contains this <code>RuntimeCall</code>. Remember the <code>call</code> object you created in the quickstart?</p>
 <pre><code class="language-ts">// From the quickstart's examples/starter-js/src/index.ts
 const call = {

@@ -178,14 +178,15 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="anatomy-of-a-module"><a class="header" href="#anatomy-of-a-module">Anatomy of a Module</a></h1>
-<p>As we begin our journey into building a production-ready module, the first step is to understand the two most important architectural concepts in the Sovereign SDK: the <strong>Runtime</strong> and its <strong>Modules</strong>.</p>
+<p>As we begin our journey into building a production-ready rollup, the first step is to understand the two most important architectural concepts in the Sovereign SDK: the <strong>Runtime</strong> and its <strong>Modules</strong>.</p>
 <h2 id="runtime-vs-modules"><a class="header" href="#runtime-vs-modules">Runtime vs. Modules</a></h2>
-<p>The <strong>runtime</strong> is the orchestrator of your rollup. It receives transactions, deserializes them, and routes them to the appropriate modules for execution. Think of it as the central nervous system that connects all your application logic. The <a href="https://github.com/Sovereign-Labs/sov-rollup-starter-wip/blob/main/crates/stf/stf-declaration/src/lib.rs#L51"><code>Runtime</code></a> struct you define in your rollup code is what specifies which modules are included.</p>
-<p><strong>Modules</strong>, on the other hand, contain the actual, isolated business-logic. Each module manages its own state and defines the specific actions (called "call messages") that users can perform.  In the quickstart, <code>ValueSetter</code> was your module.</p>
+<p>The <strong>runtime</strong> is the orchestrator of your rollup. It receives transactions, deserializes them, and routes them to the appropriate modules for execution. Think of it as the central nervous system that connects all your application logic. The <a href="https://github.com/Sovereign-Labs/rollup-starter/blob/main/crates/stf/stf-declaration/src/lib.rs#L51"><code>Runtime</code></a> struct you define in your rollup code specifies which modules are included.</p>
+<p><strong>Modules</strong> contain the actual business-logic. Each module manages its own state and defines the specific actions (called "call messages") that users can perform. Modules are usually small and self-contained, but they can contain dependencies on other modules when it
+makes sense to.</p>
 <p>Now that we understand this high-level structure, let's dissect the <code>ValueSetter</code> module you built and enhance it with production-grade features.</p>
 <h2 id="dissecting-the-valuesetter-module"><a class="header" href="#dissecting-the-valuesetter-module">Dissecting the <code>ValueSetter</code> Module</a></h2>
 <h4 id="the-module-struct-state-and-dependencies"><a class="header" href="#the-module-struct-state-and-dependencies">The Module Struct: State and Dependencies</a></h4>
-<p>You started by defining the <code>ValueSetter</code> struct. This is the entry point to any module, defining its state variables and its dependencies on other modules.</p>
+<p>First, let's look at the <code>ValueSetter</code> struct, which defined its state variables and its dependencies on other modules.</p>
 <pre><code class="language-rust">#[derive(Clone, ModuleInfo, ModuleRestApi)]
 pub struct ValueSetter&lt;S: Spec&gt; {
     #[id]
@@ -209,15 +210,15 @@ pub struct ValueSetter&lt;S: Spec&gt; {
 <p>Deriving the <code>ModuleRestApi</code> trait is optional but highly recommended. It automatically generates RESTful API endpoints for the <code>#[state]</code> items in your module. Each item's endpoint will have the name <code>{hostname}/modules/{module-name}/{field-name}/</code>, with all items automatically converted to <code>kebab-casing</code>. For example, for the <code>value</code> field in our <code>ValueSetter</code> module, the SDK generates an endpoint at the path <code>/modules/value-setter/value</code>.</p>
 <p>Note that <code>ModuleRestApi</code> can't always generate endpoints for you. If it can't figure out how to generate an endpoint for a particular state value, it will simply skip it by default. If you want to override this behavior and throw a compiler error if endpoint generation fails, you can add the <code>#[rest_api(include)]</code> attribute.</p>
 <h3 id="state-management-in-depth"><a class="header" href="#state-management-in-depth">State Management In-Depth</a></h3>
-<p>The SDK provides several "state" types for different use cases, all designed to be stored within your module struct using the <code>#[state]</code> attribute.</p>
+<p>The SDK provides several "state" types for different use cases. All three types of state can be added to your module struct using the <code>#[state]</code> attribute.</p>
 <ul>
-<li><code>StateValue&lt;T&gt;</code>: Stores a single item of type <code>T</code>. We use this for the <code>value</code> and <code>admin</code> variables in our example.</li>
-<li><code>StateMap&lt;K, V&gt;</code>: Stores a key-value mapping. Ideal for balances or other user-specific data.</li>
+<li><code>StateValue&lt;T&gt;</code>: Stores a single item of type <code>T</code>. We used this for the <code>value</code> and <code>admin</code> variables in our example.</li>
+<li><code>StateMap&lt;K, V&gt;</code>: Stores a key-value mapping. This is ideal for balances or other user-specific data.</li>
 <li><code>StateVec&lt;T&gt;</code>: Stores an ordered list of items, accessible by index.</li>
 </ul>
-<p>The generic types can be any deterministic Rust data structure, anything from a simple <code>u32</code> to a complex <code>BTreeMap</code>.</p>
-<p><strong>Accessory State</strong>: For each state type, there is a corresponding <code>AccessoryState*</code> variant (e.g., <code>AccessoryStateMap</code>). Accessory state is special: it can be read via the API, but it is <strong>write-only</strong> during a transaction. This makes it a simple and cheap storage to use for data that doesn't affect onchain logic, like purchase histories for an off-chain frontend.</p>
-<h3 id="the-module-trait-understanding-your-logic"><a class="header" href="#the-module-trait-understanding-your-logic">The <code>Module</code> Trait: Understanding Your Logic</a></h3>
+<p>The generic types can be any (deterministically) serializable Rust data structure.</p>
+<p><strong>Accessory State</strong>: For each state type, there is a corresponding <code>AccessoryState*</code> variant (e.g., <code>AccessoryStateMap</code>). Accessory state is special: it can be read via the API, but it is <strong>write-only</strong> during transaction execution. This makes it a simple and cheap storage to use for data that doesn't affect onchain logic, like purchase histories for an off-chain frontend.</p>
+<h3 id="the-module-trait"><a class="header" href="#the-module-trait">The <code>Module</code> Trait</a></h3>
 <p>The <code>Module</code> trait is where your business logic lives. Let's review the pieces you implemented for <code>ValueSetter</code> in the quickstart.</p>
 <ul>
 <li>
@@ -281,10 +282,10 @@ impl&lt;S: Spec&gt; Module for ValueSetter&lt;S&gt; {
     }
 }</code></pre>
 <p>Now, whenever the admin successfully calls <code>set_value</code>, the module will emit a <code>ValueUpdated</code> event.</p>
-<p>A key guarantee of the Sovereign SDK is that event emission is <strong>atomic</strong> with transaction execution—if a transaction reverts, so do its events. This ensures any off-chain system remains perfectly consistent with the on-chain state.</p>
+<p>A key guarantee of the Sovereign SDK is that event emission is <strong>atomic</strong> with transaction execution—if a transaction reverts, so do its events. This ensures any off-chain system remains consistent with the on-chain state.</p>
 <p>To make it simple to build scalable and faul-tolertant off-chain data pipelines, the sequencer provides a websocket endpoint that streams sequentially numbered transactions along with their corresponding events. If a client disconnects, it can reliably resume the stream from the last transaction it processed.</p>
 <h2 id="next-step-ensuring-correctness"><a class="header" href="#next-step-ensuring-correctness">Next Step: Ensuring Correctness</a></h2>
-<p>You now have a deep, conceptual understanding of how a Sovereign SDK module is structured.</p>
+<p>You now have a strong conceptual understanding of how a Sovereign SDK module is structured.</p>
 <p>In the next chapter, <strong>"Testing Your Module,"</strong> we'll show you how to test your modules.</p>
 
                     </main>
