@@ -1,6 +1,7 @@
 # Additional Capabilities
 
-The Sovereign SDK includes many advanced features beyond the core functionality covered in this documentation.
+The Sovereign SDK includes many advanced features beyond the core functionality covered in this documentation. The features listed in 
+this section are already available or very near completion, but are not yet comprehensively documented.
 
 **To learn more about implementing these features in your rollup, just shoot us a message in our [support channel](https://join.slack.com/t/sovereigndevelopers/shared_invite/zt-39aolimfp-XsFK6dL6LhOFHhtXsD_kCA) or fill out our [partner form](https://airtable.com/app9kbNZcvqdrOidH/shrPlG9rok3sVd8Mh) and we'll reach out to you.**
 

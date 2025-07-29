@@ -1,12 +1,13 @@
 # Anatomy of a Module
 
-As we begin our journey into building a production-ready module, the first step is to understand the two most important architectural concepts in the Sovereign SDK: the **Runtime** and its **Modules**.
+As we begin our journey into building a production-ready rollup, the first step is to understand the two most important architectural concepts in the Sovereign SDK: the **Runtime** and its **Modules**.
 
 ## Runtime vs. Modules
 
-The **runtime** is the orchestrator of your rollup. It receives transactions, deserializes them, and routes them to the appropriate modules for execution. Think of it as the central nervous system that connects all your application logic. The [`Runtime`](https://github.com/Sovereign-Labs/sov-rollup-starter-wip/blob/main/crates/stf/stf-declaration/src/lib.rs#L51) struct you define in your rollup code is what specifies which modules are included.
+The **runtime** is the orchestrator of your rollup. It receives transactions, deserializes them, and routes them to the appropriate modules for execution. Think of it as the central nervous system that connects all your application logic. The [`Runtime`](https://github.com/Sovereign-Labs/rollup-starter/blob/main/crates/stf/stf-declaration/src/lib.rs#L51) struct you define in your rollup code specifies which modules are included.
 
-**Modules**, on the other hand, contain the actual, isolated business-logic. Each module manages its own state and defines the specific actions (called "call messages") that users can perform.  In the quickstart, `ValueSetter` was your module.
+**Modules** contain the actual business-logic. Each module manages its own state and defines the specific actions (called "call messages") that users can perform. Modules are usually small and self-contained, but they can contain dependencies on other modules when it 
+makes sense to.
 
 Now that we understand this high-level structure, let's dissect the `ValueSetter` module you built and enhance it with production-grade features.
 
@@ -14,7 +15,7 @@ Now that we understand this high-level structure, let's dissect the `ValueSetter
 
 #### The Module Struct: State and Dependencies
 
-You started by defining the `ValueSetter` struct. This is the entry point to any module, defining its state variables and its dependencies on other modules.
+First, let's look at the `ValueSetter` struct, which defined its state variables and its dependencies on other modules.
 
 ```rust
 #[derive(Clone, ModuleInfo, ModuleRestApi)]
@@ -45,17 +46,17 @@ Note that `ModuleRestApi` can't always generate endpoints for you. If it can't f
 
 ### State Management In-Depth
 
-The SDK provides several "state" types for different use cases, all designed to be stored within your module struct using the `#[state]` attribute.
+The SDK provides several "state" types for different use cases. All three types of state can be added to your module struct using the `#[state]` attribute.
 
-*   `StateValue<T>`: Stores a single item of type `T`. We use this for the `value` and `admin` variables in our example.
-*   `StateMap<K, V>`: Stores a key-value mapping. Ideal for balances or other user-specific data.
+*   `StateValue<T>`: Stores a single item of type `T`. We used this for the `value` and `admin` variables in our example.
+*   `StateMap<K, V>`: Stores a key-value mapping. This is ideal for balances or other user-specific data.
 *   `StateVec<T>`: Stores an ordered list of items, accessible by index.
 
-The generic types can be any deterministic Rust data structure, anything from a simple `u32` to a complex `BTreeMap`.
+The generic types can be any (deterministically) serializable Rust data structure.
 
-**Accessory State**: For each state type, there is a corresponding `AccessoryState*` variant (e.g., `AccessoryStateMap`). Accessory state is special: it can be read via the API, but it is **write-only** during a transaction. This makes it a simple and cheap storage to use for data that doesn't affect onchain logic, like purchase histories for an off-chain frontend.
+**Accessory State**: For each state type, there is a corresponding `AccessoryState*` variant (e.g., `AccessoryStateMap`). Accessory state is special: it can be read via the API, but it is **write-only** during transaction execution. This makes it a simple and cheap storage to use for data that doesn't affect onchain logic, like purchase histories for an off-chain frontend.
 
-### The `Module` Trait: Understanding Your Logic
+### The `Module` Trait
 
 The `Module` trait is where your business logic lives. Let's review the pieces you implemented for `ValueSetter` in the quickstart.
 
@@ -127,12 +128,12 @@ impl<S: Spec> Module for ValueSetter<S> {
 
 Now, whenever the admin successfully calls `set_value`, the module will emit a `ValueUpdated` event.
 
-A key guarantee of the Sovereign SDK is that event emission is **atomic** with transaction execution—if a transaction reverts, so do its events. This ensures any off-chain system remains perfectly consistent with the on-chain state. 
+A key guarantee of the Sovereign SDK is that event emission is **atomic** with transaction execution—if a transaction reverts, so do its events. This ensures any off-chain system remains consistent with the on-chain state. 
 
 To make it simple to build scalable and faul-tolertant off-chain data pipelines, the sequencer provides a websocket endpoint that streams sequentially numbered transactions along with their corresponding events. If a client disconnects, it can reliably resume the stream from the last transaction it processed.
 
 ## Next Step: Ensuring Correctness
 
-You now have a deep, conceptual understanding of how a Sovereign SDK module is structured.
+You now have a strong conceptual understanding of how a Sovereign SDK module is structured.
 
 In the next chapter, **"Testing Your Module,"** we'll show you how to test your modules.

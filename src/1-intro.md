@@ -1,12 +1,12 @@
 # Introduction
 
-Welcome to *The Sovereign SDK Book*, a comprehensive guide to the industry's most flexible toolkit for building high-performance, real-time rollups.
-
-We built this SDK to give developers, from solo builders to large teams, the power to create onchain applications that were previously impossible. 
+Welcome to the Sovereign SDK Book! 
 
 With P99 of transaction executions under 10 milliseconds, the Sovereign SDK is fast enough to bring complex financial systems, like Central-Limit Orderbooks (CLOBs), fully on-chain.
 
-Let's build the next Hyperliquid.
+The Sovereign SDK provides much more flexibility and performance than traditional blockchain frameworks. In this guide, you'll learn to take full advantage of the SDK's unique features and bring your app from idea to production.
+
+Let's get started!
 
 <img src="./assets/sov-sdk-low-res.jpeg" style="border-radius: 10px">
 
@@ -44,4 +44,4 @@ This two-stage process gives you the best of both worlds: the instant, centraliz
 
 ## Ready to Build?
 
-Let's walk you through cloning our starter repository and running your first rollup in seconds.
+In the next section we'll get you up and running with your first Sovereign SDK rollup.
