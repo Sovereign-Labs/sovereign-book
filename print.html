@@ -92,7 +92,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="1-intro.html"><strong aria-hidden="true">1.</strong> Intro</a></li><li class="chapter-item expanded "><a href="2-running-starter.html"><strong aria-hidden="true">2.</strong> Running the Starter Rollup</a></li><li class="chapter-item expanded "><a href="3-quickstart.html"><strong aria-hidden="true">3.</strong> Quickstart: Your First Module</a></li><li class="chapter-item expanded "><a href="4-0-build-for-production-intro.html"><strong aria-hidden="true">4.</strong> Building for Production</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="4-1-anatomy-of-a-module.html"><strong aria-hidden="true">4.1.</strong> Anatomy of a Module</a></li><li class="chapter-item expanded "><a href="4-2-testing-your-module.html"><strong aria-hidden="true">4.2.</strong> Testing Your Module</a></li><li class="chapter-item expanded "><a href="4-3-wallets-and-accounts.html"><strong aria-hidden="true">4.3.</strong> Wallets and Accounts</a></li><li class="chapter-item expanded "><a href="4-4-advanced-topics.html"><strong aria-hidden="true">4.4.</strong> Advanced Topics</a></li><li class="chapter-item expanded "><a href="4-5-performance.html"><strong aria-hidden="true">4.5.</strong> Performance</a></li><li class="chapter-item expanded "><a href="4-6-prebuilt-modules.html"><strong aria-hidden="true">4.6.</strong> Prebuilt Modules</a></li></ol></li><li class="chapter-item expanded "><a href="5-additional-capabilities.html"><strong aria-hidden="true">5.</strong> Additional Capabilities</a></li><li class="chapter-item expanded "><a href="6-0-intro.html"><strong aria-hidden="true">6.</strong> Instrumenting Your Rollup</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="6-1-metrics.html"><strong aria-hidden="true">6.1.</strong> Metrics</a></li><li class="chapter-item expanded "><a href="6-2-logging.html"><strong aria-hidden="true">6.2.</strong> Logging</a></li></ol></li><li class="chapter-item expanded "><a href="7-0-intro.html"><strong aria-hidden="true">7.</strong> SDK Contributors</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="7-1-transaction-lifecycle.html"><strong aria-hidden="true">7.1.</strong> Transaction Lifecyle</a></li><li class="chapter-item expanded "><a href="7-2-abstractions.html"><strong aria-hidden="true">7.2.</strong> Main Abstractions</a></li><li class="chapter-item expanded "><a href="7-3-forced-sequencer-registration.html"><strong aria-hidden="true">7.3.</strong> Forced Sequencer Registration</a></li><li class="chapter-item expanded "><a href="7-4-gas.html"><strong aria-hidden="true">7.4.</strong> Gas</a></li></ol></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="1-intro.html"><strong aria-hidden="true">1.</strong> Intro</a></li><li class="chapter-item expanded "><a href="2-running-starter.html"><strong aria-hidden="true">2.</strong> Running the Starter Rollup</a></li><li class="chapter-item expanded "><a href="3-quickstart.html"><strong aria-hidden="true">3.</strong> Quickstart: Your First Module</a></li><li class="chapter-item expanded "><a href="4-0-build-for-production-intro.html"><strong aria-hidden="true">4.</strong> Building for Production</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="4-1-anatomy-of-a-module.html"><strong aria-hidden="true">4.1.</strong> Anatomy of a Module</a></li><li class="chapter-item expanded "><a href="4-2-testing-your-module.html"><strong aria-hidden="true">4.2.</strong> Testing Your Module</a></li><li class="chapter-item expanded "><a href="4-3-wallets-and-accounts.html"><strong aria-hidden="true">4.3.</strong> Wallets and Accounts</a></li><li class="chapter-item expanded "><a href="4-4-advanced-topics.html"><strong aria-hidden="true">4.4.</strong> Advanced Topics</a></li><li class="chapter-item expanded "><a href="4-5-performance.html"><strong aria-hidden="true">4.5.</strong> Performance</a></li><li class="chapter-item expanded "><a href="4-6-prebuilt-modules.html"><strong aria-hidden="true">4.6.</strong> Prebuilt Modules</a></li></ol></li><li class="chapter-item expanded "><a href="5-additional-capabilities.html"><strong aria-hidden="true">5.</strong> Additional Capabilities</a></li><li class="chapter-item expanded "><a href="6-0-intro.html"><strong aria-hidden="true">6.</strong> Instrumenting Your Rollup</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="6-1-metrics.html"><strong aria-hidden="true">6.1.</strong> Metrics</a></li><li class="chapter-item expanded "><a href="6-2-logging.html"><strong aria-hidden="true">6.2.</strong> Logging</a></li></ol></li><li class="chapter-item expanded "><a href="7-0-intro.html"><strong aria-hidden="true">7.</strong> SDK Contributors</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="7-1-transaction-lifecycle.html"><strong aria-hidden="true">7.1.</strong> Transaction Lifecyle</a></li><li class="chapter-item expanded "><a href="7-2-abstractions.html"><strong aria-hidden="true">7.2.</strong> Main Abstractions</a></li><li class="chapter-item expanded "><a href="7-3-forced-sequencer-registration.html"><strong aria-hidden="true">7.3.</strong> Forced Sequencer Registration</a></li><li class="chapter-item expanded "><a href="7-4-gas.html"><strong aria-hidden="true">7.4.</strong> Gas</a></li></ol></li><li class="chapter-item expanded "><a href="8-0-complying-with-revenue-share.html"><strong aria-hidden="true">8.</strong> Complying with Revenue Share</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -2571,6 +2571,79 @@ within the <code>ChainState</code>'s module lifecycle hooks
 contains the implementationn of the <code>SequencerStakeMeter</code> which is the data
 structure used to meter the sequencer stake before the transaction's execution
 starts.</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="revenue-share-for-premium-components"><a class="header" href="#revenue-share-for-premium-components">Revenue Share for Premium Components</a></h1>
+<p>When using Sovereign SDK's premium components (such as the ultra-low latency soft-confirming sequencer), applications that generate revenue must comply with the Sovereign Permissionless Commercial License. This guide walks you through the implementation.
+<strong>Note:</strong> Non-commercial applications and development are all exempt from the revenue share requirements.</p>
+<h2 id="license-requirements"><a class="header" href="#license-requirements">License Requirements</a></h2>
+<p>The license requires two things:</p>
+<ol>
+<li><strong>Revenue Sharing</strong>: Share a portion of revenue from transactions processed by the preferred sequencer</li>
+<li><strong>Notification</strong>: Contact Sovereign Labs before production deployment with rollup access details</li>
+</ol>
+<p>The <code>sov-revenue-share</code> module handles the revenue sharing automatically, ensuring compliance while you focus on building your application.</p>
+<h2 id="how-revenue-sharing-works"><a class="header" href="#how-revenue-sharing-works">How Revenue Sharing Works</a></h2>
+<p>The module acts as an escrow for Sovereign Labs' revenue share:</p>
+<ul>
+<li><strong>Default Rate</strong>: 10% (1,000 basis points) - can only be decreased, never increased</li>
+<li><strong>Activation</strong>: Disabled by default; Sovereign Labs activates it when ready</li>
+<li><strong>Conditional</strong>: Only applies to transactions from the preferred sequencer</li>
+<li><strong>Flexible</strong>: Supports any token compatible with <code>sov-bank</code></li>
+</ul>
+<h2 id="implementation"><a class="header" href="#implementation">Implementation</a></h2>
+<p>The revenue share module is included in the starter template. You just need to integrate it where your application generates revenue.</p>
+<h3 id="step-1-add-the-module-reference"><a class="header" href="#step-1-add-the-module-reference">Step 1: Add the Module Reference</a></h3>
+<p>Add the revenue share module to your application:</p>
+<pre><code class="language-rust">#[derive(Clone, ModuleInfo, ModuleRestApi)]
+pub struct YourApp&lt;S: Spec&gt; {
+    #[id]
+    pub id: ModuleId,
+    
+    #[module]
+    pub revenue_share: sov_revenue_share::RevenueShare&lt;S&gt;,
+    
+    // ... other modules
+}</code></pre>
+<h3 id="step-2-share-revenue-on-fee-collection"><a class="header" href="#step-2-share-revenue-on-fee-collection">Step 2: Share Revenue on Fee Collection</a></h3>
+<p>When collecting fees, check if the transaction came from the preferred sequencer and share accordingly:</p>
+<pre><code class="language-rust">pub fn charge_fee(
+    &amp;mut self,
+    payer: &amp;S::Address,
+    total_fee: Amount,
+    token_id: TokenId,
+    context: &amp;Context&lt;S&gt;,
+    state: &amp;mut impl TxState&lt;S&gt;,
+) -&gt; anyhow::Result&lt;()&gt; {
+    // Only share revenue for preferred sequencer transactions
+    if self.revenue_share.is_preferred_sequencer(context, state) {
+        self.revenue_share.compute_and_pay_revenue_share(
+            payer, 
+            token_id, 
+            total_fee, 
+            state
+        )?;
+    }
+    
+    // Continue with your fee logic...
+    Ok(())
+}</code></pre>
+<p>This pattern ensures you only share revenue when required. For custom implementations, use <code>get_revenue_share_percentage_bps()</code> and <code>pay_revenue_share()</code> directly.</p>
+<h2 id="production-deployment-requirements"><a class="header" href="#production-deployment-requirements">Production Deployment Requirements</a></h2>
+<p><strong>Before deploying to production</strong>, you must notify Sovereign Labs at <strong>info@sovlabs.io</strong> with:</p>
+<ol>
+<li><strong>Documentation</strong>: Link to or copy of your rollup interaction docs</li>
+<li><strong>API Endpoint</strong>: Where Sovereign can submit revenue share admin transactions
+<ul>
+<li>Must cover reasonable gas costs (via direct transfer, paymaster, or agreed method)</li>
+</ul>
+</li>
+<li><strong>Schema</strong> (if not available via API): Your rollup's universal wallet schema JSON</li>
+</ol>
+<p>This notification ensures Sovereign Labs can manage the revenue share module as intended by the license.</p>
+<h2 id="questions"><a class="header" href="#questions">Questions?</a></h2>
+<ul>
+<li>Technical issues: Join our <a href="https://join.slack.com/t/sovereigndevelopers/shared_invite/zt-39aolimfp-XsFK6dL6LhOFHhtXsD_kCA">Slack community</a></li>
+<li>Licensing questions: Contact info@sovlabs.io</li>
 </ul>
 
                     </main>
