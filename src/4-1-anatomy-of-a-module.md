@@ -70,7 +70,8 @@ The `Module` trait is where your business logic lives. Let's review the pieces y
 >
 > If you parameterize your `CallMessage` or `Event` over `S` (for example, to include an address of type `S::Address`), you must add the `#[schemars(bound = "S: Spec", rename = "MyEnum")]` attribute on top your enum definition. This is a necessary hint for `schemars`, a library that generates a JSON schema for your module's API. It ensures that your generic types can be correctly represented for external tools.
 
-> **Quick Tip: Handling `Vector` and `String` in CallMessage** 
+> **Quick Tip: Handling `Vector` and `String` in CallMessage**
+> 
 > Use the fixed‑size wrappers `SafeVector` and `SafeString` for any fields that are deserialized directly into a `CallMessage`; they limit payload size and prevent DoS attacks. After deserialization, feel free to convert them to regular `Vector` and `String` values and use them as usual.
 
 ## Adding Events
