@@ -178,12 +178,12 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="testing-your-module"><a class="header" href="#testing-your-module">Testing Your Module</a></h1>
-<p>In this section, we'll walk you through writing tests for the <code>ValueSetter</code> module you've been working on. The Sovereign SDK provides a powerful testing framework in the <a href="https://github.com/Sovereign-Labs/sovereign-sdk-wip/tree/nightly/crates/module-system/sov-test-utils"><code>sov-test-utils</code></a> crate that allows you to test your module's logic in an isolated environment, without needing to run a full rollup.</p>
+<p>In this section, we'll walk you through writing tests for the <code>ValueSetter</code> module you've been working on. The Sovereign SDK provides a powerful testing framework in the <a href="https://github.com/Sovereign-Labs/sovereign-sdk/tree/nightly/crates/module-system/sov-test-utils"><code>sov-test-utils</code></a> crate that allows you to test your module's logic in an isolated environment, without needing to run a full rollup.</p>
 <h2 id="step-1-setting-up-the-test-environment"><a class="header" href="#step-1-setting-up-the-test-environment">Step 1: Setting Up the Test Environment</a></h2>
 <p>All module tests follow a similar pattern. First, we need to create a temporary, isolated runtime that includes our module. Then, for each test, we'll define the initial ("genesis") state and use a <code>TestRunner</code> to execute transactions and make assertions.</p>
 <p>Let's build a <code>setup</code> helper function to handle this boilerplate.</p>
 <h3 id="a-create-a-test-runtime"><a class="header" href="#a-create-a-test-runtime">a) Create a Test Runtime</a></h3>
-<p>The first thing we need is a runtime to test against. The <code>generate_optimistic_runtime!</code> macro creates a temporary runtime that includes your <code>ValueSetter</code> module alongside the core modules (like the <a href="https://github.com/Sovereign-Labs/sovereign-sdk-wip/tree/nightly/crates/module-system/module-implementations/sov-bank"><code>Bank</code></a>) needed for a functioning rollup.</p>
+<p>The first thing we need is a runtime to test against. The <code>generate_optimistic_runtime!</code> macro creates a temporary runtime that includes your <code>ValueSetter</code> module alongside the core modules (like the <a href="https://github.com/Sovereign-Labs/sovereign-sdk/tree/nightly/crates/module-system/module-implementations/sov-bank"><code>Bank</code></a>) needed for a functioning rollup.</p>
 <pre><code class="language-rust">// Typically in tests/test_value_setter.rs
 use sov_modules_api::Spec;
 use sov_test_utils::{generate_optimistic_runtime, TestSpec};
@@ -321,7 +321,7 @@ fn test_regular_user_cannot_set_value() {
 <pre><code class="language-bash">cargo test
 </code></pre>
 <h2 id="additional-testing-capabilities"><a class="header" href="#additional-testing-capabilities">Additional Testing Capabilities</a></h2>
-<p>The <a href="https://github.com/Sovereign-Labs/sovereign-sdk-wip/blob/nightly/crates/module-system/sov-test-utils/src/runtime/mod.rs#L265"><code>TestRunner</code></a> provides methods for more advanced scenarios, all documented in the <a href="https://github.com/Sovereign-Labs/sovereign-sdk-wip/tree/nightly/crates/module-system/sov-test-utils"><code>sov-test-utils</code> crate</a>. Key capabilities include:</p>
+<p>The <a href="https://github.com/Sovereign-Labs/sovereign-sdk/blob/nightly/crates/module-system/sov-test-utils/src/runtime/mod.rs#L265"><code>TestRunner</code></a> provides methods for more advanced scenarios, all documented in the <a href="https://github.com/Sovereign-Labs/sovereign-sdk/tree/nightly/crates/module-system/sov-test-utils"><code>sov-test-utils</code> crate</a>. Key capabilities include:</p>
 <ul>
 <li><strong>Batch Execution:</strong> Execute and assert on a sequence of transactions with <code>runner.execute_batch(...)</code>.</li>
 <li><strong>Time Advancement:</strong> Test time-sensitive logic (like in <a href="./4-4-advanced-topics.html#hooks-responding-to-on-chain-events"><code>Hooks</code></a>) by advancing the slot count with <code>runner.advance_slots(...)</code>.</li>

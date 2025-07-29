@@ -330,7 +330,7 @@ async fn route_balance(
 <p>Note that for for custom REST APIs, you'll need to manually write an <code>OpenApi</code> specification if you want client support.</p>
 <h3 id="adding-legacy-rpc-support"><a class="header" href="#adding-legacy-rpc-support">Adding Legacy RPC Support</a></h3>
 <p>In addition to custom RESTful APIs, the Sovereign SDK lets you create JSON-RPC methods. This is useful to provide API compatibility with existing chains like Ethereum and Solana, but we recommend using REST APIs whenever compatibility isn't a concern.</p>
-<p>To implement RPC methods, simply annotate an <code>impl</code> block on your module with the <code>#[rpc_gen(client, server)]</code> macro, and then write methods which accept an <code>ApiStateAcessor</code> as their final argument and return an <code>RpcResult</code>. You can see some examples in the <a href="https://github.com/Sovereign-Labs/sovereign-sdk-wip/blob/nightly/crates/module-system/module-implementations/sov-evm/src/rpc/mod.rs#L187"><code>Evm</code> module</a>.</p>
+<p>To implement RPC methods, simply annotate an <code>impl</code> block on your module with the <code>#[rpc_gen(client, server)]</code> macro, and then write methods which accept an <code>ApiStateAcessor</code> as their final argument and return an <code>RpcResult</code>. You can see some examples in the <a href="https://github.com/Sovereign-Labs/sovereign-sdk/blob/nightly/crates/module-system/module-implementations/sov-evm/src/rpc/mod.rs#L187"><code>Evm</code> module</a>.</p>
 <pre><code class="language-rust">#![cfg(feature = "native")]
 #[rpc_gen(client, server)]
 impl&lt;S: Spec&gt; Evm&lt;S&gt; {
