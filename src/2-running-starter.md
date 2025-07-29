@@ -17,8 +17,8 @@ With the prerequisites installed, running the rollup takes just two commands.
 1.  **Clone the starter repository:**
 
     ```bash
-    git clone https://github.com/Sovereign-Labs/sov-rollup-starter-wip.git
-    cd sov-rollup-starter-wip
+    git clone https://github.com/Sovereign-Labs/rollup-starter.git
+    cd rollup-starter
     ```
 
 2.  **Build and run the node:**
