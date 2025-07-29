@@ -1,6 +1,7 @@
 # Revenue Share for Premium Components
 
 When using Sovereign SDK's premium components (such as the ultra-low latency soft-confirming sequencer), applications that generate revenue must comply with the Sovereign Permissionless Commercial License. This guide walks you through the implementation.
+**Note:** Non-commercial applications and development are all exempt from the revenue share requirements.
 
 ## License Requirements
 
