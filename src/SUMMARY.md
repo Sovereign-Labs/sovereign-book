@@ -19,3 +19,4 @@
   - [Main Abstractions](7-2-abstractions.md)
   - [Forced Sequencer Registration](7-3-forced-sequencer-registration.md)
   - [Gas](7-4-gas.md)
+- [Complying with Revenue Share](8-0-complying-with-revenue-share.md)
