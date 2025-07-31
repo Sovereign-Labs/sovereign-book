@@ -14,7 +14,7 @@ this section are already available or very near completion, but are not yet comp
 ### Integrations & Compatibility
 
 * **Ethereum or Solana addresses and wallet support** – Use any address format or wallet you prefer
-* **Hyperlane integration** – Bridge liquidity from any EVM, SVM, or Cosmos SDK chain
+* **Hyperlane integration** – Bridge liquidity from any EVM, SVM (Solana-like), or Cosmos SDK chain
 * **Multiple zkVM integrations** – Choose the ZK-prover that best suits your application's performance characteristics, with support for Risc0, SP1, and other Rust-compatible ZKVMs.
 
 We're happy to help you leverage these features to build production-ready rollups tailored to your exact requirements.
