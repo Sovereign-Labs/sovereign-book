@@ -132,6 +132,8 @@ impl<S: Spec> Module for ValueSetter<S> {
 // ... existing code ...
 ```
 
+> Note: The `genesis` method is called only once, when the rollup first starts. If you've previously run the rollup, you'll need to clear the database and restart from scratch to ensure the `genesis` method runs again and the `admin` is set. You can do this using the `make clean-db` command.
+
 ### d) Add the Admin Check in `call`
 
 The final piece. We'll modify the `call` method to read the `admin` address from state and compare it to the transaction sender. If they don't match, the transaction fails.
