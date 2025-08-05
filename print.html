@@ -366,6 +366,9 @@ impl&lt;S: Spec&gt; Module for ValueSetter&lt;S&gt; {
 
     fn call(&amp;mut self, msg: Self::CallMessage, context: &amp;Context&lt;S&gt;, state: &amp;mut impl TxState&lt;S&gt;) -&gt; Result&lt;()&gt; {
 // ... existing code ...</code></pre>
+<blockquote>
+<p>Note: The <code>genesis</code> method is called only once, when the rollup first starts. If you've previously run the rollup, you'll need to clear the database and restart from scratch to ensure the <code>genesis</code> method runs again and the <code>admin</code> is set. You can do this using the <code>make clean-db</code> command.</p>
+</blockquote>
 <h3 id="d-add-the-admin-check-in-call"><a class="header" href="#d-add-the-admin-check-in-call">d) Add the Admin Check in <code>call</code></a></h3>
 <p>The final piece. We'll modify the <code>call</code> method to read the <code>admin</code> address from state and compare it to the transaction sender. If they don't match, the transaction fails.</p>
 <pre><code class="language-rust">// In examples/value-setter/src/lib.rs
