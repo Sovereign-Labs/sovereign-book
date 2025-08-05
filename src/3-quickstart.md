@@ -132,7 +132,7 @@ impl<S: Spec> Module for ValueSetter<S> {
 // ... existing code ...
 ```
 
-> Note: The `genesis` method gets called only once when the rollup starts. If you have previously run the rollup, then you must clear the database and start the rollup from scratch to ensure that the `gensis` method gets called and `admin` gets set. You can use the `make clean-db` to achieve this.
+> Note: The `genesis` method gets called only once when the rollup starts. If you have previously run the rollup, then you must clear the database and start the rollup from scratch to ensure that the `gensis` method gets called and `admin` gets set. You can use the `make clean-db` command to achieve this.
 
 ### d) Add the Admin Check in `call`
 
