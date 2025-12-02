@@ -259,13 +259,14 @@ impl&lt;S: Spec&gt; Module for ValueSetter&lt;S&gt; {
     type Config = ValueSetterConfig&lt;S&gt;;
     type CallMessage = CallMessage;
     type Event = Event; // Change this from ()
+    type Error = anyhow::Error;
 
     // The `genesis` method is unchanged.
     fn genesis(&amp;mut self, _header: &amp;&lt;S::Da as sov_modules_api::DaSpec&gt;::BlockHeader, config: &amp;Self::Config, state: &amp;mut impl GenesisState&lt;S&gt;) -&gt; Result&lt;()&gt; {
         // ...
     }
 
-    fn call(&amp;mut self, msg: Self::CallMessage, context: &amp;Context&lt;S&gt;, state: &amp;mut impl TxState&lt;S&gt;) -&gt; Result&lt;()&gt; {
+    fn call(&amp;mut self, msg: Self::CallMessage, context: &amp;Context&lt;S&gt;, state: &amp;mut impl TxState&lt;S&gt;) -&gt; Result&lt;(), Self::Error&gt; {
         match msg {
             CallMessage::SetValue(new_value) =&gt; {
                 let admin = self.admin.get(state)??;
@@ -284,6 +285,84 @@ impl&lt;S: Spec&gt; Module for ValueSetter&lt;S&gt; {
 <p>Now, whenever the admin successfully calls <code>set_value</code>, the module will emit a <code>ValueUpdated</code> event.</p>
 <p>A key guarantee of the Sovereign SDK is that event emission is <strong>atomic</strong> with transaction execution—if a transaction reverts, so do its events. This ensures any off-chain system remains consistent with the on-chain state.</p>
 <p>To make it simple to build scalable and faul-tolertant off-chain data pipelines, the sequencer provides a websocket endpoint that streams sequentially numbered transactions along with their corresponding events. If a client disconnects, it can reliably resume the stream from the last transaction it processed.</p>
+<h2 id="module-error-handling"><a class="header" href="#module-error-handling">Module Error Handling</a></h2>
+<p>So far, your module uses <code>anyhow::Error</code> for error handling, which is simple but not very robust. For a production-ready module, it's better to define a custom error enum that clearly communicates the different failure modes of your module as well as includes structured error context which makes it easier for client-side applications to handle errors.</p>
+<p>Here's how you can define a custom error enum for the <code>ValueSetter</code> module:</p>
+<pre><code class="language-rust">use sov_modules_api::{ErrorDetail, ErrorContext, err_detail};
+
+#[derive(Debug, thiserror::Error, serde::Serialize)]
+#[serde(tag = "error_code", rename_all = "snake_case")]
+pub enum ValueSetterError {
+    // So we can still wrap anyhow::Error for unexpected errors
+    // State getters/setters often use anyhow
+    #[error(transparent)]
+    Any(#[from] anyhow::Error),
+    #[error("User '{sender}' is unauthorized, only the admin can set the value.")]
+    Unauthorized {
+        sender: String,
+    },
+}
+
+impl sov_modules_api::ErrorDetail for ValueSetterError {
+    fn error_detail(&amp;self) -&gt; Result&lt;ErrorContext, Box&lt;dyn std::error::Error + Send + Sync&gt;&gt; {
+        let mut detail = err_detail!(self); // Serializes `ValueSetterError` to a JSON object
+        detail.insert("message".to_owned(), self.to_string().into());
+        Ok(detail)
+    }
+
+}</code></pre>
+<blockquote>
+<p><strong>Quick Tip: ErrorDetail trait</strong></p>
+<p>The <code>ErrorDetail</code> trait controls how the error is returned from the REST API to clients. We use the <code>tag</code> attribute to implement error codes for our module then use <code>err_detail!</code> to serialize the error to a JSON object.
+Finally , we add a human-readable <code>message</code> field to the error context to enable showing a summarized message to users.</p>
+</blockquote>
+<p>Then, update your <code>Module</code> implementation to use this new error type:</p>
+<pre><code class="language-rust">impl&lt;S: Spec&gt; Module for ValueSetter&lt;S&gt; {
+    type Spec = S;
+    type Config = ValueSetterConfig&lt;S&gt;;
+    type CallMessage = CallMessage;
+    type Event = Event;
+    type Error = ValueSetterError; // Use the custom error type
+
+    // The `genesis` method is unchanged.
+    fn genesis(&amp;mut self, _header: &amp;&lt;S::Da as sov_modules_api::DaSpec&gt;::BlockHeader, config: &amp;Self::Config, state: &amp;mut impl GenesisState&lt;S&gt;) -&gt; Result&lt;()&gt; {
+        // ...
+    }
+
+    fn call(&amp;mut self, msg: Self::CallMessage, context: &amp;Context&lt;S&gt;, state: &amp;mut impl TxState&lt;S&gt;) -&gt; Result&lt;(), Self::Error&gt; {
+        match msg {
+            CallMessage::SetValue(new_value) =&gt; {
+                let admin = self.admin.get(state)??;
+
+                if admin != *context.sender() {
+                    // NEW: Return a structured Unauthorized error
+                    return Err(ValueSetterError::Unauthorized {
+                        sender: context.sender().to_string(),
+                    });
+                }
+
+                self.value.set(&amp;new_value, state)?;
+
+                self.emit_event(state, Event::ValueUpdated(new_value));
+
+                Ok(())
+            }
+        }
+    }
+}</code></pre>
+<p>Now when a submitted transaction fails because the sender is not the admin, it will return your <code>ErrorDetails</code> in the <code>details</code> field of the error response, like this:</p>
+<pre><code class="language-json">{
+  "error": {
+    "message": "Transaction execution unsuccessful",
+    "status": 400,
+    "details": {
+        "error_code": "unauthorized",
+        "sender": "0x1234...abcd",
+        "message": "User '0x1234...abcd' is unauthorized, only the admin can set the value."
+    }
+  }
+}
+</code></pre>
 <h2 id="next-step-ensuring-correctness"><a class="header" href="#next-step-ensuring-correctness">Next Step: Ensuring Correctness</a></h2>
 <p>You now have a strong conceptual understanding of how a Sovereign SDK module is structured.</p>
 <p>In the next chapter, <strong>"Testing Your Module,"</strong> we'll show you how to test your modules.</p>
