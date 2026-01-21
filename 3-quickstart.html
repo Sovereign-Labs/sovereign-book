@@ -307,9 +307,9 @@ impl&lt;S: Spec&gt; Module for ValueSetter&lt;S&gt; {
     }
 }</code></pre>
 <h2 id="step-3-configure-the-genesis-state"><a class="header" href="#step-3-configure-the-genesis-state">Step 3: Configure the Genesis State</a></h2>
-<p>Our <code>genesis</code> method reads the admin's address from a configuration file. We need to provide that value in <code>configs/mock_da/genesis.json</code>.</p>
+<p>Our <code>genesis</code> method reads the admin's address from a configuration file. We need to provide that value in <code>configs/mock/genesis.json</code>.</p>
 <p>The SDK automatically deserializes this JSON into our <code>ValueSetterConfig</code> struct (since we plugged in said struct as the <code>Config</code> associated type of our module) when the rollup starts.</p>
-<pre><code class="language-json">// In sov-rollup-starter/configs/mock_da/genesis.json
+<pre><code class="language-json">// In sov-rollup-starter/configs/mock/genesis.json
 {
   // ... other module configs
   "value_setter": {
