@@ -164,12 +164,12 @@ The final piece. We'll modify the `call` method to read the `admin` address from
 
 ## Step 3: Configure the Genesis State
 
-Our `genesis` method reads the admin's address from a configuration file. We need to provide that value in `configs/mock_da/genesis.json`.
+Our `genesis` method reads the admin's address from a configuration file. We need to provide that value in `configs/mock/genesis.json`.
 
 The SDK automatically deserializes this JSON into our `ValueSetterConfig` struct (since we plugged in said struct as the `Config` associated type of our module) when the rollup starts.
 
 ```json
-// In sov-rollup-starter/configs/mock_da/genesis.json
+// In sov-rollup-starter/configs/mock/genesis.json
 {
   // ... other module configs
   "value_setter": {
